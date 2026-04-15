@@ -1,0 +1,2919 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Влад — Веб-разработчик</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        /* ========== RESET & BASE ========== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0b;
+            --bg-secondary: #111113;
+            --bg-card: #161618;
+            --bg-card-hover: #1c1c1f;
+            --border: #222225;
+            --border-light: #2a2a2d;
+            --text-primary: #f5f5f7;
+            --text-secondary: #a1a1a6;
+            --text-muted: #6e6e73;
+            --accent: #6c5ce7;
+            --accent-light: #a29bfe;
+            --accent-glow: rgba(108, 92, 231, 0.15);
+            --accent-glow-strong: rgba(108, 92, 231, 0.3);
+            --green: #00cec9;
+            --green-glow: rgba(0, 206, 201, 0.15);
+            --orange: #e17055;
+            --gradient-1: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            --gradient-2: linear-gradient(135deg, #0a0a0b 0%, #111113 100%);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 48px rgba(0, 0, 0, 0.6);
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent) var(--bg-secondary);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent);
+            border-radius: 3px;
+        }
+
+        /* ========== CURSOR GLOW ========== */
+        .cursor-glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(circle, rgba(108, 92, 231, 0.06) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s;
+        }
+
+        /* ========== NAVIGATION ========== */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 0 24px;
+            transition: var(--transition);
+        }
+
+        .nav.scrolled {
+            background: rgba(10, 10, 11, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 72px;
+        }
+
+        .nav-logo {
+            font-size: 20px;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-1);
+            border-radius: 1px;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-cta {
+            padding: 8px 20px;
+            background: var(--gradient-1);
+            color: white !important;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            -webkit-text-fill-color: white !important;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px var(--accent-glow-strong);
+        }
+
+        .nav-cta::after {
+            display: none !important;
+        }
+
+        /* Mobile menu */
+        .nav-burger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 8px;
+            z-index: 1001;
+        }
+
+        .nav-burger span {
+            width: 24px;
+            height: 2px;
+            background: var(--text-primary);
+            border-radius: 2px;
+            transition: var(--transition);
+        }
+
+        .nav-burger.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+        .nav-burger.active span:nth-child(2) {
+            opacity: 0;
+        }
+        .nav-burger.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 10, 11, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 32px;
+        }
+
+        .mobile-menu.active {
+            display: flex;
+        }
+
+        .mobile-menu a {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 24px;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .mobile-menu a:hover {
+            color: var(--accent-light);
+        }
+
+        /* ========== SECTIONS COMMON ========== */
+        section {
+            position: relative;
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .section-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-light);
+            margin-bottom: 16px;
+            padding: 6px 16px;
+            background: var(--accent-glow);
+            border: 1px solid rgba(108, 92, 231, 0.2);
+            border-radius: 100px;
+        }
+
+        .section-title {
+            font-size: clamp(32px, 5vw, 48px);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 16px;
+            letter-spacing: -1px;
+        }
+
+        .section-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            max-width: 560px;
+            line-height: 1.7;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 64px;
+        }
+
+        .section-header .section-subtitle {
+            margin: 0 auto;
+        }
+
+        /* ========== HERO ========== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            padding: 120px 0 80px;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
+        .hero-bg .grid-pattern {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(108, 92, 231, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(108, 92, 231, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        .hero-bg .gradient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+        }
+
+        .hero-bg .orb-1 {
+            width: 600px;
+            height: 600px;
+            background: rgba(108, 92, 231, 0.08);
+            top: -200px;
+            right: -200px;
+        }
+
+        .hero-bg .orb-2 {
+            width: 400px;
+            height: 400px;
+            background: rgba(0, 206, 201, 0.05);
+            bottom: -100px;
+            left: -100px;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+        }
+
+        .hero-inner {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px 6px 8px;
+            background: var(--accent-glow);
+            border: 1px solid rgba(108, 92, 231, 0.2);
+            border-radius: 100px;
+            font-size: 13px;
+            color: var(--accent-light);
+            font-weight: 500;
+            margin-bottom: 24px;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .hero-badge .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        .hero-title {
+            font-size: clamp(40px, 6vw, 64px);
+            font-weight: 900;
+            line-height: 1.05;
+            letter-spacing: -2px;
+            margin-bottom: 24px;
+            animation: fadeInUp 0.6s ease 0.1s both;
+        }
+
+        .hero-title .gradient-text {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-description {
+            font-size: 17px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 40px;
+            max-width: 480px;
+            animation: fadeInUp 0.6s ease 0.2s both;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.6s ease 0.3s both;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: var(--radius-md);
+            font-size: 15px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--gradient-1);
+            color: white;
+            box-shadow: 0 4px 24px var(--accent-glow-strong);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px var(--accent-glow-strong);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--border-light);
+            transform: translateY(-2px);
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 40px;
+            margin-top: 48px;
+            animation: fadeInUp 0.6s ease 0.4s both;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Hero visual */
+        .hero-visual {
+            position: relative;
+            animation: fadeInUp 0.6s ease 0.3s both;
+        }
+
+        .hero-code-window {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .code-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 20px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .code-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .code-dot.red { background: #ff5f56; }
+        .code-dot.yellow { background: #ffbd2e; }
+        .code-dot.green { background: #27ca40; }
+
+        .code-header span {
+            margin-left: 12px;
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .code-body {
+            padding: 24px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 2;
+            color: var(--text-secondary);
+        }
+
+        .code-line {
+            display: flex;
+            gap: 12px;
+        }
+
+        .code-number {
+            color: var(--text-muted);
+            user-select: none;
+            min-width: 24px;
+            text-align: right;
+        }
+
+        .code-keyword { color: #c792ea; }
+        .code-string { color: #c3e88d; }
+        .code-property { color: #82aaff; }
+        .code-bracket { color: #89ddff; }
+        .code-value { color: #f78c6c; }
+        .code-comment { color: var(--text-muted); font-style: italic; }
+
+        /* Floating elements around hero visual */
+        .floating-badge {
+            position: absolute;
+            padding: 10px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--shadow);
+            animation: float 3s ease-in-out infinite;
+            white-space: nowrap;
+        }
+
+        .floating-badge.badge-1 {
+            top: -20px;
+            right: -20px;
+            animation-delay: 0s;
+        }
+
+        .floating-badge.badge-2 {
+            bottom: 40px;
+            left: -30px;
+            animation-delay: 1s;
+        }
+
+        .floating-badge.badge-3 {
+            bottom: -10px;
+            right: 40px;
+            animation-delay: 2s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========== SERVICES ========== */
+        .services {
+            padding: 120px 0;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .service-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 36px 28px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-1);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .service-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-light);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .service-card:hover::before {
+            opacity: 1;
+        }
+
+        .service-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .service-icon.purple {
+            background: var(--accent-glow);
+            color: var(--accent-light);
+        }
+        .service-icon.teal {
+            background: var(--green-glow);
+            color: var(--green);
+        }
+        .service-icon.orange {
+            background: rgba(225, 112, 85, 0.15);
+            color: var(--orange);
+        }
+
+        .service-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.3px;
+        }
+
+        .service-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .service-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 16px;
+        }
+
+        .service-tag {
+            padding: 4px 10px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* ========== CASES ========== */
+        .cases {
+            padding: 120px 0;
+        }
+
+        .cases-list {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .case-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .case-card:hover {
+            border-color: var(--border-light);
+            box-shadow: 0 8px 48px rgba(0, 0, 0, 0.3);
+        }
+
+        .case-inner {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            min-height: 480px;
+        }
+
+        .case-inner.reverse {
+            grid-template-columns: 1fr 1.2fr;
+        }
+
+        .case-inner.reverse .case-gallery {
+            order: 2;
+        }
+
+        .case-inner.reverse .case-info {
+            order: 1;
+        }
+
+        /* Case Gallery */
+        .case-gallery {
+            position: relative;
+            overflow: hidden;
+            background: var(--bg-secondary);
+        }
+
+        .gallery-slider {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+        }
+
+        .gallery-slide {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .gallery-slide.active {
+            opacity: 1;
+        }
+
+        .gallery-slide img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .gallery-slide img:hover {
+            transform: scale(1.02);
+        }
+
+        /* Screenshot placeholders */
+        .screenshot-placeholder {
+            width: 100%;
+            height: 100%;
+            min-height: 340px;
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .screenshot-placeholder:hover {
+            transform: scale(1.02);
+            border-color: var(--accent);
+        }
+
+        .screenshot-placeholder.crm-main {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        .screenshot-placeholder.crm-analytics {
+            background: linear-gradient(135deg, #0f3460 0%, #1a1a2e 100%);
+        }
+
+        .screenshot-placeholder.crm-mobile {
+            background: linear-gradient(135deg, #16213e 0%, #1a1a2e 100%);
+            max-width: 220px;
+            margin: 0 auto;
+        }
+
+        .screenshot-placeholder.landing-main {
+            background: linear-gradient(135deg, #1b2838 0%, #1a2332 100%);
+        }
+
+        .screenshot-placeholder.landing-product {
+            background: linear-gradient(135deg, #1a2332 0%, #1b2838 100%);
+        }
+
+        .screenshot-placeholder.landing-mobile {
+            background: linear-gradient(135deg, #1b2838 0%, #162029 100%);
+            max-width: 220px;
+            margin: 0 auto;
+        }
+
+        .screenshot-placeholder.course-main {
+            background: linear-gradient(135deg, #1a1625 0%, #221a30 100%);
+        }
+
+        .screenshot-placeholder.course-modules {
+            background: linear-gradient(135deg, #221a30 0%, #1a1625 100%);
+        }
+
+        .screenshot-placeholder.course-mobile {
+            background: linear-gradient(135deg, #1a1625 0%, #1e1529 100%);
+            max-width: 220px;
+            margin: 0 auto;
+        }
+
+        .screenshot-placeholder.design-main {
+            background: linear-gradient(135deg, #1a2520 0%, #162320 100%);
+        }
+
+        .screenshot-placeholder.design-edit {
+            background: linear-gradient(135deg, #162320 0%, #1a2520 100%);
+        }
+
+        .screenshot-placeholder.design-mobile {
+            background: linear-gradient(135deg, #1a2520 0%, #152018 100%);
+            max-width: 220px;
+            margin: 0 auto;
+        }
+
+        /* Mock UI elements inside placeholders */
+        .mock-ui {
+            width: 90%;
+            height: 85%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 12px;
+        }
+
+        .mock-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+        }
+
+        .mock-dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .mock-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+        }
+
+        .mock-url {
+            width: 120px;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+        }
+
+        .mock-sidebar {
+            width: 60px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 8px;
+            flex-shrink: 0;
+        }
+
+        .mock-sidebar-item {
+            width: 100%;
+            height: 6px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 3px;
+        }
+
+        .mock-sidebar-item.active {
+            background: var(--accent);
+            opacity: 0.5;
+        }
+
+        .mock-content {
+            flex: 1;
+            display: flex;
+            gap: 8px;
+        }
+
+        .mock-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .mock-card-row {
+            display: flex;
+            gap: 6px;
+        }
+
+        .mock-stat-card {
+            flex: 1;
+            height: 40px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .mock-chart-area {
+            flex: 1;
+            background: rgba(255,255,255,0.03);
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mock-chart-line {
+            position: absolute;
+            bottom: 20%;
+            left: 5%;
+            width: 90%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--green));
+            border-radius: 1px;
+            opacity: 0.6;
+        }
+
+        .mock-chart-line::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            background: linear-gradient(180deg, transparent, rgba(108, 92, 231, 0.1));
+        }
+
+        .mock-table {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .mock-table-row {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .mock-table-cell {
+            height: 8px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 2px;
+            flex: 1;
+        }
+
+        .mock-table-cell:first-child {
+            flex: 0.5;
+        }
+
+        .mock-hero-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 20px;
+        }
+
+        .mock-hero-title {
+            width: 60%;
+            height: 12px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 6px;
+        }
+
+        .mock-hero-subtitle {
+            width: 40%;
+            height: 8px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 4px;
+        }
+
+        .mock-hero-btn {
+            width: 80px;
+            height: 24px;
+            background: var(--accent);
+            opacity: 0.4;
+            border-radius: 6px;
+            margin-top: 8px;
+        }
+
+        .mock-product-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            padding: 0 12px 12px;
+        }
+
+        .mock-product-card {
+            aspect-ratio: 1;
+            background: rgba(255,255,255,0.04);
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        /* Gallery controls */
+        .gallery-controls {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .gallery-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .gallery-dot.active {
+            background: var(--accent-light);
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        .gallery-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            z-index: 10;
+            font-size: 14px;
+        }
+
+        .gallery-arrow:hover {
+            background: rgba(108, 92, 231, 0.5);
+        }
+
+        .gallery-arrow.prev { left: 12px; }
+        .gallery-arrow.next { right: 12px; }
+
+        .slide-label {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            padding: 4px 12px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 100px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            z-index: 10;
+        }
+
+        /* Case Info */
+        .case-info {
+            padding: 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .case-type {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 16px;
+            width: fit-content;
+        }
+
+        .case-type.crm {
+            background: var(--accent-glow);
+            color: var(--accent-light);
+        }
+        .case-type.landing {
+            background: var(--green-glow);
+            color: var(--green);
+        }
+        .case-type.course {
+            background: rgba(253, 203, 110, 0.15);
+            color: #ffeaa7;
+        }
+        .case-type.design {
+            background: rgba(225, 112, 85, 0.15);
+            color: #fab1a0;
+        }
+
+        .case-title {
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            letter-spacing: -0.5px;
+        }
+
+        .case-description {
+            font-size: 15px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 28px;
+        }
+
+        .case-features {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 32px;
+        }
+
+        .case-feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .case-feature i {
+            color: var(--green);
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .case-tech {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 32px;
+        }
+
+        .tech-tag {
+            padding: 6px 14px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .case-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .case-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .case-link.primary {
+            background: var(--gradient-1);
+            color: white;
+        }
+
+        .case-link.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px var(--accent-glow-strong);
+        }
+
+        .case-link.secondary {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .case-link.secondary:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+
+        /* ========== ABOUT ========== */
+        .about {
+            padding: 120px 0;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .about-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .about-feature {
+            padding: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            transition: var(--transition);
+        }
+
+        .about-feature:hover {
+            border-color: var(--border-light);
+            transform: translateY(-2px);
+        }
+
+        .about-feature-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            font-size: 18px;
+        }
+
+        .about-feature h4 {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .about-feature p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* ========== PRICING ========== */
+        .pricing {
+            padding: 120px 0;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .pricing-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 40px 32px;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-light);
+            box-shadow: 0 8px 48px rgba(0, 0, 0, 0.3);
+        }
+
+        .pricing-card.featured {
+            border-color: var(--accent);
+            background: linear-gradient(180deg, rgba(108, 92, 231, 0.05) 0%, var(--bg-card) 100%);
+        }
+
+        .pricing-card.featured::before {
+            content: 'Популярное';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 4px 16px;
+            background: var(--gradient-1);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 100px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .pricing-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .pricing-card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .pricing-card .price {
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 4px;
+            letter-spacing: -1px;
+        }
+
+        .pricing-card .price span {
+            font-size: 16px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .pricing-card .price-note {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .pricing-features {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .pricing-feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .pricing-feature i {
+            color: var(--green);
+            font-size: 12px;
+        }
+
+        .pricing-btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .pricing-btn.primary {
+            background: var(--gradient-1);
+            color: white;
+        }
+
+        .pricing-btn.primary:hover {
+            box-shadow: 0 4px 24px var(--accent-glow-strong);
+            transform: translateY(-2px);
+        }
+
+        .pricing-btn.secondary {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .pricing-btn.secondary:hover {
+            border-color: var(--accent);
+        }
+
+        .pricing-note {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+        }
+
+        .pricing-note p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .pricing-note i {
+            color: var(--accent-light);
+            margin-right: 6px;
+        }
+
+        /* ========== CTA / CONTACT ========== */
+        .contact {
+            padding: 120px 0;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+        }
+
+        .contact-box {
+            max-width: 640px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 64px 48px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--gradient-1);
+        }
+
+        .contact-box .section-title {
+            margin-bottom: 16px;
+        }
+
+        .contact-box .section-subtitle {
+            margin: 0 auto 40px;
+        }
+
+        .contact-tg {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 40px;
+            background: #2AABEE;
+            color: white;
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-weight: 700;
+            transition: var(--transition);
+        }
+
+        .contact-tg:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(42, 171, 238, 0.3);
+        }
+
+        .contact-tg i {
+            font-size: 20px;
+        }
+
+        /* ========== FOOTER ========== */
+        .footer {
+            padding: 32px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .footer-text {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .footer-links a {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-light);
+        }
+
+        /* ========== LIGHTBOX ========== */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 10000;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(20px);
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            position: relative;
+        }
+
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: var(--radius-md);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* ========== SCROLL ANIMATIONS ========== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+        .reveal-delay-5 { transition-delay: 0.5s; }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 1024px) {
+            .hero-inner {
+                grid-template-columns: 1fr;
+                gap: 48px;
+            }
+
+            .hero-visual {
+                display: none;
+            }
+
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .case-inner,
+            .case-inner.reverse {
+                grid-template-columns: 1fr;
+            }
+
+            .case-inner.reverse .case-gallery { order: 1; }
+            .case-inner.reverse .case-info { order: 2; }
+
+            .gallery-slider {
+                min-height: 320px;
+            }
+
+            .about-grid {
+                grid-template-columns: 1fr;
+                gap: 48px;
+            }
+
+            .pricing-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .pricing-card:last-child {
+                grid-column: span 2;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .nav-burger {
+                display: flex;
+            }
+
+            .hero {
+                padding: 100px 0 60px;
+            }
+
+            .hero-title {
+                font-size: 36px;
+                letter-spacing: -1px;
+            }
+
+            .hero-stats {
+                gap: 24px;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .case-info {
+                padding: 32px 24px;
+            }
+
+            .case-title {
+                font-size: 22px;
+            }
+
+            .gallery-slider {
+                min-height: 280px;
+            }
+
+            .about-features {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-card:last-child {
+                grid-column: auto;
+            }
+
+            .contact-box {
+                padding: 40px 24px;
+            }
+
+            .footer-inner {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+
+            .section-header {
+                margin-bottom: 40px;
+            }
+
+            .services, .cases, .about, .pricing, .contact {
+                padding: 80px 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-buttons {
+                flex-direction: column;
+            }
+
+            .hero-buttons .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .hero-stats {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .case-links {
+                flex-direction: column;
+            }
+
+            .case-link {
+                text-align: center;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Cursor Glow -->
+<div class="cursor-glow" id="cursorGlow"></div>
+
+<!-- Navigation -->
+<nav class="nav" id="nav">
+    <div class="nav-inner">
+        <div class="nav-logo">vlad.dev</div>
+        <ul class="nav-links">
+            <li><a href="#services">Услуги</a></li>
+            <li><a href="#cases">Кейсы</a></li>
+            <li><a href="#about">Обо мне</a></li>
+            <li><a href="#pricing">Цены</a></li>
+            <li><a href="https://t.me/vladoss_011" target="_blank" class="nav-cta">Telegram</a></li>
+        </ul>
+        <div class="nav-burger" id="navBurger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobileMenu">
+    <a href="#services" class="mobile-link">Услуги</a>
+    <a href="#cases" class="mobile-link">Кейсы</a>
+    <a href="#about" class="mobile-link">Обо мне</a>
+    <a href="#pricing" class="mobile-link">Цены</a>
+    <a href="https://t.me/vladoss_011" target="_blank">Telegram →</a>
+</div>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+    <div class="hero-bg">
+        <div class="grid-pattern"></div>
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+    </div>
+    <div class="container hero-content">
+        <div class="hero-inner">
+            <div class="hero-text">
+                <div class="hero-badge">
+                    <span class="dot"></span>
+                    Открыт для проектов
+                </div>
+                <h1 class="hero-title">
+                    Влад —<br>
+                    <span class="gradient-text">веб-разработчик</span>
+                </h1>
+                <p class="hero-description">
+                    Создаю сайты и CRM-системы под бизнес с нуля. Код пишу самостоятельно — без конструкторов. Работаю быстро и по делу.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#cases" class="btn btn-primary">
+                        <i class="fas fa-eye"></i>
+                        Смотреть кейсы
+                    </a>
+                    <a href="https://t.me/vladoss_011" target="_blank" class="btn btn-secondary">
+                        <i class="fab fa-telegram"></i>
+                        Написать в Telegram
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">10+</span>
+                        <span class="stat-label">Проектов</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">2-3</span>
+                        <span class="stat-label">Дня на проект</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Код без конструкторов</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-code-window">
+                    <div class="code-header">
+                        <div class="code-dot red"></div>
+                        <div class="code-dot yellow"></div>
+                        <div class="code-dot green"></div>
+                        <span>vlad-portfolio.js</span>
+                    </div>
+                    <div class="code-body">
+                        <div class="code-line">
+                            <span class="code-number">1</span>
+                            <span><span class="code-keyword">const</span> <span class="code-property">developer</span> <span class="code-bracket">=</span> <span class="code-bracket">{</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="code-number">2</span>
+                            <span>&nbsp;&nbsp;<span class="code-property">name</span><span class="code-bracket">:</span> <span class="code-string">"Влад"</span><span class="code-bracket">,</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="code-number">3</span>
+                            <span>&nbsp;&nbsp;<span class="code-property">role</span><span class="code-bracket">:</span> <span class="code-string">"Web Developer"</span><span class="code-bracket">,</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="code-number">4</span>
+                            <span>&nbsp;&nbsp;<span class="code-property">skills</span><span class="code-bracket">:</span> <span class="code-bracket">[</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="code-number">5</span>
+                            <span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-string">"HTML/CSS/JS"</span><span class="code-bracket">,</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="code-number">6</span>
+                            <span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-string">"CRM Systems"</span><span class="code-bracket">,</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="code-number">7</span>
+                            <span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-string">"Web Design"</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="code-number">8</span>
+                            <span>&nbsp;&nbsp;<span class="code-bracket">],</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="code-number">9</span>
+                            <span>&nbsp;&nbsp;<span class="code-property">available</span><span class="code-bracket">:</span> <span class="code-value">true</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="code-number">10</span>
+                            <span><span class="code-bracket">}</span><span class="code-bracket">;</span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="code-number">11</span>
+                            <span></span>
+                        </div>
+                        <div class="code-line">
+                            <span class="code-number">12</span>
+                            <span><span class="code-comment">// Готов к новым проектам 🚀</span></span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Floating badges -->
+                <div class="floating-badge badge-1">
+                    <i class="fas fa-check-circle" style="color: var(--green);"></i>
+                    Дедлайны соблюдаю
+                </div>
+                <div class="floating-badge badge-2">
+                    <i class="fas fa-code" style="color: var(--accent-light);"></i>
+                    Чистый код
+                </div>
+                <div class="floating-badge badge-3">
+                    <i class="fas fa-mobile-alt" style="color: var(--orange);"></i>
+                    Адаптив
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services -->
+<section class="services" id="services">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-label">
+                <i class="fas fa-th-large"></i>
+                Услуги
+            </div>
+            <h2 class="section-title">Что я создаю</h2>
+            <p class="section-subtitle">Сайты и системы для бизнеса — от лендинга до полноценной CRM с аналитикой</p>
+        </div>
+        <div class="services-grid">
+            <!-- Card 1 -->
+            <div class="service-card reveal reveal-delay-1">
+                <div class="service-icon purple">
+                    <i class="fas fa-desktop"></i>
+                </div>
+                <h3>Лендинги</h3>
+                <p>Продающие одностраничники для товаров, услуг и курсов. Быстрая загрузка и адаптив.</p>
+                <div class="service-tags">
+                    <span class="service-tag">Товары</span>
+                    <span class="service-tag">Услуги</span>
+                    <span class="service-tag">Курсы</span>
+                </div>
+            </div>
+            <!-- Card 2 -->
+            <div class="service-card reveal reveal-delay-2">
+                <div class="service-icon teal">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h3>Сайты с тарифами</h3>
+                <p>Многостраничные сайты для курсов и обучения: модули, пакеты, доступы, тарифы.</p>
+                <div class="service-tags">
+                    <span class="service-tag">Модули</span>
+                    <span class="service-tag">Тарифы</span>
+                    <span class="service-tag">Доступы</span>
+                </div>
+            </div>
+            <!-- Card 3 -->
+            <div class="service-card reveal reveal-delay-3">
+                <div class="service-icon orange">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>CRM системы</h3>
+                <p>Системы управления клиентами, заявками, оплатами. Аналитика менеджеров и интеграции.</p>
+                <div class="service-tags">
+                    <span class="service-tag">Google Sheets</span>
+                    <span class="service-tag">Аналитика</span>
+                    <span class="service-tag">Оплаты</span>
+                </div>
+            </div>
+            <!-- Card 4 -->
+            <div class="service-card reveal reveal-delay-1">
+                <div class="service-icon teal">
+                    <i class="fas fa-sync-alt"></i>
+                </div>
+                <h3>Редизайн сайтов</h3>
+                <p>Обновление внешнего вида и удобства существующих сайтов. Новая жизнь старому проекту.</p>
+                <div class="service-tags">
+                    <span class="service-tag">UI/UX</span>
+                    <span class="service-tag">Оптимизация</span>
+                </div>
+            </div>
+            <!-- Card 5 -->
+            <div class="service-card reveal reveal-delay-2">
+                <div class="service-icon purple">
+                    <i class="fas fa-paint-brush"></i>
+                </div>
+                <h3>Дизайн и обработка</h3>
+                <p>Дизайн сайта с нуля, обработка фото в Photoshop, подготовка визуала под проект.</p>
+                <div class="service-tags">
+                    <span class="service-tag">Photoshop</span>
+                    <span class="service-tag">Визуал</span>
+                </div>
+            </div>
+            <!-- Card 6 -->
+            <div class="service-card reveal reveal-delay-3">
+                <div class="service-icon orange">
+                    <i class="fas fa-plug"></i>
+                </div>
+                <h3>Интеграции</h3>
+                <p>Подключение Google Sheets, учёт оплат, контроль менеджеров — всё в одной системе.</p>
+                <div class="service-tags">
+                    <span class="service-tag">API</span>
+                    <span class="service-tag">Таблицы</span>
+                    <span class="service-tag">Автоматизация</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Cases -->
+<section class="cases" id="cases">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-label">
+                <i class="fas fa-briefcase"></i>
+                Кейсы
+            </div>
+            <h2 class="section-title">Мои проекты</h2>
+            <p class="section-subtitle">Реальные проекты — сайты и системы, которые работают</p>
+        </div>
+
+        <div class="cases-list">
+
+            <!-- Case 1: CRM System -->
+            <div class="case-card reveal">
+                <div class="case-inner">
+                    <div class="case-gallery">
+                        <div class="gallery-slider" data-gallery="crm">
+                            <!-- Slide 1: Main Dashboard -->
+                            <div class="gallery-slide active">
+                                <div class="slide-label">Главный экран</div>
+                                <div class="screenshot-placeholder crm-main">
+                                    <div class="mock-ui">
+                                        <div class="mock-topbar">
+                                            <div class="mock-dots">
+                                                <div class="mock-dot"></div>
+                                                <div class="mock-dot"></div>
+                                                <div class="mock-dot"></div>
+                                            </div>
+                                            <div class="mock-url"></div>
+                                            <div style="width: 20px;"></div>
+                                        </div>
+                                        <div class="mock-content">
+                                            <div class="mock-sidebar">
+                                                <div class="mock-sidebar-item active"></div>
+                                                <div class="mock-sidebar-item"></div>
+                                                <div class="mock-sidebar-item"></div>
+                                                <div class="mock-sidebar-item"></div>
+                                                <div class="mock-sidebar-item"></div>
+                                            </div>
+                                            <div class="mock-main">
+                                                <div class="mock-card-row">
+                                                    <div class="mock-stat-card"></div>
+                                                    <div class="mock-stat-card"></div>
+                                                    <div class="mock-stat-card"></div>
+                                                </div>
+                                                <div class="mock-chart-area">
+                                                    <div class="mock-chart-line"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Slide 2: Analytics -->
+                            <div class="gallery-slide">
+                                <div class="slide-label">Аналитика</div>
+                                <div class="screenshot-placeholder crm-analytics">
+                                    <div class="mock-ui">
+                                        <div class="mock-topbar">
+                                            <div class="mock-dots">
+                                                <div class="mock-dot"></div>
+                                                <div class="mock-dot"></div>
+                                                <div class="mock-dot"></div>
+                                            </div>
+                                            <div class="mock-url"></div>
+                                            <div style="width: 20px;"></div>
+                                        </div>
+                                        <div class="mock-content">
+                                            <div class="mock-sidebar">
+                                                <div class="mock-sidebar-item"></div>
+                                                <div class="mock-sidebar-item active"></div>
+                                                <div class="mock-sidebar-item"></div>
+                                                <div class="mock-sidebar-item"></div>
+                                            </div>
+                                            <div class="mock-main">
+                                                <div class="mock-card-row">
+                                                    <div class="mock-stat-card"></div>
+                                                    <div class="mock-stat-card"></div>
+                                                </div>
+                                                <div class="mock-table">
+                                                    <div class="mock-table-row">
+                                                        <div class="mock-table-cell"></div>
+                                                        <div class="mock-table-cell"></div>
+                                                        <div class="mock-table-cell"></div>
+                                                    </div>
+                                                    <div class="mock-table-row">
+                                                        <div class="mock-table-cell"></div>
+                                                        <div class="mock-table-cell"></div>
+                                                        <div class="mock-table-cell"></div>
+                                                    </div>
+                                                    <div class="mock-table-row">
+                                                        <div class="mock-table-cell"></div>
+                                                        <div class="mock-table-cell"></div>
+                                                        <div class="mock-table-cell"></div>
+                                                    </div>
+                                                    <div class="mock-table-row">
+                                                        <div class="mock-table-cell"></div>
+                                                        <div class="mock-table-cell"></div>
+                                                        <div class="mock-table-cell"></div>
+                                                    </div>
+                                                    <div class="mock-table-row">
+                                                        <div class="mock-table-cell"></div>
+                                                        <div class="mock-table-cell"></div>
+                                                        <div class="mock-table-cell"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Slide 3: Mobile -->
+                            <div class="gallery-slide">
+                                <div class="slide-label">Мобильная версия</div>
+                                <div class="screenshot-placeholder crm-mobile">
+                                    <div class="mock-ui" style="width: 85%;">
+                                        <div class="mock-topbar">
+                                            <div class="mock-dots">
+                                                <div class="mock-dot"></div>
+                                            </div>
+                                            <div class="mock-url" style="width: 60px;"></div>
+                                            <div style="width: 10px;"></div>
+                                        </div>
+                                        <div class="mock-main">
+                                            <div class="mock-stat-card" style="height: 30px;"></div>
+                                            <div class="mock-stat-card" style="height: 30px;"></div>
+                                            <div class="mock-chart-area" style="min-height: 80px;">
+                                                <div class="mock-chart-line"></div>
+                                            </div>
+                                            <div class="mock-stat-card" style="height: 30px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="gallery-controls">
+                            <div class="gallery-dot active" data-slide="0"></div>
+                            <div class="gallery-dot" data-slide="1"></div>
+                            <div class="gallery-dot" data-slide="2"></div>
+                        </div>
+                        <div class="gallery-arrow prev" data-dir="prev"><i class="fas fa-chevron-left"></i></div>
+                        <div class="gallery-arrow next" data-dir="next"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                    <div class="case-info">
+                        <div class="case-type crm">
+                            <i class="fas fa-database"></i>
+                            CRM Система
+                        </div>
+                        <h3 class="case-title">CRM для управления бизнесом</h3>
+                        <p class="case-description">
+                            Полноценная система для управления клиентами и заявками. Канбан-доска, создание и удаление блоков, учёт оплат, аналитика менеджеров, загрузка и выгрузка файлов.
+                        </p>
+                        <div class="case-features">
+                            <div class="case-feature">
+                                <i class="fas fa-check"></i>
+                                Канбан-доска с задачами (создание / удаление / перемещение)
+                            </div>
+                            <div class="case-feature">
+                                <i class="fas fa-check"></i>
+                                Аналитика менеджеров и контроль оплат
+                            </div>
+                            <div class="case-feature">
+                                <i class="fas fa-check"></i>
+                                Статистика, сравнение проектов, учёт закрытых задач
+                            </div>
+                            <div class="case-feature">
+                                <i class="fas fa-check"></i>
+                                Загрузка / выгрузка файлов, таблицы данных
+                            </div>
+                            <div class="case-feature">
+                                <i class="fas fa-check"></i>
+                                Адаптивный дизайн под все устройства
+                            </div>
+                        </div>
+                        <div class="case-tech">
+                            <span class="tech-tag">HTML</span>
+                            <span class="tech-tag">CSS</span>
+                            <span class="tech-tag">JavaScript</span>
+                            <span class="tech-tag">Google Sheets API</span>
+                        </div>
+                        <div class="case-links">
+                            <a href="#" class="case-link primary">
+                                <i class="fas fa-external-link-alt"></i>
+                                Посмотреть проект
+                            </a>
+                            <a href="https://t.me/vladoss_011" target="_blank" class="case-link secondary">
+                                <i class="fas fa-code"></i>
+                                Код по запросу
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Case 2: Landing Page -->
+            <div class="case-card reveal">
+                <div class="case-inner reverse">
+                    <div class="case-gallery">
+                        <div class="gallery-slider" data-gallery="landing">
+                            <div class="gallery-slide active">
+                                <div class="slide-label">Главный экран</div>
+                                <div class="screenshot-placeholder landing-main">
+                                    <div class="mock-ui">
+                                        <div class="mock-topbar">
+                                            <div class="mock-dots">
+                                                <div class="mock-dot"></div>
+                                                <div class="mock-dot"></div>
+                                                <div class="mock-dot"></div>
+                                            </div>
+                                            <div class="mock-url"></div>
+                                            <div style="width: 20px;"></div>
+                                        </div>
+                                        <div class="mock-hero-section">
+                                            <div class="mock-hero-title"></div>
+                                            <div class="mock-hero-subtitle"></div>
+                                            <div class="mock-hero-btn"></div>
+                                        </div>
+                                        <div class="mock-product-grid">
+                                            <div class="mock-product-card"></div>
+                                            <div class="mock-product-card"></div>
+                                            <div class="mock-product-card"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gallery-slide">
+                                <div class="slide-label">Карточки товаров</div>
+                                <div class="screenshot-placeholder landing-product">
+                                    <div class="mock-ui">
+                                        <div class="mock-topbar">
+                                            <div class="mock-dots">
+                                                <div class="mock-dot"></div>
+                                                <div class="mock-dot"></div>
+                                                <div class="mock-dot"></div>
+                                            </div>
+                                            <div class="mock-url"></div>
+                                            <div style="width: 20px;"></div>
+                                        </div>
+                                        <div class="mock-main" style="padding: 12px;">
+                                            <div class="mock-product-grid" style="padding: 0; grid-template-columns: repeat(2, 1fr); gap: 8px; flex: 1;">
+                                                <div class="mock-product-card" style="aspect-ratio: 3/4;"></div>
+                                                <div class="mock-product-card" style="aspect-ratio: 3/4;"></div>
+                                                <div class="mock-product-card" style="aspect-ratio: 3/4;"></div>
+                                                <div class="mock-product-card" style="aspect-ratio: 3/4;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gallery-slide">
+                                <div class="slide-label">Мобильная версия</div>
+                                <div class="screenshot-placeholder landing-mobile">
+                                    <div class="mock-ui" style="width: 85%;">
+                                        <div class="mock-topbar">
+                                            <div class="mock-dots"><div class="mock-dot"></div></div>
+                                            <div class="mock-url" style="width: 60px;"></div>
+                                            <div style="width: 10px;"></div>
+                                        </div>
+                                        <div class="mock-hero-section" style="gap: 8px; padding: 12px;">
+                                            <div class="mock-hero-title" style="width: 80%;"></div>
+                                            <div class="mock-hero-subtitle" style="width: 60%;"></div>
+                                            <div class="mock-hero-btn" style="width: 60px; height: 20px;"></div>
+                                        </div>
+                                        <div class="mock-product-grid" style="grid-template-columns: repeat(2, 1fr); padding: 0 8px 8px;">
+                                            <div class="mock-product-card"></div>
+                                            <div class="mock-product-card"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="gallery-controls">
+                            <div class="gallery-dot active" data-slide="0"></div>
+                            <div class="gallery-dot" data-slide="1"></div>
+                            <div class="gallery-dot" data-slide="2"></div>
+                        </div>
+                        <div class="gallery-arrow prev" data-dir="prev"><i class="fas fa-chevron-left"></i></div>
+                        <div class="gallery-arrow next" data-dir="next"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                    <div class="case-info">
+                        <div class="case-type landing">
+                            <i class="fas fa-shopping-bag"></i>
+                            Лендинг
+                        </div>
+                        <h3 class="case-title">Лендинг для товара</h3>
+                        <p class="case-description">
+                            Продающий одностраничный сайт для товара. Каталог, карточки товаров, CTA-кнопки, блоки преимуществ и отзывов. Полностью адаптивный.
+                        </p>
+                        <div class="case-features">
+                            <div class="case-feature">
+                                <i class="fas fa-check"></i>
+                                Адаптивный дизайн под все экраны
+                            </div>
+                            <div class="case-feature">
+                                <i class="fas fa-check"></i>
+                                Каталог с карточками товаров
+                            </div>
+                            <div class="case-feature">
+                                <i class="fas fa-check"></i>
+                                Блоки отзывов и преимуществ
+                            </div>
+                            <div class="case-feature">
+                                <i class="fas fa-check"></i>
+                                Быстрая загрузка и SEO
+                            </div>
+                        </div>
+                        <div class="case-tech">
+                            <span class="tech-tag">HTML</span>
+                            <span class="tech-tag">CSS</span>
+                            <span class="tech-tag">JavaScript</span>
+                        </div>
+                        <div class="case-links">
+                            <a href="#" class="case-link primary">
+                                <i class="fas fa-external-link-alt"></i>
+                                Посмотреть проект
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Case 3: Course Website -->
+            <div class="case-card reveal">
+                <div class="case-inner">
+                    <div class="case-gallery">
+                        <div class="gallery-slider" data-gallery="course">
+                            <div class="gallery-slide active">
+                                <div class="slide-label">Главный экран</div>
+                                <div class="screenshot-placeholder course-main">
+                                    <div class="mock-ui">
+                                        <div class="mock-topbar">
+                                            <div class="mock-dots">
+                                                <div class="mock-dot"></div>
+                                                <div class="mock-dot"></div>
+                                                <div class="mock-dot"></div>
+                                            </div>
+                                            <div class="mock-url"></div>
+                                            <div style="width: 20px;"></div>
+                                        </div>
+                                        <div class="mock-hero-section">
+                                            <div class="mock-hero-title" style="background: rgba(253, 203, 110, 0.2);"></div>
+                                            <div class="mock-hero-subtitle" style="background: rgba(253, 203, 110, 0.1);"></div>
+                                            <div class="mock-hero-btn" style="background: rgba(253, 203, 110, 0.4);"></div>
+                                        </div>
+                                        <div class="mock-card-row" style="padding: 0 12px 12px; gap: 8px;">
+                                            <div class="mock-stat-card" style="height: 60px;"></div>
+                                            <div class="mock-stat-card" style="height: 60px;"></div>
+                                            <div class="mock-stat-card" style="height: 60px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gallery-slide">
+                                <div class="slide-label">Модули и тарифы</div>
+                                <div class="screenshot-placeholder course-modules">
+                                    <div class="mock-ui">
+                                        <div class="mock-topbar">
+                                            <div class="mock-dots">
+                                                <div class="mock-dot"></div>
+                                                <div class="mock-dot"></div>
+                                                <div class="mock-dot"></div>
+                                            </div>
+                                            <div class="mock-url"></div>
+                                            <div style="width: 20px;"></div>
+                                        </div>
+                                        <div class="mock-main" style="padding: 12px; gap: 8px;">
+                                            <div style="display: flex; gap: 8px;">
+                                                <div class="mock-stat-card" style="height: 100px; flex: 1;"></div>
+                                                <div class="mock-stat-card" style="height: 100px; flex: 1; border: 1px solid rgba(253, 203, 110, 0.3);"></div>
+                                                <div class="mock-stat-card" style="height: 100px; flex: 1;"></div>
+                                            </div>
+                                            <div class="mock-table">
+                                                <div class="mock-table-row">
+                                                    <div class="mock-table-cell"></div>
+                                                    <div class="mock-table-cell"></div>
+                                                </div>
+                                                <div class="mock-table-row">
+                                                    <div class="mock-table-cell"></div>
+                                                    <div class="mock-table-cell"></div>
+                                                </div>
+                                                <div class="mock-table-row">
+                                                    <div class="mock-table-cell"></div>
+                                                    <div class="mock-table-cell"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gallery-slide">
+                                <div class="slide-label">Мобильная версия</div>
+                                <div class="screenshot-placeholder course-mobile">
+                                    <div class="mock-ui" style="width: 85%;">
+                                        <div class="mock-topbar">
+                                            <div class="mock-dots"><div class="mock-dot"></div></div>
+                                            <div class="mock-url" style="width: 60px;"></div>
+                                            <div style="width: 10px;"></div>
+                                        </div>
+                                        <div class="mock-hero-section" style="gap: 8px; padding: 12px;">
+                                            <div class="mock-hero-title" style="width: 80%; background: rgba(253, 203, 110, 0.2);"></div>
+                                            <div class="mock-hero-subtitle" style="width: 60%; background: rgba(253, 203, 110, 0.1);"></div>
+                                        </div>
+                                        <div class="mock-main" style="padding: 0 8px 8px; gap: 6px;">
+                                            <div class="mock-stat-card" style="height: 50px;"></div>
+                                            <div class="mock-stat-card" style="height: 50px; border: 1px solid rgba(253, 203, 110, 0.3);"></div>
+                                            <div class="mock-stat-card" style="height: 50px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="gallery-controls">
+                            <div class="gallery-dot active" data-slide="0"></div>
+                            <div class="gallery-dot" data-slide="1"></div>
+                            <div class="gallery-dot" data-slide="2"></div>
+                        </div>
+                        <div class="gallery-arrow prev" data-dir="prev"><i class="fas fa-chevron-left"></i></div>
+                        <div class="gallery-arrow next" data-dir="next"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                    <div class="case-info">
+                        <div class="case-type course">
+                            <i class="fas fa-book-open"></i>
+                            Сайт курса
+                        </div>
+                        <h3 class="case-title">Сайт онлайн-курса</h3>
+                        <p class="case-description">
+                            Сайт для онлайн-обучения с модулями, тарифами и пакетами. Структурированная программа курса, блоки доступов и оплат.
+                        </p>
+                        <div class="case-features">
+                            <div class="case-feature">
+                                <i class="fas fa-check"></i>
+                                Модули и программа курса
+                            </div>
+                            <div class="case-feature">
+                                <i class="fas fa-check"></i>
+                                Тарифные планы (базовый / стандарт / премиум)
+                            </div>
+                            <div class="case-feature">
+                                <i class="fas fa-check"></i>
+                                Интерактивный выбор пакета
+                            </div>
+                            <div class="case-feature">
+                                <i class="fas fa-check"></i>
+                                Полная адаптивность
+                            </div>
+                        </div>
+                        <div class="case-tech">
+                            <span class="tech-tag">HTML</span>
+                            <span class="tech-tag">CSS</span>
+                            <span class="tech-tag">JavaScript</span>
+                        </div>
+                        <div class="case-links">
+                            <a href="#" class="case-link primary">
+                                <i class="fas fa-external-link-alt"></i>
+                                Посмотреть проект
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Case 4: Design / Photo -->
+            <div class="case-card reveal">
+                <div class="case-inner reverse">
+                    <div class="case-gallery">
+                        <div class="gallery-slider" data-gallery="design">
+                            <div class="gallery-slide active">
+                                <div class="slide-label">Дизайн сайта</div>
+                                <div class="screenshot-placeholder design-main">
+                                    <div class="mock-ui">
+                                        <div class="mock-topbar">
+                                            <div class="mock-dots">
+                                                <div class="mock-dot"></div>
+                                                <div class="mock-dot"></div>
+                                                <div class="mock-dot"></div>
+                                            </div>
+                                            <div class="mock-url"></div>
+                                            <div style="width: 20px;"></div>
+                                        </div>
+                                        <div class="mock-hero-section" style="gap: 16px;">
+                                            <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(0, 206, 201, 0.15); border: 2px solid rgba(0, 206, 201, 0.3);"></div>
+                                            <div class="mock-hero-title" style="background: rgba(0, 206, 201, 0.15);"></div>
+                                            <div class="mock-hero-subtitle" style="background: rgba(0, 206, 201, 0.08);"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gallery-slide">
+                                <div class="slide-label">Обработка фото</div>
+                                <div class="screenshot-placeholder design-edit">
+                                    <div class="mock-ui">
+                                        <div class="mock-topbar">
+                                            <div class="mock-dots">
+                                                <div class="mock-dot"></div>
+                                                <div class="mock-dot"></div>
+                                                <div class="mock-dot"></div>
+                                            </div>
+                                            <div class="mock-url"></div>
+                                            <div style="width: 20px;"></div>
+                                        </div>
+                                        <div class="mock-content">
+                                            <div class="mock-sidebar" style="width: 40px;">
+                                                <div class="mock-sidebar-item"></div>
+                                                <div class="mock-sidebar-item"></div>
+                                                <div class="mock-sidebar-item"></div>
+                                                <div class="mock-sidebar-item"></div>
+                                            </div>
+                                            <div class="mock-main" style="align-items: center; justify-content: center;">
+                                                <div style="width: 70%; aspect-ratio: 4/3; background: rgba(0, 206, 201, 0.08); border-radius: 8px; border: 1px solid rgba(0, 206, 201, 0.15);"></div>
+                                            </div>
+                                            <div class="mock-sidebar" style="width: 50px;">
+                                                <div class="mock-sidebar-item"></div>
+                                                <div class="mock-sidebar-item"></div>
+                                                <div class="mock-sidebar-item"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="gallery-slide">
+                                <div class="slide-label">Мобильная версия</div>
+                                <div class="screenshot-placeholder design-mobile">
+                                    <div class="mock-ui" style="width: 85%;">
+                                        <div class="mock-topbar">
+                                            <div class="mock-dots"><div class="mock-dot"></div></div>
+                                            <div class="mock-url" style="width: 60px;"></div>
+                                            <div style="width: 10px;"></div>
+                                        </div>
+                                        <div class="mock-hero-section" style="gap: 10px; padding: 12px;">
+                                            <div style="width: 50px; height: 50px; border-radius: 50%; background: rgba(0, 206, 201, 0.15);"></div>
+                                            <div class="mock-hero-title" style="width: 80%; background: rgba(0, 206, 201, 0.15);"></div>
+                                            <div class="mock-hero-subtitle" style="width: 60%; background: rgba(0, 206, 201, 0.08);"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="gallery-controls">
+                            <div class="gallery-dot active" data-slide="0"></div>
+                            <div class="gallery-dot" data-slide="1"></div>
+                            <div class="gallery-dot" data-slide="2"></div>
+                        </div>
+                        <div class="gallery-arrow prev" data-dir="prev"><i class="fas fa-chevron-left"></i></div>
+                        <div class="gallery-arrow next" data-dir="next"><i class="fas fa-chevron-right"></i></div>
+                    </div>
+                    <div class="case-info">
+                        <div class="case-type design">
+                            <i class="fas fa-palette"></i>
+                            Дизайн
+                        </div>
+                        <h3 class="case-title">Дизайн и обработка фото</h3>
+                        <p class="case-description">
+                            Дизайн сайта с нуля и обработка фото в Photoshop. Подготовка визуала под проект, баннеры, карточки.
+                        </p>
+                        <div class="case-features">
+                            <div class="case-feature">
+                                <i class="fas fa-check"></i>
+                                Дизайн макета сайта с нуля
+                            </div>
+                            <div class="case-feature">
+                                <i class="fas fa-check"></i>
+                                Обработка и ретушь фото
+                            </div>
+                            <div class="case-feature">
+                                <i class="fas fa-check"></i>
+                                Подготовка визуала под сайт
+                            </div>
+                        </div>
+                        <div class="case-tech">
+                            <span class="tech-tag">Photoshop</span>
+                            <span class="tech-tag">Figma</span>
+                            <span class="tech-tag">UI/UX</span>
+                        </div>
+                        <div class="case-links">
+                            <a href="https://t.me/vladoss_011" target="_blank" class="case-link primary">
+                                <i class="fab fa-telegram"></i>
+                                Примеры по запросу
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- About -->
+<section class="about" id="about">
+    <div class="container">
+        <div class="about-grid">
+            <div class="reveal">
+                <div class="section-label">
+                    <i class="fas fa-user"></i>
+                    Обо мне
+                </div>
+                <h2 class="section-title">Коротко о главном</h2>
+                <p class="section-subtitle" style="margin-bottom: 24px;">
+                    Я веб-разработчик Влад. Создаю сайты и выстраиваю системы для бизнеса с нуля. Код пишу самостоятельно — без конструкторов.
+                </p>
+                <p class="section-subtitle">
+                    Работаю быстро и по делу — простые проекты за 2-3 дня, сложные обсуждаем отдельно. Все сроки и дедлайны соблюдаю.
+                </p>
+            </div>
+            <div class="about-features">
+                <div class="about-feature reveal reveal-delay-1">
+                    <div class="about-feature-icon" style="background: var(--accent-glow); color: var(--accent-light);">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h4>Чистый код</h4>
+                    <p>Пишу код сам, без конструкторов и шаблонов</p>
+                </div>
+                <div class="about-feature reveal reveal-delay-2">
+                    <div class="about-feature-icon" style="background: var(--green-glow); color: var(--green);">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h4>Быстрые сроки</h4>
+                    <p>2-3 дня на простой проект, сложные — по договорённости</p>
+                </div>
+                <div class="about-feature reveal reveal-delay-3">
+                    <div class="about-feature-icon" style="background: rgba(225, 112, 85, 0.15); color: var(--orange);">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h4>Адаптивность</h4>
+                    <p>Все проекты работают на любых устройствах</p>
+                </div>
+                <div class="about-feature reveal reveal-delay-4">
+                    <div class="about-feature-icon" style="background: rgba(253, 203, 110, 0.15); color: #ffeaa7;">
+                        <i class="fas fa-handshake"></i>
+                    </div>
+                    <h4>Дедлайны</h4>
+                    <p>Фиксирую сроки и всегда их соблюдаю</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing -->
+<section class="pricing" id="pricing">
+    <div class="container">
+        <div class="section-header reveal">
+            <div class="section-label">
+                <i class="fas fa-tag"></i>
+                Цены
+            </div>
+            <h2 class="section-title">Стоимость услуг</h2>
+            <p class="section-subtitle">Ориентировочные цены — финальная стоимость фиксируется перед стартом</p>
+        </div>
+
+        <div class="pricing-grid">
+            <!-- Plan 1 -->
+            <div class="pricing-card reveal reveal-delay-1">
+                <div class="pricing-icon" style="background: var(--green-glow); color: var(--green);">
+                    <i class="fas fa-desktop"></i>
+                </div>
+                <h3>Лендинг</h3>
+                <div class="price">от 80€</div>
+                <div class="price-note">1 страница</div>
+                <div class="pricing-features">
+                    <div class="pricing-feature">
+                        <i class="fas fa-check"></i>
+                        Продающий дизайн
+                    </div>
+                    <div class="pricing-feature">
+                        <i class="fas fa-check"></i>
+                        Адаптив под все устройства
+                    </div>
+                    <div class="pricing-feature">
+                        <i class="fas fa-check"></i>
+                        Быстрая загрузка
+                    </div>
+                    <div class="pricing-feature">
+                        <i class="fas fa-check"></i>
+                        Сдача за 2-3 дня
+                    </div>
+                </div>
+                <a href="https://t.me/vladoss_011" target="_blank" class="pricing-btn secondary">Обсудить проект</a>
+            </div>
+            <!-- Plan 2 -->
+            <div class="pricing-card featured reveal reveal-delay-2">
+                <div class="pricing-icon" style="background: var(--accent-glow); color: var(--accent-light);">
+                    <i class="fas fa-layer-group"></i>
+                </div>
+                <h3>Многостраничный сайт</h3>
+                <div class="price">от 150€</div>
+                <div class="price-note">несколько страниц</div>
+                <div class="pricing-features">
+                    <div class="pricing-feature">
+                        <i class="fas fa-check"></i>
+                        Модули и тарифы
+                    </div>
+                    <div class="pricing-feature">
+                        <i class="fas fa-check"></i>
+                        Продуманная структура
+                    </div>
+                    <div class="pricing-feature">
+                        <i class="fas fa-check"></i>
+                        Адаптив и анимации
+                    </div>
+                    <div class="pricing-feature">
+                        <i class="fas fa-check"></i>
+                        Помогу собрать ТЗ
+                    </div>
+                </div>
+                <a href="https://t.me/vladoss_011" target="_blank" class="pricing-btn primary">Обсудить проект</a>
+            </div>
+            <!-- Plan 3 -->
+            <div class="pricing-card reveal reveal-delay-3">
+                <div class="pricing-icon" style="background: rgba(225, 112, 85, 0.15); color: var(--orange);">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>CRM / Система</h3>
+                <div class="price">от 200€+</div>
+                <div class="price-note">зависит от сложности</div>
+                <div class="pricing-features">
+                    <div class="pricing-feature">
+                        <i class="fas fa-check"></i>
+                        CRM с аналитикой
+                    </div>
+                    <div class="pricing-feature">
+                        <i class="fas fa-check"></i>
+                        Интеграция Google Sheets
+                    </div>
+                    <div class="pricing-feature">
+                        <i class="fas fa-check"></i>
+                        Учёт оплат и менеджеров
+                    </div>
+                    <div class="pricing-feature">
+                        <i class="fas fa-check"></i>
+                        Полная кастомизация
+                    </div>
+                </div>
+                <a href="https://t.me/vladoss_011" target="_blank" class="pricing-btn secondary">Обсудить проект</a>
+            </div>
+        </div>
+
+        <div class="pricing-note reveal">
+            <p>
+                <i class="fas fa-info-circle"></i>
+                Финальная стоимость обсуждается и фиксируется перед стартом работы. Если в процессе добавляются дополнительные функции — стоимость корректируется по договорённости.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Contact -->
+<section class="contact" id="contact">
+    <div class="container">
+        <div class="contact-box reveal">
+            <h2 class="section-title">Готов обсудить проект?</h2>
+            <p class="section-subtitle">
+                Напишите в Telegram — отвечаю быстро. Обсудим задачу, сроки и стоимость.
+            </p>
+            <a href="https://t.me/vladoss_011" target="_blank" class="contact-tg">
+                <i class="fab fa-telegram"></i>
+                @vladoss_011
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-inner">
+            <div class="footer-text">© 2025 Влад. Веб-разработка.</div>
+            <div class="footer-links">
+                <a href="#services">Услуги</a>
+                <a href="#cases">Кейсы</a>
+                <a href="https://t.me/vladoss_011" target="_blank">Telegram</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+    <div class="lightbox-content">
+        <div class="lightbox-close"><i class="fas fa-times"></i></div>
+        <img src="" alt="" id="lightboxImg">
+    </div>
+</div>
+
+<script>
+    // ========== CURSOR GLOW ==========
+    const cursorGlow = document.getElementById('cursorGlow');
+    
+    if (window.innerWidth > 768) {
+        document.addEventListener('mousemove', (e) => {
+            cursorGlow.style.left = e.clientX + 'px';
+            cursorGlow.style.top = e.clientY + 'px';
+        });
+    }
+
+    // ========== NAVIGATION ==========
+    const nav = document.getElementById('nav');
+    
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            nav.classList.add('scrolled');
+        } else {
+            nav.classList.remove('scrolled');
+        }
+    });
+
+    // ========== MOBILE MENU ==========
+    const burger = document.getElementById('navBurger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    
+    burger.addEventListener('click', () => {
+        burger.classList.toggle('active');
+        mobileMenu.classList.toggle('active');
+        document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+    });
+
+    document.querySelectorAll('.mobile-link').forEach(link => {
+        link.addEventListener('click', () => {
+            burger.classList.remove('active');
+            mobileMenu.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    });
+
+    // ========== GALLERY SLIDERS ==========
+    document.querySelectorAll('.gallery-slider').forEach(slider => {
+        const slides = slider.querySelectorAll('.gallery-slide');
+        const parent = slider.closest('.case-gallery');
+        const dots = parent.querySelectorAll('.gallery-dot');
+        const prevBtn = parent.querySelector('.gallery-arrow.prev');
+        const nextBtn = parent.querySelector('.gallery-arrow.next');
+        let currentSlide = 0;
+
+        function goToSlide(index) {
+            slides.forEach(s => s.classList.remove('active'));
+            dots.forEach(d => d.classList.remove('active'));
+            currentSlide = (index + slides.length) % slides.length;
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
+        }
+
+        dots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                goToSlide(parseInt(dot.dataset.slide));
+            });
+        });
+
+        if (prevBtn) prevBtn.addEventListener('click', () => goToSlide(currentSlide - 1));
+        if (nextBtn) nextBtn.addEventListener('click', () => goToSlide(currentSlide + 1));
+
+        // Touch/swipe support
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        slider.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        slider.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) {
+                    goToSlide(currentSlide + 1);
+                } else {
+                    goToSlide(currentSlide - 1);
+                }
+            }
+        }, { passive: true });
+    });
+
+    // ========== LIGHTBOX ==========
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightboxImg');
+
+    // For actual images, uncomment:
+    // document.querySelectorAll('.gallery-slide img').forEach(img => {
+    //     img.addEventListener('click', () => {
+    //         lightboxImg.src = img.src;
+    //         lightbox.classList.add('active');
+    //         document.body.style.overflow = 'hidden';
+    //     });
+    // });
+
+    lightbox.addEventListener('click', () => {
+        lightbox.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+
+    // ========== SCROLL REVEAL ==========
+    const revealElements = document.querySelectorAll('.reveal');
+    
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    revealElements.forEach(el => revealObserver.observe(el));
+
+    // ========== SMOOTH SCROLL ==========
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
