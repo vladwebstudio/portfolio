@@ -1,0 +1,2345 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Влад — Веб-разработчик</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+/* ===== RESET ===== */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+--bg:#0a0a0b;--bg2:#111113;--bgc:#161618;--bgch:#1c1c1f;
+--b:#222225;--bl:#2a2a2d;
+--t1:#f5f5f7;--t2:#a1a1a6;--tm:#6e6e73;
+--acc:#6c5ce7;--accl:#a29bfe;--accg:rgba(108,92,231,0.15);--accgs:rgba(108,92,231,0.3);
+--gr:#00cec9;--grg:rgba(0,206,201,0.15);
+--or:#e17055;
+--g1:linear-gradient(135deg,#6c5ce7,#a29bfe);
+--rsm:8px;--rmd:12px;--rlg:16px;--rxl:24px;
+--sh:0 4px 24px rgba(0,0,0,0.4);--shl:0 8px 48px rgba(0,0,0,0.6);
+--tr:0.3s cubic-bezier(0.4,0,0.2,1);
+}
+html{scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:var(--acc) var(--bg2);overflow-x:hidden;position:relative;width:100%;max-width:100vw;}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--t1);line-height:1.6;overflow-x:hidden;width:100%;max-width:100vw;-webkit-font-smoothing:antialiased;touch-action:pan-y;}
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--acc);border-radius:3px;}
+
+/* ===== WELCOME SCREEN ===== */
+#welcomeScreen{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:var(--bg);overflow:hidden;transition:opacity 0.8s ease,transform 0.8s ease;}
+#welcomeScreen.hide{opacity:0;transform:scale(1.05);pointer-events:none;}
+.w-bg{position:absolute;inset:0;}
+.w-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(108,92,231,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(108,92,231,0.04) 1px,transparent 1px);background-size:60px 60px;}
+.w-orb{position:absolute;border-radius:50%;filter:blur(80px);}
+.w-orb1{width:700px;height:700px;background:rgba(108,92,231,0.08);top:-200px;right:-200px;}
+.w-orb2{width:500px;height:500px;background:rgba(0,206,201,0.05);bottom:-150px;left:-150px;}
+.w-orb3{width:300px;height:300px;background:rgba(225,112,85,0.04);top:50%;left:50%;transform:translate(-50%,-50%);}
+.w-content{position:relative;z-index:1;text-align:center;max-width:600px;padding:40px 24px;}
+.w-logo{font-size:22px;font-weight:800;background:var(--g1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:48px;letter-spacing:-0.5px;opacity:0;animation:wFadeUp 0.6s ease 0.2s forwards;}
+.w-greeting{font-size:clamp(36px,6vw,64px);font-weight:900;line-height:1.1;letter-spacing:-2px;margin-bottom:16px;opacity:0;animation:wFadeUp 0.6s ease 0.4s forwards;}
+.w-greeting .g{background:var(--g1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.w-sub{font-size:16px;color:var(--t2);margin-bottom:48px;line-height:1.7;opacity:0;animation:wFadeUp 0.6s ease 0.6s forwards;}
+.w-lang-label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--tm);margin-bottom:16px;opacity:0;animation:wFadeUp 0.6s ease 0.7s forwards;}
+.w-langs{display:flex;gap:12px;justify-content:center;margin-bottom:48px;opacity:0;animation:wFadeUp 0.6s ease 0.8s forwards;}
+.w-lang-btn{padding:12px 24px;border-radius:var(--rmd);border:1px solid var(--b);background:var(--bgc);color:var(--t2);font-size:15px;font-weight:600;cursor:pointer;transition:var(--tr);font-family:inherit;display:flex;align-items:center;gap:8px;}
+.w-lang-btn:hover{border-color:var(--acc);color:var(--t1);}
+.w-lang-btn.active{border-color:var(--acc);background:var(--accg);color:var(--accl);}
+.w-enter-btn{display:inline-flex;align-items:center;gap:10px;padding:16px 48px;background:var(--g1);color:#fff;border:none;border-radius:var(--rmd);font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;transition:var(--tr);box-shadow:0 4px 24px var(--accgs);opacity:0;animation:wFadeUp 0.6s ease 1s forwards;}
+.w-enter-btn:hover{box-shadow:0 8px 40px var(--accgs);}
+.w-enter-btn i{transition:var(--tr);}
+.w-enter-btn:hover i{transform:translateX(4px);}
+.w-particles{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.w-particle{position:absolute;width:2px;height:2px;background:var(--accl);border-radius:50%;opacity:0;animation:wParticle linear infinite;}
+@keyframes wFadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes wParticle{0%{opacity:0;transform:translateY(0) scale(0);}10%{opacity:0.6;}90%{opacity:0.2;}100%{opacity:0;transform:translateY(-100vh) scale(0.5);}}
+
+/* ===== LANG SWITCHER (in site) ===== */
+.lang-switcher{display:flex;gap:4px;background:var(--bgc);border:1px solid var(--b);border-radius:var(--rsm);padding:4px;}
+.lang-btn{padding:5px 12px;border-radius:5px;border:none;background:transparent;color:var(--t2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;transition:var(--tr);}
+.lang-btn.active{background:var(--accg);color:var(--accl);}
+.lang-btn:hover:not(.active){color:var(--t1);}
+.tg-link{color:var(--t2);text-decoration:none;display:flex;align-items:center;gap:4px;padding:5px 10px;}
+.tg-link:hover{color:#2AABEE;}
+
+/* ===== CURSOR GLOW ===== */
+.cursor-glow{position:fixed;width:600px;height:600px;border-radius:50%;pointer-events:none;z-index:0;background:radial-gradient(circle,rgba(108,92,231,0.06) 0%,transparent 70%);transform:translate(-50%,-50%);transition:opacity 0.3s;}
+
+/* ===== PARTICLE SYSTEM ===== */
+#particleCanvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1;opacity:0.6;}
+
+/* ===== NAV ===== */
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:0 24px;transition:var(--tr);}
+.nav.scrolled{background:rgba(10,10,11,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--b);}
+.nav-inner{width:100%;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:72px;}
+.nav-logo{font-size:20px;font-weight:800;background:var(--g1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.5px;}
+.nav-links{display:flex;gap:32px;list-style:none;align-items:center;}
+.nav-links a{color:var(--t2);text-decoration:none;font-size:14px;font-weight:500;transition:var(--tr);position:relative;}
+.nav-links a:hover{color:var(--t1);}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;background:var(--g1);border-radius:1px;transition:var(--tr);}
+.nav-links a:hover::after{width:100%;}
+.nav-cta{padding:8px 20px;background:var(--g1);color:#fff;border-radius:var(--rsm);font-size:13px;font-weight:600;text-decoration:none;transition:var(--tr);display:flex;align-items:center;gap:8px;}
+.nav-cta span:first-child{display:inline-flex;align-items:center;justify-content:center;}
+.nav-cta span:last-child{color:#fff;}
+.nav-cta i{color:#fff;font-size:16px;}
+.nav-cta:hover{box-shadow:0 4px 20px var(--accgs);}
+.nav-cta::after{display:none!important;}
+.nav-burger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:8px;z-index:1001;}
+.nav-burger span{width:24px;height:2px;background:var(--t1);border-radius:2px;transition:var(--tr);}
+.nav-burger.active span:nth-child(1){transform:rotate(45deg) translate(5px,5px);}
+.nav-burger.active span:nth-child(2){opacity:0;}
+.nav-burger.active span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px);}
+.mobile-menu{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,10,11,0.98);backdrop-filter:blur(20px);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.mobile-menu.active{display:flex;}
+.mobile-menu a{color:var(--t1);text-decoration:none;font-size:24px;font-weight:600;transition:var(--tr);}
+.mobile-menu a:hover{color:var(--accl);}
+.mobile-menu .lang-switcher{margin-top:16px;}
+
+/* ===== COMMON ===== */
+section{position:relative;z-index:1;}
+.container{max-width:1200px;margin:0 auto;padding:0 24px;}
+.section-label{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--accl);margin-bottom:16px;padding:6px 16px;background:var(--accg);border:1px solid rgba(108,92,231,0.2);border-radius:100px;}
+.section-title{font-size:clamp(32px,5vw,48px);font-weight:800;line-height:1.1;margin-bottom:16px;letter-spacing:-1px;}
+.section-subtitle{font-size:16px;color:var(--t2);max-width:560px;line-height:1.7;}
+.section-note{font-size:14px;color:var(--t2);max-width:640px;margin:12px auto 0;line-height:1.6;font-style:italic;}
+.section-header{text-align:center;margin-bottom:40px;}
+.section-header .section-subtitle{margin:0 auto;}
+
+/* ===== HERO ===== */
+.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;padding:60px 0 40px;}
+.hero-bg{position:absolute;inset:0;z-index:0;}
+.hero-bg .grid-pattern{position:absolute;inset:0;background-image:linear-gradient(rgba(108,92,231,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(108,92,231,0.03) 1px,transparent 1px);background-size:60px 60px;}
+.hero-bg .orb{position:absolute;border-radius:50%;filter:blur(80px);}
+.hero-bg .orb1{width:600px;height:600px;background:rgba(108,92,231,0.08);top:-200px;right:-200px;}
+.hero-bg .orb2{width:400px;height:400px;background:rgba(0,206,201,0.05);bottom:-100px;left:-100px;}
+.hero-content{position:relative;z-index:1;width:100%;}
+.hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px 6px 8px;background:var(--accg);border:1px solid rgba(108,92,231,0.2);border-radius:100px;font-size:13px;color:var(--accl);font-weight:500;margin-bottom:24px;animation:fadeInUp 0.6s ease;}
+.hero-badge .dot{width:8px;height:8px;background:var(--gr);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(0.8);}}
+.hero-title{font-size:clamp(40px,6vw,64px);font-weight:900;line-height:1.05;letter-spacing:-2px;margin-bottom:24px;animation:fadeInUp 0.6s ease 0.1s both;}
+.hero-title .gradient-text{background:var(--g1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-desc{font-size:17px;color:var(--t2);line-height:1.7;margin-bottom:40px;max-width:480px;animation:fadeInUp 0.6s ease 0.2s both;}
+.hero-btns{display:flex;gap:16px;flex-wrap:wrap;animation:fadeInUp 0.6s ease 0.3s both;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:var(--rmd);font-size:15px;font-weight:600;text-decoration:none;transition:var(--tr);cursor:pointer;border:none;font-family:inherit;}
+.btn-primary{background:var(--g1);color:white;box-shadow:0 4px 24px var(--accgs);}
+.btn-primary:hover{box-shadow:0 8px 32px var(--accgs);}
+.btn-secondary{background:var(--bgc);color:var(--t1);border:1px solid var(--b);}
+.btn-secondary:hover{background:var(--bgch);border-color:var(--bl);}
+.hero-stats{display:flex;gap:40px;margin-top:48px;animation:fadeInUp 0.6s ease 0.4s both;}
+.stat-item{display:flex;flex-direction:column;}
+.stat-num{font-size:28px;font-weight:800;background:var(--g1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.stat-lbl{font-size:13px;color:var(--tm);font-weight:500;}
+.hero-visual{position:relative;animation:fadeInUp 0.6s ease 0.3s both;}
+.code-window{background:var(--bgc);border:1px solid var(--b);border-radius:var(--rlg);overflow:hidden;box-shadow:var(--shl);}
+.code-hdr{display:flex;align-items:center;gap:8px;padding:16px 20px;background:var(--bg2);border-bottom:1px solid var(--b);}
+.cdot{width:12px;height:12px;border-radius:50%;}
+.cdot.r{background:#ff5f56;}.cdot.y{background:#ffbd2e;}.cdot.g{background:#27ca40;}
+.code-hdr span{margin-left:12px;font-size:13px;color:var(--tm);font-weight:500;}
+.code-body{padding:24px;font-family:'JetBrains Mono','Fira Code',monospace;font-size:13px;line-height:2;color:var(--t2);}
+.cl{display:flex;gap:12px;}
+.cn{color:var(--tm);user-select:none;min-width:24px;text-align:right;}
+.ck{color:#c792ea;}.cs{color:#c3e88d;}.cp{color:#82aaff;}.cb{color:#89ddff;}.cv{color:#f78c6c;}.cc{color:var(--tm);font-style:italic;}
+.fl-badge{position:absolute;padding:10px 16px;background:var(--bgc);border:1px solid var(--b);border-radius:var(--rmd);font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px;box-shadow:var(--sh);white-space:nowrap;}
+.fl-badge.b1{top:-20px;right:-20px;animation:float 3s ease-in-out infinite;}
+.fl-badge.b2{bottom:40px;left:-30px;animation:float 3s ease-in-out 1s infinite;}
+.fl-badge.b3{bottom:-10px;right:40px;animation:float 3s ease-in-out 2s infinite;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+/* ===== SERVICES ===== */
+.services{padding:60px 0;background:var(--bg2);border-top:1px solid var(--b);border-bottom:1px solid var(--b);}
+.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.svc-card{background:var(--bgc);border:1px solid var(--b);border-radius:var(--rlg);padding:28px 20px;transition:var(--tr);position:relative;overflow:hidden;}
+.svc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--g1);opacity:0;transition:var(--tr);}
+.svc-card:hover{border-color:var(--bl);box-shadow:0 8px 40px rgba(0,0,0,0.3);}
+.svc-card:hover::before{opacity:1;}
+.svc-icon{width:48px;height:48px;border-radius:var(--rmd);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:20px;}
+.svc-icon.purple{background:var(--accg);color:var(--accl);}
+.svc-icon.teal{background:var(--grg);color:var(--gr);}
+.svc-icon.orange{background:rgba(225,112,85,0.15);color:var(--or);}
+.svc-card h3{font-size:18px;font-weight:700;margin-bottom:12px;letter-spacing:-0.3px;}
+.svc-card p{font-size:14px;color:var(--t2);line-height:1.7;}
+.svc-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px;}
+.svc-tag{padding:4px 10px;background:var(--bg2);border:1px solid var(--b);border-radius:100px;font-size:11px;color:var(--tm);font-weight:500;}
+
+/* ===== PROCESS ===== */
+.process{padding:60px 0 80px;background:linear-gradient(180deg,var(--bg2) 0%,rgba(108,92,231,0.03) 10%);border-bottom:1px solid var(--b);}
+.process-wrap{max-width:900px;margin:0 auto;}
+.timeline{position:relative;padding-left:90px;display:flex;flex-direction:column;gap:44px;}
+.timeline::before{content:'';position:absolute;left:31px;top:10px;bottom:10px;width:2px;background:linear-gradient(180deg,rgba(108,92,231,0.5),rgba(108,92,231,0.2));}
+.t-item{position:relative;}
+.t-num{position:absolute;left:-90px;top:0;width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--bgc);border:1px solid var(--bl);color:var(--accl);font-size:30px;font-weight:800;letter-spacing:-1px;box-shadow:var(--sh);}
+.t-title{display:flex;align-items:center;gap:10px;font-size:34px;font-weight:800;line-height:1.2;letter-spacing:-0.6px;margin-bottom:10px;}
+.t-title i{font-size:20px;color:var(--accl);}
+.t-desc{font-size:16px;color:var(--t2);line-height:1.8;max-width:760px;}
+
+/* ===== CASES ===== */
+.cases{padding:60px 0;background:linear-gradient(180deg,var(--bg2) 0%,rgba(108,92,231,0.03) 10%);}
+.cases-list{display:flex;flex-direction:column;gap:24px;}
+.case-card{background:var(--bgc);border:1px solid var(--b);border-radius:var(--rxl);overflow:hidden;transition:var(--tr);}
+.case-card:hover{border-color:var(--bl);box-shadow:0 8px 48px rgba(0,0,0,0.3);}
+.case-inner{display:grid;grid-template-columns:1.2fr 1fr;min-height:200px;}
+.case-inner.rev{grid-template-columns:1fr 1.2fr;}
+.case-inner.rev .case-gallery{order:2;}
+.case-inner.rev .case-info{order:1;}
+.case-gallery{position:relative;overflow:hidden;background:var(--bg2);}
+.gallery-slider{position:relative;width:100%;height:100%;min-height:120px;}
+.gallery-slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:1px;opacity:0;transition:opacity 0.5s ease;pointer-events:none;}
+.gallery-slide.active{opacity:1;pointer-events:auto;}
+.slide-label{position:absolute;top:16px;left:16px;padding:4px 12px;background:rgba(0,0,0,0.6);backdrop-filter:blur(10px);border-radius:100px;font-size:11px;color:var(--t2);font-weight:500;z-index:10;}
+.scr{width:100%;height:100%;min-height:140px;border-radius:var(--rmd);display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--b);cursor:pointer;transition:var(--tr);position:relative;overflow:hidden;}
+.scr img{max-height:100%;object-fit:contain;border-radius:12px;}
+.scr:hover{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc);}
+.scr.crm-mgr-main{background:linear-gradient(135deg,#1a1a2e,#16213e);}
+.scr.crm-mgr-pay{background:linear-gradient(135deg,#0f3460,#1a1a2e);}
+.scr.crm-adm-main{background:linear-gradient(135deg,#16213e,#1a1a2e);}
+.scr.crm-adm-ana{background:linear-gradient(135deg,#1a1a2e,#0f3460);}
+.scr.crm-mob-main{background:linear-gradient(135deg,#0f3460,#16213e);}
+.scr.crm-mob-main img{max-width:85%;max-height:85%;margin:0 auto;}
+.scr.land-main{background:linear-gradient(135deg,#1b2838,#1a2332);}
+.scr.land-prod{background:linear-gradient(135deg,#1a2332,#1b2838);}
+.scr.land-feat{background:linear-gradient(135deg,#1b2838,#1a2332);}
+.scr.land-rev{background:linear-gradient(135deg,#1a2332,#1b2838);}
+.scr.land-mob{background:linear-gradient(135deg,#1b2838,#162029);max-width:220px;margin:0 auto;}
+.scr.crs-main{background:linear-gradient(135deg,#1a1625,#221a30);}
+.scr.crs-mod{background:linear-gradient(135deg,#221a30,#1a1625);}
+.scr.crs-mob{background:linear-gradient(135deg,#1a1625,#1e1529);max-width:220px;margin:0 auto;}
+/* Mock UI */
+.mck{width:90%;height:75%;position:absolute;top:30px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;padding:12px;}
+.mck-top{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:6px;}
+.mck-dots{display:flex;gap:4px;}
+.mck-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.2);}
+.mck-url{width:120px;height:6px;background:rgba(255,255,255,0.1);border-radius:3px;}
+.mck-sb{width:60px;background:rgba(255,255,255,0.03);border-radius:6px;display:flex;flex-direction:column;gap:6px;padding:8px;flex-shrink:0;}
+.mck-sbi{width:100%;height:6px;background:rgba(255,255,255,0.08);border-radius:3px;}
+.mck-sbi.on{background:var(--acc);opacity:0.5;}
+.mck-cnt{flex:1;display:flex;gap:8px;}
+.mck-main{flex:1;display:flex;flex-direction:column;gap:8px;}
+.mck-row{display:flex;gap:6px;}
+.mck-sc{flex:1;height:40px;background:rgba(255,255,255,0.04);border-radius:6px;border:1px solid rgba(255,255,255,0.06);}
+.mck-chart{flex:1;background:rgba(255,255,255,0.03);border-radius:6px;border:1px solid rgba(255,255,255,0.05);position:relative;overflow:hidden;}
+.mck-line{position:absolute;bottom:20%;left:5%;width:90%;height:2px;background:linear-gradient(90deg,var(--acc),var(--gr));border-radius:1px;opacity:0.6;}
+.mck-tbl{flex:1;display:flex;flex-direction:column;gap:4px;}
+.mck-tr{display:flex;gap:4px;align-items:center;}
+.mck-td{height:8px;background:rgba(255,255,255,0.06);border-radius:2px;flex:1;}
+.mck-td:first-child{flex:0.5;}
+.mck-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:20px;}
+.mck-ht{width:60%;height:12px;background:rgba(255,255,255,0.15);border-radius:6px;}
+.mck-hs{width:40%;height:8px;background:rgba(255,255,255,0.08);border-radius:4px;}
+.mck-hb{width:80px;height:24px;background:var(--acc);opacity:0.4;border-radius:6px;margin-top:8px;}
+.mck-pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:0 12px 12px;}
+.mck-pc{aspect-ratio:1;background:rgba(255,255,255,0.04);border-radius:4px;border:1px solid rgba(255,255,255,0.06);}
+/* Gallery controls */
+.gal-controls{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:10;}
+.gal-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.3);cursor:pointer;transition:var(--tr);}
+.gal-dot.active{background:var(--accl);width:24px;border-radius:4px;}
+.gal-arr{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);border:1px solid var(--b);color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--tr);z-index:10;font-size:14px;}
+.gal-arr:hover{background:rgba(108,92,231,0.5);}
+.gal-arr.prev{left:12px;}
+.gal-arr.next{right:12px;}
+/* Case info */
+.case-info{padding:28px;display:flex;flex-direction:column;justify-content:center;}
+.case-type{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:100px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px;width:fit-content;}
+.case-type.crm{background:var(--accg);color:var(--accl);}
+.case-type.landing{background:var(--grg);color:var(--gr);}
+.case-type.course{background:rgba(253,203,110,0.15);color:#ffeaa7;}
+.case-title{font-size:28px;font-weight:800;line-height:1.2;margin-bottom:16px;letter-spacing:-0.5px;}
+.case-desc{font-size:15px;color:var(--t2);line-height:1.8;margin-bottom:28px;}
+.case-feats{display:flex;flex-direction:column;gap:10px;margin-bottom:32px;}
+.case-feat{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--t2);}
+.case-feat i{color:var(--gr);font-size:12px;flex-shrink:0;}
+.case-tech{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:32px;}
+.tech-tag{padding:6px 14px;background:var(--bg2);border:1px solid var(--b);border-radius:100px;font-size:12px;color:var(--tm);font-weight:500;}
+.case-links{display:flex;gap:12px;flex-wrap:wrap;}
+.case-link{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:var(--rsm);font-size:13px;font-weight:600;text-decoration:none;transition:var(--tr);}
+.case-link.primary{background:var(--g1);color:white;}
+.case-link.primary:hover{box-shadow:0 4px 20px var(--accgs);}
+.case-link.secondary{background:var(--bg2);border:1px solid var(--b);color:var(--t2);}
+.case-link.secondary:hover{border-color:var(--acc);color:var(--t1);}
+
+/* ===== ABOUT ===== */
+.about{padding:60px 0;background:var(--bg2);border-top:1px solid var(--b);border-bottom:1px solid var(--b);}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+.about-feats{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.about-feat{padding:24px;background:var(--bgc);border:1px solid var(--b);border-radius:var(--rlg);transition:var(--tr);}
+.about-feat:hover{border-color:var(--bl);}
+.about-feat-icon{width:40px;height:40px;border-radius:var(--rsm);display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:18px;}
+.about-feat h4{font-size:15px;font-weight:700;margin-bottom:8px;}
+.about-feat p{font-size:13px;color:var(--tm);line-height:1.6;}
+
+/* ===== PRICING ===== */
+.pricing{padding:60px 0;background:linear-gradient(180deg,var(--bg2) 0%,rgba(108,92,231,0.03) 10%);}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.price-card{background:var(--bgc);border:1px solid var(--b);border-radius:var(--rxl);padding:32px 24px;position:relative;transition:var(--tr);}
+.price-card:hover{border-color:var(--bl);box-shadow:0 8px 48px rgba(0,0,0,0.3);}
+.price-card.feat{border-color:var(--acc);background:linear-gradient(180deg,rgba(108,92,231,0.05) 0%,var(--bgc) 100%);}
+.price-card.feat::before{content:attr(data-badge);position:absolute;top:-12px;left:50%;transform:translateX(-50%);padding:4px 16px;background:var(--g1);color:white;font-size:11px;font-weight:700;border-radius:100px;text-transform:uppercase;letter-spacing:1px;white-space:nowrap;}
+.price-icon{width:48px;height:48px;border-radius:var(--rmd);display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:20px;}
+.price-card h3{font-size:20px;font-weight:700;margin-bottom:8px;}
+.price-val{font-size:36px;font-weight:900;margin-bottom:4px;letter-spacing:-1px;}
+.price-val span{font-size:16px;color:var(--tm);font-weight:500;}
+.price-note{font-size:13px;color:var(--tm);margin-bottom:24px;}
+.price-feats{display:flex;flex-direction:column;gap:12px;margin-bottom:32px;}
+.price-feat{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--t2);}
+.price-feat i{color:var(--gr);font-size:12px;}
+.price-btn{display:block;width:100%;padding:14px;border-radius:var(--rmd);font-size:14px;font-weight:600;text-align:center;text-decoration:none;transition:var(--tr);}
+.price-btn.primary{background:var(--g1);color:white;}
+.price-btn.primary:hover{box-shadow:0 4px 24px var(--accgs);}
+.price-btn.secondary{background:var(--bg2);border:1px solid var(--b);color:var(--t1);}
+.price-btn.secondary:hover{border-color:var(--acc);}
+.price-note-box{text-align:center;margin-top:40px;padding:20px;background:var(--bgc);border:1px solid var(--b);border-radius:var(--rlg);}
+.price-note-box p{font-size:14px;color:var(--t2);line-height:1.7;}
+.price-note-box i{color:var(--accl);margin-right:6px;}
+
+/* ===== CALCULATOR ===== */
+.calculator{padding:60px 0;background:linear-gradient(180deg,var(--bg2) 0%,rgba(108,92,231,0.03) 50%,var(--bg2) 100%);border-top:1px solid var(--b);}
+.calculator-box{max-width:700px;margin:0 auto;padding:32px;background:var(--bgc);border:1px solid var(--b);border-radius:var(--rxl);}
+.calc-section{margin-bottom:24px;}
+.calc-section h3{font-size:16px;font-weight:700;margin-bottom:16px;color:var(--accl);}
+.calc-type-options{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.calc-type-option{cursor:pointer;}
+.calc-type-option input{display:none;}
+.calc-type-card{padding:16px;background:var(--bg2);border:2px solid var(--b);border-radius:var(--rmd);text-align:center;transition:var(--tr);}
+.calc-type-card i{font-size:24px;margin-bottom:8px;color:var(--t2);}
+.calc-type-card span{display:block;font-size:13px;font-weight:600;color:var(--t1);margin-bottom:4px;}
+.calc-type-card .calc-price{font-size:16px;font-weight:700;color:var(--accl);}
+.calc-type-option input:checked + .calc-type-card{border-color:var(--acc);background:var(--accg);}
+.calc-type-option input:checked + .calc-type-card i{color:var(--accl);}
+.calc-addons-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.calc-addon{cursor:pointer;}
+.calc-addon input{display:none;}
+.calc-addon-card{padding:12px;background:var(--bg2);border:2px solid var(--b);border-radius:var(--rsm);transition:var(--tr);position:relative;}
+.calc-addon-card i{font-size:16px;color:var(--t2);margin-bottom:6px;}
+.calc-addon-info span{display:block;font-size:12px;font-weight:600;color:var(--t1);}
+.calc-addon-price{font-size:12px;font-weight:700;color:var(--accl);}
+.calc-addon input:checked + .calc-addon-card{border-color:var(--acc);background:var(--accg);}
+.calc-addon input:checked + .calc-addon-card i{color:var(--accl);}
+.calc-info-btn{z-index: 10000;position:absolute;top:6px;right:6px;width:24px;height:24px;background:var(--bgc);border:2px solid rgba(108,92,231,0.5);border-radius:6px;font-size:11px;font-weight:700;font-style:italic;color:var(--accl);cursor:pointer;transition:var(--tr);z-index:1;display:flex;align-items:center;justify-content:center;}
+.calc-info-btn:hover{z-index: 10000;background:var(--acc);border-color:var(--acc);color:white;}
+.calc-info-btn::after{z-index: 10000;content:attr(data-tooltip);position:absolute;top:0;left:calc(100% + 8px);padding:12px 16px;background:var(--bgc);border:2px solid var(--acc);border-radius:var(--rmd);font-size:12px;font-weight:500;color:var(--t1);white-space:normal;max-width:200px;line-height:1.4;opacity:0;visibility:hidden;transition:var(--tr);pointer-events:none;transform:translateX(8px);z-index:10;text-align:left;}
+.calc-info-btn::before{z-index: 10000;content:'';position:absolute;top:8px;left:calc(100% + 2px);border:6px solid transparent;border-right-color:var(--acc);opacity:0;visibility:hidden;transition:var(--tr);z-index:10;}
+.calc-info-btn:hover::after{z-index: 10001;margin-left:-130px; opacity:1;visibility:visible;transform:translateX(0);}
+.calc-info-btn:hover::before{z-index: 10000;opacity:1;visibility:visible;}
+.calc-total{display:flex;align-items:center;justify-content:space-between;padding:16px;background:var(--accg);border:1px solid rgba(108,92,231,0.2);border-radius:var(--rmd);margin-bottom:16px;}
+.calc-total-label{font-size:16px;font-weight:700;color:var(--t1);}
+.calc-total-value{font-size:24px;font-weight:800;color:var(--accl);}
+.calc-note{text-align:center;margin-top:16px;padding:12px;background:var(--bg2);border:1px solid var(--b);border-radius:var(--rsm);}
+.calc-note p{font-size:12px;color:var(--t2);line-height:1.5;margin:0;}
+.calc-note i{color:var(--accl);margin-right:4px;}
+.calc-cta{text-align:center;margin-top:16px;}
+.calc-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 32px;background:var(--g1);color:white;border-radius:var(--rmd);font-size:14px;font-weight:600;text-decoration:none;transition:var(--tr);box-shadow:0 4px 24px var(--accgs);}
+.calc-btn:hover{box-shadow:0 8px 32px var(--accgs);}
+
+/* ===== SUPPORT ===== */
+.support{padding:60px 0;background:var(--bgc);border-top:1px solid var(--b);}
+.support-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;margin-bottom:40px;max-width:800px;margin-left:auto;margin-right:auto;}
+.support-card{padding:32px;background:var(--bg2);border:1px solid var(--b);border-radius:var(--rxl);position:relative;transition:var(--tr);}
+.support-card::before{content:'';position:absolute;inset:-1px;border-radius:var(--rxl);border:1px solid var(--acc);opacity:0;transition:opacity 0.2s ease;pointer-events:none;}
+.support-card:hover::before{opacity:1;}
+.support-icon{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:28px;}
+.support-card h3{font-size:20px;font-weight:700;margin-bottom:12px;color:var(--t1);}
+.support-card p{font-size:14px;color:var(--t2);line-height:1.6;margin-bottom:16px;}
+.support-price{font-size:24px;font-weight:700;color:var(--accl);margin-bottom:20px;}
+.support-features{list-style:none;padding:0;margin:0;}
+.support-features li{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--t1);margin-bottom:8px;}
+.support-features li i{color:var(--gr);font-size:12px;flex-shrink:0;}
+.support-note{text-align:center;padding:20px;background:var(--bg2);border:1px solid var(--b);border-radius:var(--rlg);}
+.support-note p{font-size:14px;color:var(--t2);line-height:1.7;}
+.support-note i{color:var(--accl);margin-right:6px;}
+
+/* ===== FAQ ===== */
+.faq{padding:60px 0;background:var(--bgc);border-top:1px solid var(--b);}
+.faq-list{display:flex;flex-direction:column;gap:16px;}
+.faq-item{padding:24px;background:var(--bg2);border:1px solid var(--b);border-radius:var(--rmd);position:relative;transition:var(--tr);}
+.faq-item::before{content:'';position:absolute;inset:-1px;border-radius:var(--rmd);border:1px solid var(--acc);opacity:0;transition:opacity 0.2s ease;pointer-events:none;}
+.faq-item:hover::before{opacity:1;}
+.faq-item.active{border-color:var(--acc);}
+.faq-item.active::before{opacity:1;}
+.faq-question{display:flex;align-items:center;gap:12px;cursor:pointer;font-size:16px;font-weight:600;color:var(--t1);}
+.faq-question i{font-size:12px;color:var(--accl);transition:var(--tr);}
+.faq-item.active .faq-question i{transform:rotate(180deg);}
+.faq-answer{max-height:0;overflow:hidden;transition:var(--tr);margin-top:0;font-size:14px;color:var(--t2);line-height:1.6;}
+.faq-item.active .faq-answer{max-height:200px;margin-top:16px;}
+
+/* ===== CONTACT ===== */
+.contact{padding:80px 0;background:linear-gradient(180deg,var(--bg2) 0%,rgba(108,92,231,0.03) 50%,var(--bg2) 100%);border-top:1px solid var(--b);position:relative;}
+.contact-box{max-width:600px;margin:0 auto;text-align:center;padding:48px 40px;background:var(--bgc);border:1px solid var(--b);border-radius:var(--rxl);position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
+.contact-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--acc),var(--gr));}
+.contact-box .section-subtitle{margin:0 auto 32px;font-size:15px;}
+.contact-title{font-size:28px;font-weight:800;margin-bottom:12px;background:var(--g1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.contact-desc{font-size:14px;color:var(--t2);margin-bottom:32px;line-height:1.6;}
+.tg-btn{display:inline-flex;align-items:center;gap:12px;padding:18px 48px;background:var(--g1);color:white;text-decoration:none;border-radius:var(--rmd);font-size:16px;font-weight:700;transition:var(--tr);box-shadow:0 8px 32px var(--accgs);position:relative;overflow:hidden;}
+.tg-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.1),transparent);opacity:0;transition:var(--tr);}
+.tg-btn:hover{box-shadow:0 12px 40px var(--accgs);}
+.tg-btn:hover::before{opacity:1;}
+.tg-btn i{font-size:22px;}
+
+/* ===== FOOTER ===== */
+.footer{padding:32px 0;background:linear-gradient(180deg,var(--bg2) 0%,rgba(108,92,231,0.08) 50%,var(--bg2) 100%);border-top:1px solid var(--b);}
+.footer-inner{display:flex;align-items:center;justify-content:space-between;}
+.footer-text{font-size:13px;color:var(--tm);}
+.footer-links{display:flex;gap:24px;}
+.footer-links a{font-size:13px;color:var(--tm);text-decoration:none;transition:var(--tr);}
+.footer-links a:hover{color:var(--accl);}
+
+/* ===== LIGHTBOX ===== */
+.lightbox{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.95);backdrop-filter:blur(20px);align-items:center;justify-content:center;cursor:pointer;}
+.lightbox.active{display:flex;}
+.lb-content{max-width:90vw;max-height:90vh;position:relative;}
+.lb-content img{max-width:100%;max-height:90vh;object-fit:contain;border-radius:var(--rmd);cursor:grab;}
+.lb-content img:active{cursor:grabbing;}
+.lb-close{position:fixed;top:20px;right:20px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;color:white;font-size:18px;cursor:pointer;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);border:1px solid var(--b);border-radius:50%;transition:var(--tr);z-index:10001;}
+.lb-close:hover{background:rgba(108,92,231,0.5);transform:scale(1.1);}
+.lb-nav{position:fixed;top:50%;left:0;right:0;transform:translateY(-50%);display:flex;justify-content:space-between;pointer-events:none;z-index:10001;}
+.lb-arr{width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);border:1px solid var(--b);color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--tr);pointer-events:auto;margin:0 20px;}
+.lb-arr:hover{background:rgba(108,92,231,0.5);transform:scale(1.1);}
+.lb-counter{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);color:var(--t2);font-size:14px;font-weight:500;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);padding:8px 16px;border-radius:20px;border:1px solid var(--b);z-index:10001;}
+.lb-zoom{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:10001;}
+.lb-zoom-btn{width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);border:1px solid var(--b);color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--tr);font-size:16px;}
+.lb-zoom-btn:hover{background:rgba(108,92,231,0.5);transform:scale(1.1);}
+.lb-info{position:fixed;top:20px;left:20px;max-width:350px;background:rgba(0,0,0,0.6);backdrop-filter:blur(20px);border:1px solid var(--b);border-radius:var(--rlg);padding:16px;color:white;z-index:10001;opacity:0;transform:translateX(-20px);transition:var(--tr);}
+.lb-info.show{opacity:1;transform:translateX(0);}
+.lb-info-title{font-size:18px;font-weight:700;margin-bottom:8px;color:var(--accl);}
+.lb-info-desc{font-size:13px;line-height:1.4;color:var(--t2);margin-bottom:10px;}
+.lb-info-features{display:flex;flex-direction:column;gap:5px;max-height:200px;overflow-y:auto;}
+.lb-info-feature{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--t1);}
+.lb-info-feature i{color:var(--gr);font-size:11px;flex-shrink:0;}
+
+/* ===== RESPONSIVE ===== */
+
+/* ===== GALLERY INFO PANEL ===== */
+.gal-info{margin-top:20px;padding:20px;background:var(--bg2);border:1px solid var(--b);border-radius:var(--rlg);opacity:0;transform:translateY(10px);transition:var(--tr);}
+.gal-info.show{opacity:1;transform:translateY(0);}
+.gal-info-title{font-size:18px;font-weight:700;margin-bottom:8px;color:var(--accl);}
+.gal-info-desc{font-size:13px;line-height:1.5;color:var(--t2);margin-bottom:12px;}
+.gal-info-features{display:flex;flex-direction:column;gap:6px;}
+.gal-info-feature{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t1);}
+.gal-info-feature i{color:var(--gr);font-size:10px;flex-shrink:0;}
+
+/* ===== SCROLL REVEAL ===== */
+.reveal{opacity:0;transition:opacity 0.6s ease;}
+.reveal.visible{opacity:1;}
+.rd1{transition-delay:0.1s;}.rd2{transition-delay:0.2s;}.rd3{transition-delay:0.3s;}.rd4{transition-delay:0.4s;}.rd5{transition-delay:0.5s;}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1024px){
+.hero-inner{grid-template-columns:1fr;gap:48px;}
+.hero-visual{display:none;}
+.services-grid{grid-template-columns:repeat(2,1fr);}
+.case-inner,.case-inner.rev{grid-template-columns:1fr;}
+.case-inner.rev .case-gallery{order:1;}
+.case-inner.rev .case-info{order:2;}
+.gallery-slider{min-height:160px;}
+.about-grid{grid-template-columns:1fr;gap:48px;}
+.pricing-grid{grid-template-columns:repeat(2,1fr);}
+.price-card:last-child{grid-column:span 2;}
+.calc-type-options{grid-template-columns:1fr;}
+.calc-addons-grid{grid-template-columns:repeat(2,1fr);}
+.support-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:768px){
+.nav-links{display:none;}
+.nav-burger{display:flex;}
+.hero{padding:100px 0 60px;}
+.hero-title{font-size:36px;letter-spacing:-1px;}
+.hero-stats{gap:24px;}
+.services-grid{grid-template-columns:1fr;}
+.timeline{padding-left:74px;gap:32px;}
+.timeline::before{left:25px;}
+.t-num{left:-74px;width:52px;height:52px;font-size:24px;}
+.t-title{font-size:28px;}
+.case-info{padding:32px 24px;}
+.case-title{font-size:22px;}
+.gallery-slider{min-height:140px;}
+.about-feats{grid-template-columns:1fr;}
+.pricing-grid{grid-template-columns:1fr;}
+.price-card:last-child{grid-column:auto;}
+.contact-box{padding:40px 24px;}
+.footer-inner{flex-direction:column;gap:16px;text-align:center;}
+.section-header{margin-bottom:40px;}
+.services,.cases,.about,.pricing,.calculator,.support,.contact{padding:40px 0;}
+
+.calculator-box{padding:32px 24px;}
+.calc-type-options{grid-template-columns:1fr;}
+.calc-addons-grid{grid-template-columns:repeat(2,1fr);}
+.calc-total-value{font-size:24px;}
+.support-grid{grid-template-columns:1fr;}
+.support-card{padding:24px;}
+}
+@media(max-width:480px){
+.container{max-width:100%;padding:0 16px;}
+.hero{padding:80px 0 40px;text-align:center;}
+.hero-title{font-size:36px;letter-spacing:-0.5px;margin-top: 30px;margin-bottom: 40px;}
+.hero-desc{font-size:15px;margin-bottom:42px;}
+.hero-btns{flex-direction:column;}
+.hero-btns .btn{width:100%;justify-content:center;padding:12px 20px;}
+.hero-stats{gap:16px;justify-content:space-between;}
+.stat-item{text-align:center;align-items:center;max-width:33%;}
+.stat-item-center .stat-num{text-align:center;margin-left: 50px;}
+.stat-item-center .stat-lbl{word-break:break-word;margin-left: 50px;}
+.stat-num{text-align:center;}
+.stat-lbl{word-break:break-word;}
+.nav-logo{font-size:18px;}
+.section-label{font-size:11px;padding:5px 12px;text-align:center;}
+.section-title{font-size:28px;text-align:center;}
+.section-subtitle{font-size:14px;text-align:center;}
+.services,.cases,.about,.pricing,.calculator,.support,.contact{padding:32px 0;}
+.timeline{padding-left:50px;gap:24px;}
+.timeline::before{display:block;left:18px;top:10px;bottom:10px;width:2px;background:linear-gradient(180deg,rgba(108,92,231,0.5),rgba(108,92,231,0.2));}
+.t-item{padding:0;background:transparent;border:none;}
+.t-num{position:absolute;left:-50px;width:40px;height:40px;font-size:18px;margin-bottom:0;}
+.t-title{font-size:18px;}
+.t-desc{font-size:13px;}
+.svc-card{padding:20px;}
+.svc-icon{width:48px;height:48px;font-size:20px;}
+.svc-card h3{font-size:16px;}
+.svc-card p{font-size:13px;}
+.svc-tags{flex-wrap:wrap;}
+.svc-tag{font-size:11px;padding:4px 10px;}
+.case-info{padding:24px 20px;}
+.case-title{font-size:18px;}
+.case-desc{font-size:13px;}
+.case-gallery{height:280px;}
+.gallery-slider{min-height:120px;}
+.scr img{max-width:95%;max-height:105%;margin:0 auto;display:block;}
+.case-links{flex-direction:column;}
+.case-link{width:100%;text-align:center;justify-content:center;}
+.case-tech{flex-wrap:wrap;}
+.tech-tag{font-size:11px;padding:4px 10px;}
+.about-feats{grid-template-columns:1fr;}
+.about-text-center{text-align:center;}
+.af-item{padding:20px;}
+.af-icon{width:48px;height:48px;font-size:20px;}
+.af-item h3{font-size:16px;}
+.af-item p{font-size:13px;}
+.pricing-grid{grid-template-columns:1fr;}
+.price-card{padding:24px;}
+.price-icon{width:56px;height:56px;font-size:24px;}
+.price-card h3{font-size:20px;}
+.price-val{font-size:32px;}
+.price-note{font-size:14px;}
+.price-feat{font-size:15px;}
+.price-btn{padding:10px 20px;font-size:13px;}
+.calculator-box{padding:20px 16px;}
+.calc-section{margin-bottom:20px;}
+.calc-section h3{font-size:14px;margin-bottom:12px;}
+.calc-type-options{grid-template-columns:repeat(3,1fr);gap:8px;}
+.calc-type-card{padding:12px;min-height:130px; min-width:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.calc-type-card i{font-size:20px;margin-bottom:6px;}
+.calc-type-card span{font-size:12px;}
+.calc-type-card .calc-price{font-size:14px;}
+.calc-addons-grid{grid-template-columns:repeat(2,1fr);gap:8px;}
+.calc-addon-card{padding:10px;}
+.calc-addon-info span{font-size:11px;}
+.calc-addon-price{font-size:11px;}
+/* .calc-info-btn{display:none;} */
+.calc-total{padding:12px;}
+.calc-total-label{font-size:14px;}
+.calc-total-value{font-size:20px;}
+.calc-note p{font-size:11px;}
+.calc-btn{padding:10px 24px;font-size:13px;}
+.support-grid{grid-template-columns:1fr;}
+.support-card{padding:20px;}
+.support-icon{width:56px;height:56px;font-size:24px;}
+.support-card h3{font-size:18px;}
+.support-card p{font-size:13px;}
+.support-price{font-size:20px;}
+.support-features li{font-size:13px;}
+.contact-box{padding:32px 20px;}
+.contact-card{padding:20px;}
+.contact-icon{width:48px;height:48px;font-size:20px;}
+.contact-card h3{font-size:16px;}
+.contact-card p{font-size:13px;}
+.footer-inner{padding:12px 20px;}
+.footer-logo{font-size:20px;}
+.footer-links{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;text-align:center;margin-top: -10px; margin-bottom: -20px;}
+.footer-links a{font-size:13px;}
+.footer-copy{font-size:12px;}
+.w-langs{flex-direction:column;align-items:center;}
+.w-lang-btn{width:100%;padding:12px 16px;font-size:14px;}
+.w-enter-btn{width:100%;padding:14px 20px;font-size:14px;}
+
+/* ===== MOBILE LIGHTBOX ===== */
+.lb-content{max-width:95vw;max-height:80vh;}
+.lb-content img{max-height:60vh;}
+.lb-info{top:auto;bottom:20px;left:10px;right:10px;max-width:none;transform:translateY(20px);padding:12px;}
+.lb-info.show{transform:translateY(0);}
+.lb-info-title{font-size:16px;margin-bottom:6px;}
+.lb-info-desc{font-size:12px;margin-bottom:8px;}
+.lb-info-features{max-height:80px;}
+.lb-info-feature{font-size:11px;}
+.lb-close{top:10px;right:10px;width:36px;height:36px;}
+.lb-arr{width:40px;height:40px;margin:0 10px;}
+.lb-counter{bottom:10px;font-size:12px;padding:6px 12px;}
+.lb-zoom{bottom:10px;right:10px;}
+.lb-zoom-btn{width:36px;height:36px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== WELCOME SCREEN ===== -->
+<div id="welcomeScreen">
+  <div class="w-bg">
+    <div class="w-grid"></div>
+    <div class="w-orb w-orb1"></div>
+    <div class="w-orb w-orb2"></div>
+    <div class="w-orb w-orb3"></div>
+    <div class="w-particles" id="wParticles"></div>
+  </div>
+  <div class="w-content">
+    <div class="w-logo">vlad.dev</div>
+    <h1 class="w-greeting">
+      <span data-key="w_hi">Привет!</span> 👋<br>
+      <span class="g">Я — Влад</span>
+    </h1>
+    <p class="w-sub" data-key="w_sub">Веб-разработчик. Создаю сайты и CRM-системы для бизнеса с нуля.</p>
+    <div class="w-lang-label" data-key="w_choose">Выберите язык / Choose language</div>
+    <div class="w-langs">
+      <button class="w-lang-btn active" data-lang="ru" onclick="setLang('ru',true)">🇷🇺 Русский</button>
+      <button class="w-lang-btn" data-lang="uk" onclick="setLang('uk',true)">🇺🇦 Українська</button>
+      <button class="w-lang-btn" data-lang="en" onclick="setLang('en',true)">🇬🇧 English</button>
+    </div>
+    <button class="w-enter-btn" onclick="enterSite()">
+      <span data-key="w_enter">Войти в портфолио</span>
+      <i class="fas fa-arrow-right"></i>
+    </button>
+  </div>
+</div>
+
+<!-- ===== CURSOR GLOW ===== -->
+<div class="cursor-glow" id="cursorGlow"></div>
+
+<!-- ===== PARTICLE CANVAS ===== -->
+<canvas id="particleCanvas"></canvas>
+
+<!-- ===== NAV ===== -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">vlad.dev</div>
+    <ul class="nav-links">
+      <li><a href="#services" data-key="nav_services">Услуги</a></li>
+      <li><a href="#process" data-key="nav_process">Процесс</a></li>
+      <li><a href="#cases" data-key="nav_cases">Кейсы</a></li>
+      <li><a href="#about" data-key="nav_about">Обо мне</a></li>
+      <li><a href="#pricing" data-key="nav_price">Цены</a></li>
+      <li><a href="#calculator" data-key="nav_calc">Калькулятор</a></li>
+      <li><a href="#support" data-key="nav_support">Поддержка</a></li>
+      <li>
+        <div class="lang-switcher">
+          <button class="lang-btn active" data-lang="ru" onclick="setLang('ru')">RU</button>
+          <button class="lang-btn" data-lang="uk" onclick="setLang('uk')">UA</button>
+          <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+        </div>
+      </li>
+      <li><a href="https://t.me/vladoss_011" target="_blank" class="nav-cta"><span><i class="fab fa-telegram"></i></span> <span>Telegram</span></a></li>
+    </ul>
+    <div class="nav-burger" id="navBurger">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== MOBILE MENU ===== -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#services" class="mobile-link" data-key="nav_services">Услуги</a>
+  <a href="#process" class="mobile-link" data-key="nav_process">Процесс</a>
+  <a href="#cases" class="mobile-link" data-key="nav_cases">Кейсы</a>
+  <a href="#about" class="mobile-link" data-key="nav_about">Обо мне</a>
+  <a href="#pricing" class="mobile-link" data-key="nav_price">Цены</a>
+  <a href="#calculator" class="mobile-link" data-key="nav_calc">Калькулятор</a>
+  <a href="#support" class="mobile-link" data-key="nav_support">Поддержка</a>
+  <a href="https://t.me/vladoss_011" target="_blank" data-key="nav_tg_mob">Telegram →</a>
+  <div class="lang-switcher">
+    <button class="lang-btn active" data-lang="ru" onclick="setLang('ru')">RU</button>
+    <button class="lang-btn" data-lang="uk" onclick="setLang('uk')">UA</button>
+    <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+  </div>
+</div>
+
+<!-- ===== HERO ===== -->
+<section class="hero" id="hero">
+  <div class="hero-bg">
+    <div class="grid-pattern"></div>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+  </div>
+  <div class="container hero-content">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <div class="hero-badge">
+          <span class="dot"></span>
+          <span data-key="h_open">Открыт для проектов</span>
+        </div>
+        <h1 class="hero-title">
+          <span data-key="h_name">Влад</span><br>
+          <span class="gradient-text" data-key="h_role">веб-разработчик</span>
+        </h1>
+        <p class="hero-desc" data-key="h_desc">Создаю сайты и CRM-системы под бизнес с нуля. Код пишу самостоятельно — без конструкторов. Работаю быстро и по делу.</p>
+        <div class="hero-btns">
+          <a href="#cases" class="btn btn-primary">
+            <i class="fas fa-eye"></i>
+            <span data-key="h_btn1">Смотреть кейсы</span>
+          </a>
+          <a href="https://t.me/vladoss_011" target="_blank" class="btn btn-secondary">
+            <i class="fab fa-telegram"></i>
+            <span data-key="h_btn2">Написать в Telegram</span>
+          </a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item stat-item-left">
+            <span class="stat-num">10+</span>
+            <span class="stat-lbl" data-key="h_s1">Проектов</span>
+          </div>
+          <div class="stat-item stat-item-center">
+            <span class="stat-num">2-3</span>
+            <span class="stat-lbl" data-key="h_s2">Дня на проект</span>
+          </div>
+          <div class="stat-item stat-item-right">
+            <span class="stat-num">100%</span>
+            <span class="stat-lbl" data-key="h_s3">Код без конструкторов</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="code-window">
+          <div class="code-hdr">
+            <div class="cdot r"></div><div class="cdot y"></div><div class="cdot g"></div>
+            <span>vlad-portfolio.js</span>
+          </div>
+          <div class="code-body">
+            <div class="cl"><span class="cn">1</span><span><span class="ck">const</span> <span class="cp">developer</span> <span class="cb">=</span> <span class="cb">{</span></span></div>
+            <div class="cl"><span class="cn">2</span><span>&nbsp;&nbsp;<span class="cp">name</span><span class="cb">:</span> <span class="cs">"Влад"</span><span class="cb">,</span></span></div>
+            <div class="cl"><span class="cn">3</span><span>&nbsp;&nbsp;<span class="cp">role</span><span class="cb">:</span> <span class="cs">"Web Developer"</span><span class="cb">,</span></span></div>
+            <div class="cl"><span class="cn">4</span><span>&nbsp;&nbsp;<span class="cp">skills</span><span class="cb">:</span> <span class="cb">[</span></span></div>
+            <div class="cl"><span class="cn">5</span><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="cs">"HTML/CSS/JS"</span><span class="cb">,</span></span></div>
+            <div class="cl"><span class="cn">6</span><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="cs">"CRM Systems"</span><span class="cb">,</span></span></div>
+            <div class="cl"><span class="cn">7</span><span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="cs">"Web Design"</span></span></div>
+            <div class="cl"><span class="cn">8</span><span>&nbsp;&nbsp;<span class="cb">],</span></span></div>
+            <div class="cl"><span class="cn">9</span><span>&nbsp;&nbsp;<span class="cp">available</span><span class="cb">:</span> <span class="cv">true</span></span></div>
+            <div class="cl"><span class="cn">10</span><span><span class="cb">};</span></span></div>
+            <div class="cl"><span class="cn">11</span><span></span></div>
+            <div class="cl"><span class="cn">12</span><span><span class="cc">// Готов к новым проектам 🚀</span></span></div>
+          </div>
+        </div>
+        <div class="fl-badge b1"><i class="fas fa-check-circle" style="color:var(--gr)"></i><span data-key="fb1">Дедлайны соблюдаю</span></div>
+        <div class="fl-badge b2"><i class="fas fa-code" style="color:var(--accl)"></i><span data-key="fb2">Чистый код</span></div>
+        <div class="fl-badge b3"><i class="fas fa-mobile-alt" style="color:var(--or)"></i><span data-key="fb3">Адаптив</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SERVICES ===== -->
+<section class="services" id="services">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label"><i class="fas fa-th-large"></i><span data-key="s_label">Услуги</span></div>
+      <h2 class="section-title" data-key="s_title">Что я создаю</h2>
+      <p class="section-subtitle" data-key="s_sub">Сайты и системы для бизнеса — от лендинга до полноценной CRM с аналитикой</p>
+    </div>
+    <div class="services-grid">
+      <div class="svc-card reveal rd1">
+        <div class="svc-icon purple"><i class="fas fa-desktop"></i></div>
+        <h3 data-key="sv1_t">Лендинги</h3>
+        <p data-key="sv1_d">Продающие одностраничники для товаров, услуг и курсов. Быстрая загрузка и адаптив.</p>
+        <div class="svc-tags"><span class="svc-tag" data-key="sv1_tag1">Товары</span><span class="svc-tag" data-key="sv1_tag2">Услуги</span><span class="svc-tag" data-key="sv1_tag3">Курсы</span></div>
+      </div>
+      <div class="svc-card reveal rd2">
+        <div class="svc-icon teal"><i class="fas fa-graduation-cap"></i></div>
+        <h3 data-key="sv2_t">Сайты с тарифами</h3>
+        <p data-key="sv2_d">Многостраничные сайты для курсов и обучения: модули, пакеты, доступы, тарифы.</p>
+        <div class="svc-tags"><span class="svc-tag" data-key="sv2_tag1">Модули</span><span class="svc-tag" data-key="sv2_tag2">Тарифы</span><span class="svc-tag" data-key="sv2_tag3">Доступы</span></div>
+      </div>
+      <div class="svc-card reveal rd3">
+        <div class="svc-icon orange"><i class="fas fa-chart-line"></i></div>
+        <h3 data-key="sv3_t">CRM системы</h3>
+        <p data-key="sv3_d">Системы управления клиентами, заявками, оплатами. Аналитика менеджеров и интеграции.</p>
+        <div class="svc-tags"><span class="svc-tag">Google Sheets</span><span class="svc-tag" data-key="sv3_tag2">Аналитика</span><span class="svc-tag" data-key="sv3_tag3">Оплаты</span></div>
+      </div>
+      <div class="svc-card reveal rd1">
+        <div class="svc-icon teal"><i class="fas fa-sync-alt"></i></div>
+        <h3 data-key="sv4_t">Редизайн сайтов</h3>
+        <p data-key="sv4_d">Обновление внешнего вида и удобства существующих сайтов. Новая жизнь старому проекту.</p>
+        <div class="svc-tags"><span class="svc-tag">UI/UX</span><span class="svc-tag" data-key="sv4_tag2">Оптимизация</span></div>
+      </div>
+      <div class="svc-card reveal rd2">
+        <div class="svc-icon purple"><i class="fas fa-paint-brush"></i></div>
+        <h3 data-key="sv5_t">Дизайн и обработка</h3>
+        <p data-key="sv5_d">Дизайн сайта с нуля, обработка фото в Photoshop, подготовка визуала под проект.</p>
+        <div class="svc-tags"><span class="svc-tag">Photoshop</span><span class="svc-tag" data-key="sv5_tag2">Визуал</span></div>
+      </div>
+      <div class="svc-card reveal rd3">
+        <div class="svc-icon orange"><i class="fas fa-plug"></i></div>
+        <h3 data-key="sv6_t">Интеграции</h3>
+        <p data-key="sv6_d">Подключение Google Sheets, учёт оплат, контроль менеджеров — всё в одной системе.</p>
+        <div class="svc-tags"><span class="svc-tag">API</span><span class="svc-tag" data-key="sv6_tag2">Таблицы</span><span class="svc-tag" data-key="sv6_tag3">Автоматизация</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PROCESS ===== -->
+<section class="process" id="process">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label"><i class="fas fa-list-check"></i><span data-key="proc_label">Как я работаю</span></div>
+      <h2 class="section-title" data-key="proc_title">Процесс разработки</h2>
+      <p class="section-subtitle" data-key="proc_sub">Прозрачный процесс от идеи до запуска</p>
+    </div>
+    <div class="process-wrap">
+      <div class="timeline">
+        <div class="t-item reveal rd1">
+          <div class="t-num">01</div>
+          <h3 class="t-title"><i class="fas fa-comment-dots"></i><span data-key="proc_1_t">Обсуждение</span></h3>
+          <p class="t-desc" data-key="proc_1_d">Узнаю ваши цели, целевую аудиторию и пожелания по дизайну. Определяем структуру и функционал сайта. Фиксируем ТЗ.</p>
+        </div>
+        <div class="t-item reveal rd2">
+          <div class="t-num">02</div>
+          <h3 class="t-title"><i class="fas fa-palette"></i><span data-key="proc_2_t">Дизайн</span></h3>
+          <p class="t-desc" data-key="proc_2_d">Создаю уникальный дизайн, согласовываю каждый экран. Вносим правки до полного утверждения. Вы видите результат до верстки.</p>
+        </div>
+        <div class="t-item reveal rd3">
+          <div class="t-num">03</div>
+          <h3 class="t-title"><i class="fas fa-laptop-code"></i><span data-key="proc_3_t">Верстка</span></h3>
+          <p class="t-desc" data-key="proc_3_d">Превращаю макет в живой сайт: чистый код, анимации и адаптив под все устройства. Оптимизирую скорость загрузки.</p>
+        </div>
+        <div class="t-item reveal rd4">
+          <div class="t-num">04</div>
+          <h3 class="t-title"><i class="fas fa-rocket"></i><span data-key="proc_4_t">Запуск</span></h3>
+          <p class="t-desc" data-key="proc_4_d">Размещаю сайт на хостинге, подключаю домен и SSL. Провожу финальное тестирование и передаю вам доступы.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CASES ===== -->
+<section class="cases" id="cases">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label"><i class="fas fa-briefcase"></i><span data-key="c_label">Кейсы</span></div>
+      <h2 class="section-title" data-key="c_title">Мои проекты</h2>
+      <p class="section-subtitle" data-key="c_sub">Примеры реализованных проектов — от лендингов до CRM систем</p>
+      <p class="section-note" data-key="c_note">Это одни из самых масштабных и интересных проектов. Полный список по запросу.</p>
+    </div>
+    <div class="cases-list">
+
+      <!-- CASE 1: CRM -->
+      <div class="case-card reveal">
+        <div class="case-inner">
+          <div class="case-gallery">
+            <div class="scr crm-mgr-main">
+              <div class="mck">
+                <div class="mck-top"><div class="mck-dots"><div class="mck-dot"></div><div class="mck-dot"></div><div class="mck-dot"></div></div><div class="mck-url"></div><div style="width:20px"></div></div>
+                <div class="mck-cnt">
+                  <img src="img/srm-1.png" alt="Главный экран менеджера" style="width:100%;height:100%;object-fit:contain;border-radius:6px;">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="case-info">
+            <div class="case-type crm"><i class="fas fa-database"></i><span data-key="c1_type">CRM Система</span></div>
+            <h3 class="case-title" data-key="c1_title">CRM и контроль оплат</h3>
+            <p class="case-desc" data-key="c1_desc">Система для контроля оплат, менеджеров и статистики. Панель администратора и менеджера, учёт фактических и потенциальных оплат, аналитика по проектам.</p>
+            <div class="case-tech"><span class="tech-tag">HTML</span><span class="tech-tag">CSS</span><span class="tech-tag">JavaScript</span><span class="tech-tag">Google Sheets API</span></div>
+            <div class="case-links">
+              <a href="case-detail.html?id=1" class="case-link primary"><i class="fas fa-search"></i><span data-key="c_detail">Посмотреть кейс</span></a>
+              <a href="https://vladwebstudio.github.io/crm-con-pay/" class="case-link secondary" target="_blank"><i class="fas fa-external-link-alt"></i><span data-key="c_view">Посмотреть проект (гость)</span></a>
+              <a href="https://t.me/vladoss_011" target="_blank" class="case-link secondary"><i class="fas fa-code"></i><span data-key="c_code">Код по запросу</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CASE 2: Landing -->
+      <div class="case-card reveal">
+        <div class="case-inner rev">
+          <div class="case-gallery">
+            <div class="scr land-main">
+              <div class="mck">
+                <div class="mck-top"><div class="mck-dots"><div class="mck-dot"></div><div class="mck-dot"></div><div class="mck-dot"></div></div><div class="mck-url"></div><div style="width:20px"></div></div>
+                <div class="mck-cnt">
+                  <img src="img/land-1.png" alt="Главный экран лендинга" style="width:100%;height:100%;object-fit:contain;border-radius:6px;">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="case-info">
+            <div class="case-type landing"><i class="fas fa-rocket"></i><span data-key="c2_type">Лендинг</span></div>
+            <h3 class="case-title" data-key="c2_title">Лендинг для товара</h3>
+            <p class="case-desc" data-key="c2_desc">Продающий одностраничный сайт для товара. Каталог, карточки товаров, CTA-кнопки, блоки преимуществ и отзывов. Полностью адаптивный.</p>
+            <div class="case-tech"><span class="tech-tag">HTML</span><span class="tech-tag">CSS</span><span class="tech-tag">JavaScript</span><span class="tech-tag">Telegram</span></div>
+            <div class="case-links">
+              <a href="case-detail.html?id=2" class="case-link primary"><i class="fas fa-search"></i><span data-key="c_detail">Посмотреть кейс</span></a>
+              <a href="https://vladwebstudio.github.io/lend-castle/" class="case-link secondary" target="_blank"><i class="fas fa-external-link-alt"></i><span data-key="c_view">Посмотреть проект (гость)</span></a>
+              <a href="https://t.me/vladoss_011" target="_blank" class="case-link secondary"><i class="fas fa-code"></i><span data-key="c_code">Код по запросу</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CASE 3: Course -->
+      <div class="case-card reveal">
+        <div class="case-inner">
+          <div class="case-gallery">
+            <div class="scr crs-main">
+              <div class="mck">
+                <div class="mck-top"><div class="mck-dots"><div class="mck-dot"></div><div class="mck-dot"></div><div class="mck-dot"></div></div><div class="mck-url"></div><div style="width:20px"></div></div>
+                <div class="mck-cnt">
+                  <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a1625,#221a30);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--t2);font-size:12px;text-align:center;padding:10px;">Course Preview</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="case-info">
+            <div class="case-type course"><i class="fas fa-book-open"></i><span data-key="c3_type">Сайт курса</span></div>
+            <h3 class="case-title" data-key="c3_title">Сайт онлайн-курса</h3>
+            <p class="case-desc" data-key="c3_desc">Сайт для онлайн-обучения с модулями, тарифами и пакетами. Структурированная программа курса, блоки доступов и оплат.</p>
+            <div class="case-tech"><span class="tech-tag">HTML</span><span class="tech-tag">CSS</span><span class="tech-tag">JavaScript</span></div>
+            <div class="case-links">
+              <a href="case-detail.html?id=3" class="case-link primary"><i class="fas fa-search"></i><span data-key="c_detail">Посмотреть кейс</span></a>
+              <a href="#" class="case-link secondary" target="_blank"><i class="fas fa-external-link-alt"></i><span data-key="c_view">Посмотреть проект (гость)</span></a>
+              <a href="https://t.me/vladoss_011" target="_blank" class="case-link secondary"><i class="fas fa-code"></i><span data-key="c_code">Код по запросу</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===== ABOUT ===== -->
+<section class="about" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="reveal about-text-center">
+        <div class="section-label"><i class="fas fa-user"></i><span data-key="a_label">Обо мне</span></div>
+        <h2 class="section-title" data-key="a_title">Коротко о главном</h2>
+        <p class="section-subtitle" style="margin-bottom:24px" data-key="a_desc1">Я веб-разработчик Влад. Создаю сайты и выстраиваю системы для бизнеса с нуля. Код пишу самостоятельно — без конструкторов.</p>
+        <p class="section-subtitle" data-key="a_desc2">Работаю быстро и по делу — простые проекты за 2-3 дня, сложные обсуждаем отдельно. Все сроки и дедлайны соблюдаю.</p>
+      </div>
+      <div class="about-feats">
+        <div class="about-feat reveal rd1">
+          <div class="about-feat-icon" style="background:var(--accg);color:var(--accl)"><i class="fas fa-code"></i></div>
+          <h4 data-key="af1_t">Чистый код</h4>
+          <p data-key="af1_d">Пишу код сам, без конструкторов и шаблонов</p>
+        </div>
+        <div class="about-feat reveal rd2">
+          <div class="about-feat-icon" style="background:var(--grg);color:var(--gr)"><i class="fas fa-clock"></i></div>
+          <h4 data-key="af2_t">Быстрые сроки</h4>
+          <p data-key="af2_d">2-3 дня на простой проект, сложные — по договорённости</p>
+        </div>
+        <div class="about-feat reveal rd3">
+          <div class="about-feat-icon" style="background:rgba(225,112,85,0.15);color:var(--or)"><i class="fas fa-mobile-alt"></i></div>
+          <h4 data-key="af3_t">Адаптивность</h4>
+          <p data-key="af3_d">Все проекты работают на любых устройствах</p>
+        </div>
+        <div class="about-feat reveal rd4">
+          <div class="about-feat-icon" style="background:rgba(253,203,110,0.15);color:#ffeaa7"><i class="fas fa-handshake"></i></div>
+          <h4 data-key="af4_t">Дедлайны</h4>
+          <p data-key="af4_d">Фиксирую сроки и всегда их соблюдаю</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PRICING ===== -->
+<section class="pricing" id="pricing">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label"><i class="fas fa-tag"></i><span data-key="p_label">Цены</span></div>
+      <h2 class="section-title" data-key="p_title">Стоимость услуг</h2>
+      <p class="section-subtitle" data-key="p_sub">Ориентировочные цены — финальная стоимость фиксируется перед стартом</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card feat reveal rd1" data-badge="Популярное">
+        <div class="price-icon" style="background:var(--accg);color:var(--accl)"><i class="fas fa-desktop"></i></div>
+        <h3 data-key="pr1_t">Лендинг</h3>
+        <div class="price-val"><span data-key="price_from">от</span> $100</div>
+        <div class="price-note" data-key="pr1_note">1 страница</div>
+        <div class="price-feats">
+          <div class="price-feat"><i class="fas fa-check"></i><span data-key="pr1_f1">Продающий дизайн</span></div>
+          <div class="price-feat"><i class="fas fa-check"></i><span data-key="pr1_f2">Адаптив под все устройства</span></div>
+          <div class="price-feat"><i class="fas fa-check"></i><span data-key="pr1_f3">Быстрая загрузка</span></div>
+          <div class="price-feat"><i class="fas fa-check"></i><span data-key="pr1_f4">Сдача за 2-3 дня</span></div>
+        </div>
+        <a href="https://t.me/vladoss_011" target="_blank" class="price-btn secondary" data-key="pr_cta">Обсудить проект</a>
+      </div>
+      <div class="price-card reveal rd2">
+        <div class="price-icon" style="background:var(--accg);color:var(--accl)"><i class="fas fa-layer-group"></i></div>
+        <h3 data-key="pr2_t">Многостраничный сайт</h3>
+        <div class="price-val"><span data-key="price_from">от</span> $180</div>
+        <div class="price-note" data-key="pr2_note">несколько страниц</div>
+        <div class="price-feats">
+          <div class="price-feat"><i class="fas fa-check"></i><span data-key="pr2_f1">Модули и тарифы</span></div>
+          <div class="price-feat"><i class="fas fa-check"></i><span data-key="pr2_f2">Продуманная структура</span></div>
+          <div class="price-feat"><i class="fas fa-check"></i><span data-key="pr2_f3">Адаптив и анимации</span></div>
+          <div class="price-feat"><i class="fas fa-check"></i><span data-key="pr2_f4">Помогу собрать ТЗ</span></div>
+        </div>
+        <a href="https://t.me/vladoss_011" target="_blank" class="price-btn primary" data-key="pr_cta">Обсудить проект</a>
+      </div>
+      <div class="price-card reveal rd3">
+        <div class="price-icon" style="background:rgba(225,112,85,0.15);color:var(--or)"><i class="fas fa-chart-line"></i></div>
+        <h3 data-key="pr3_t">CRM / Система</h3>
+        <div class="price-val"><span data-key="price_from">от</span> $250+</div>
+        <div class="price-note" data-key="pr3_note">зависит от сложности</div>
+        <div class="price-feats">
+          <div class="price-feat"><i class="fas fa-check"></i><span data-key="pr3_f1">CRM с аналитикой</span></div>
+          <div class="price-feat"><i class="fas fa-check"></i><span data-key="pr3_f2">Интеграция Google Sheets</span></div>
+          <div class="price-feat"><i class="fas fa-check"></i><span data-key="pr3_f3">Учёт оплат и менеджеров</span></div>
+          <div class="price-feat"><i class="fas fa-check"></i><span data-key="pr3_f4">Полная кастомизация</span></div>
+        </div>
+        <a href="https://t.me/vladoss_011" target="_blank" class="price-btn secondary" data-key="pr_cta">Обсудить проект</a>
+      </div>
+    </div>
+    <div class="price-note-box reveal">
+      <p><i class="fas fa-info-circle"></i><span data-key="p_info">Финальная стоимость обсуждается и фиксируется перед стартом работы. Если в процессе добавляются дополнительные функции — стоимость корректируется по договорённости.</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CALCULATOR ===== -->
+<section class="calculator" id="calculator">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label"><i class="fas fa-calculator"></i><span data-key="calc_label">Калькулятор проекта</span></div>
+      <h2 class="section-title" data-key="calc_title">Рассчитайте стоимость</h2>
+      <p class="section-subtitle" data-key="calc_sub">Выберите тип проекта и дополнительные функции для предварительной оценки</p>
+    </div>
+    <div class="calculator-box reveal">
+      <div class="calc-section">
+        <h3 data-key="calc_type_title">Тип проекта</h3>
+        <div class="calc-type-options">
+          <label class="calc-type-option">
+            <input type="radio" name="projectType" value="landing" data-price="100" checked>
+            <div class="calc-type-card">
+              <i class="fas fa-desktop"></i>
+              <span data-key="calc_landing">Лендинг</span>
+              <div class="calc-price">$100</div>
+            </div>
+          </label>
+          <label class="calc-type-option">
+            <input type="radio" name="projectType" value="multipage" data-price="180">
+            <div class="calc-type-card">
+              <i class="fas fa-layer-group"></i>
+              <span data-key="calc_multipage">Многостраничный сайт</span>
+              <div class="calc-price">$180</div>
+            </div>
+          </label>
+          <label class="calc-type-option">
+            <input type="radio" name="projectType" value="crm" data-price="250">
+            <div class="calc-type-card">
+              <i class="fas fa-chart-line"></i>
+              <span data-key="calc_crm">CRM / Система</span>
+              <div class="calc-price">$250</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="calc-section">
+        <h3 data-key="calc_addons_title">Дополнительные функции</h3>
+        <div class="calc-addons-grid">
+          <label class="calc-addon">
+            <input type="checkbox" name="addons" value="seo" data-price="50">
+            <div class="calc-addon-card">
+              <i class="fas fa-search"></i>
+              <div class="calc-addon-info">
+                <span data-key="calc_seo">SEO оптимизация</span>
+                <div class="calc-addon-price">+$50</div>
+              </div>
+              <button class="calc-info-btn" data-tooltip="Оптимизация для поисковых систем. Повышает позиции сайта в Google.">i</button>
+            </div>
+          </label>
+          <label class="calc-addon">
+            <input type="checkbox" name="addons" value="analytics" data-price="40">
+            <div class="calc-addon-card">
+              <i class="fas fa-chart-bar"></i>
+              <div class="calc-addon-info">
+                <span data-key="calc_analytics">Google Analytics</span>
+                <div class="calc-addon-price">+$40</div>
+              </div>
+              <button class="calc-info-btn" data-tooltip="Аналитика отслеживает посещаемость и поведение пользователей.">i</button>
+            </div>
+          </label>
+          <label class="calc-addon">
+            <input type="checkbox" name="addons" value="chat" data-price="30">
+            <div class="calc-addon-card">
+              <i class="fas fa-comments"></i>
+              <div class="calc-addon-info">
+                <span data-key="calc_chat">Чат-бот</span>
+                <div class="calc-addon-price">+$30</div>
+              </div>
+              <button class="calc-info-btn" data-tooltip="Автоответчик на частые вопросы. Работает 24/7.">i</button>
+            </div>
+          </label>
+          <label class="calc-addon">
+            <input type="checkbox" name="addons" value="multilang" data-price="60">
+            <div class="calc-addon-card">
+              <i class="fas fa-globe"></i>
+              <div class="calc-addon-info">
+                <span data-key="calc_multilang">Мультиязычность</span>
+                <div class="calc-addon-price">+$60</div>
+              </div>
+              <button class="calc-info-btn" data-tooltip="Поддержка нескольких языков. Для международной аудитории.">i</button>
+            </div>
+          </label>
+          <label class="calc-addon">
+            <input type="checkbox" name="addons" value="animation" data-price="45">
+            <div class="calc-addon-card">
+              <i class="fas fa-magic"></i>
+              <div class="calc-addon-info">
+                <span data-key="calc_animation">Кастомные анимации</span>
+                <div class="calc-addon-price">+$45</div>
+              </div>
+              <button class="calc-info-btn" data-tooltip="Уникальные эффекты и анимации. Делает сайт современным.">i</button>
+            </div>
+          </label>
+          <label class="calc-addon">
+            <input type="checkbox" name="addons" value="cms" data-price="70">
+            <div class="calc-addon-card">
+              <i class="fas fa-cogs"></i>
+              <div class="calc-addon-info">
+                <span data-key="calc_cms">Админ-панель (CMS)</span>
+                <div class="calc-addon-price">+$70</div>
+              </div>
+              <button class="calc-info-btn" data-tooltip="Статистика, аналитика, управление объектами. Полный контроль над проектом.">i</button>
+            </div>
+          </label>
+          <label class="calc-addon">
+            <input type="checkbox" name="addons" value="sheets" data-price="55">
+            <div class="calc-addon-card">
+              <i class="fas fa-table"></i>
+              <div class="calc-addon-info">
+                <span data-key="calc_sheets">Google Sheets</span>
+                <div class="calc-addon-price">+$55</div>
+              </div>
+              <button class="calc-info-btn" data-tooltip="Подключение Google таблиц. Автоматический сбор данных в Excel.">i</button>
+            </div>
+          </label>
+          <label class="calc-addon">
+            <input type="checkbox" name="addons" value="api" data-price="80">
+            <div class="calc-addon-card">
+              <i class="fas fa-plug"></i>
+              <div class="calc-addon-info">
+                <span data-key="calc_api">API интеграции</span>
+                <div class="calc-addon-price">+$80</div>
+              </div>
+              <button class="calc-info-btn" data-tooltip="Подключение внешних сервисов. CRM, рассылки, соцсети.">i</button>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="calc-total">
+        <div class="calc-total-label" data-key="calc_total">Итого:</div>
+        <div class="calc-total-value" id="totalPrice">$100</div>
+      </div>
+
+      <div class="calc-note">
+        <p><i class="fas fa-info-circle"></i><span data-key="calc_note">Это ориентировочная цена. Финальная стоимость обсуждается индивидуально и зависит от требований проекта.</span></p>
+      </div>
+
+      <div class="calc-cta">
+        <a href="https://t.me/vladoss_011?text=Привет! Хочу заказать проект. Примерная стоимость: " target="_blank" class="calc-btn" id="calcBtn">
+          <i class="fab fa-telegram"></i>
+          <span data-key="calc_order">Обсудить проект</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SUPPORT ===== -->
+<section class="support" id="support">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label"><i class="fas fa-shield-alt"></i><span data-key="sup_label">Поддержка проекта</span></div>
+      <h2 class="section-title" data-key="sup_title">Полная забота о вашем проекте</h2>
+      <p class="section-subtitle" data-key="sup_sub">Запуск на платный хостинг и техподдержка</p>
+    </div>
+    <div class="support-grid">
+      <div class="support-card reveal rd1">
+        <div class="support-icon" style="background:var(--accg);color:var(--accl)">
+          <i class="fas fa-server"></i>
+        </div>
+        <h3 data-key="sup_host_title">Платный хостинг</h3>
+        <p data-key="sup_host_desc">Запуск проекта на надёжном платном хостинге с SSL сертификатом. Высокая скорость работы и 99.9% uptime.</p>
+        <div class="support-price">$20/<span data-key="per_month">мес</span></div>
+        <ul class="support-features">
+          <li><i class="fas fa-check"></i><span data-key="sup_host_f1">SSL сертификат бесплатно</span></li>
+          <li><i class="fas fa-check"></i><span data-key="sup_host_f2">Автоматические бэкапы</span></li>
+          <li><i class="fas fa-check"></i><span data-key="sup_host_f3">24/7 мониторинг</span></li>
+        </ul>
+      </div>
+      <div class="support-card reveal rd2">
+        <div class="support-icon" style="background:rgba(0,206,201,0.15);color:var(--gr)">
+          <i class="fas fa-tools"></i>
+        </div>
+        <h3 data-key="sup_tech_title">Техподдержка</h3>
+        <p data-key="sup_tech_desc">Минимальные правки + хостинг. Большие правки по дополнительной стоимости.</p>
+        <div class="support-price">$40/<span data-key="per_month">мес</span></div>
+        <ul class="support-features">
+          <li><i class="fas fa-check"></i><span data-key="sup_tech_f1">Исправление багов</span></li>
+          <li><i class="fas fa-check"></i><span data-key="sup_tech_f2">Минимальные правки</span></li>
+          <li><i class="fas fa-check"></i><span data-key="sup_tech_f3">Включён хостинг</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="support-note reveal">
+      <p><i class="fas fa-info-circle"></i><span data-key="sup_info">Можно выбрать отдельные услуги или комплексный пакет. Стоимость обсуждается индивидуально в зависимости от требований проекта.</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONTACT ===== -->
+<section class="contact" id="contact">
+  <div class="container">
+    <div class="contact-box reveal">
+      <h2 class="contact-title" data-key="ct_title">Готовы обсудить проект?</h2>
+      <p class="contact-desc" data-key="ct_sub">Напишите в Telegram — отвечаю быстро. Обсудим задачу, сроки и стоимость для Вашего проекта.</p>
+      <a href="https://t.me/vladoss_011" target="_blank" class="tg-btn">
+        <i class="fab fa-telegram"></i>
+        @vladoss_011
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section class="faq" id="faq">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label"><i class="fas fa-question-circle"></i><span data-key="faq_label">Частые вопросы</span></div>
+      <h2 class="section-title" data-key="faq_title">Ответы на популярные вопросы</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item reveal">
+        <div class="faq-question">
+          <i class="fas fa-chevron-down"></i>
+          <span data-key="faq_q1">Сколько времени занимает разработка сайта?</span>
+        </div>
+        <div class="faq-answer" data-key="faq_a1">Лендинг — примерно 2-3 дня. Многостраничный сайт — 5-10 дней. CRM или сложная система — обсуждается индивидуально. Сроки могут варьироваться в зависимости от требований проекта.</div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-question">
+          <i class="fas fa-chevron-down"></i>
+          <span data-key="faq_q2">Что входит в стоимость?</span>
+        </div>
+        <div class="faq-answer" data-key="faq_a2">Разработка уникального дизайна и стиля. Полностью кодовый сайт, готовый к запуску со всеми необходимыми подключениями. Адаптив под все устройства, SEO оптимизация. Уникальные фотографии, визуальные элементы и стили, соответствующие вашему бренду.</div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-question">
+          <i class="fas fa-chevron-down"></i>
+          <span data-key="faq_q3">Как происходит оплата?</span>
+        </div>
+        <div class="faq-answer" data-key="faq_a3">Оплата поэтапно: 50% предоплата перед стартом, 50% после сдачи проекта. Возможны другие варианты по договорённости. Финальная стоимость фиксируется перед началом работы.</div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-question">
+          <i class="fas fa-chevron-down"></i>
+          <span data-key="faq_q4">Нужен ли хостинг и домен?</span>
+        </div>
+        <div class="faq-answer" data-key="faq_a4">Размещение на хостинге и регистрация домена — это дополнительные услуги. Я могу помочь с запуском на платном хостинге за отдельную плату. Также вы можете разместить сайт на любом другом хостинге по своему выбору.</div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-question">
+          <i class="fas fa-chevron-down"></i>
+          <span data-key="faq_q5">Предоставляете ли техподдержку после запуска?</span>
+        </div>
+        <div class="faq-answer" data-key="faq_a5">Да, есть отдельные услуги техподдержки и платного хостинга. Минимальные правки и хостинг — $40/мес. Большие правки обсуждаются дополнительно. Можем обсудить индивидуальный пакет поддержки.</div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-question">
+          <i class="fas fa-chevron-down"></i>
+          <span data-key="faq_q6">Как происходит процесс работы?</span>
+        </div>
+        <div class="faq-answer" data-key="faq_a6">Сначала обсуждаем задачу и требования. Затем создаю дизайн, согласовываем с вами. После утверждения верстаю сайт и программирую функционал. Провожу тестирование и сдачу проекта с передачей всех доступов.</div>
+      </div>
+      <div class="faq-item reveal">
+        <div class="faq-question">
+          <i class="fas fa-chevron-down"></i>
+          <span data-key="faq_q7">Можно ли вносить правки после запуска?</span>
+        </div>
+        <div class="faq-answer" data-key="faq_a7">Да, можно вносить правки и изменения после запуска. Минимальные правки входят в техподдержку. Большие изменения и новый функционал обсуждаются и оплачиваются отдельно в зависимости от объёма работы.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-text" data-key="ft_copy">© 2025 Влад. Веб-разработка.</div>
+      <div class="footer-links">
+        <a href="#services" data-key="nav_services">Услуги</a>
+        <a href="#process" data-key="nav_process">Процесс</a>
+        <a href="#cases" data-key="nav_cases">Кейсы</a>
+        <a href="#calculator" data-key="nav_calc">Калькулятор</a>
+        <a href="#support" data-key="nav_support">Поддержка</a>
+        <a href="https://t.me/vladoss_011" target="_blank">Telegram</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== LIGHTBOX ===== -->
+<div class="lightbox" id="lightbox">
+  <div class="lb-content">
+    <div class="lb-close"><i class="fas fa-times"></i></div>
+    <img src="" alt="" id="lightboxImg">
+    <div class="lb-nav">
+      <div class="lb-arr lb-prev"><i class="fas fa-chevron-left"></i></div>
+      <div class="lb-arr lb-next"><i class="fas fa-chevron-right"></i></div>
+    </div>
+    <div class="lb-counter"></div>
+    <div class="lb-zoom">
+      <div class="lb-zoom-btn lb-zoom-in" id="zoomIn"><i class="fas fa-plus"></i></div>
+      <div class="lb-zoom-btn lb-zoom-reset" id="zoomReset"><i class="fas fa-undo"></i></div>
+      <div class="lb-zoom-btn lb-zoom-out" id="zoomOut"><i class="fas fa-minus"></i></div>
+    </div>
+    <div class="lb-info">
+      <div class="lb-info-title"></div>
+      <div class="lb-info-desc"></div>
+      <div class="lb-info-features"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== TRANSLATIONS =====
+const T = {
+  ru:{
+    w_hi:"Привет!",w_sub:"Веб-разработчик. Создаю сайты и CRM-системы для бизнеса с нуля.",
+    w_choose:"Выберите язык",w_enter:"Войти в портфолио",
+    nav_services:"Услуги",nav_process:"Процесс",nav_cases:"Кейсы",nav_about:"Обо мне",nav_price:"Цены",nav_calc:"Калькулятор",nav_support:"Поддержка",
+    nav_tg:"Telegram",nav_tg_mob:"Telegram →",
+    h_open:"Открыт для проектов",h_name:"Влад",h_role:"веб-разработчик",
+    h_desc:"Создаю сайты и CRM-системы под бизнес с нуля. Код пишу самостоятельно — без конструкторов. Работаю быстро и по делу.",
+    h_btn1:"Смотреть кейсы",h_btn2:"Написать в Telegram",
+    h_s1:"Проектов",h_s2:"Дня на проект",h_s3:"Код без конструкторов",
+    fb1:"Дедлайны соблюдаю",fb2:"Чистый код",fb3:"Адаптив",
+    s_label:"Услуги",s_title:"Что я создаю",s_sub:"Сайты и системы для бизнеса — от лендинга до полноценной CRM с аналитикой",
+    sv1_t:"Лендинги",sv1_d:"Продающие одностраничники для товаров, услуг и курсов. Быстрая загрузка и адаптив.",sv1_tag1:"Товары",sv1_tag2:"Услуги",sv1_tag3:"Курсы",
+    sv2_t:"Сайты с тарифами",sv2_d:"Многостраничные сайты для курсов и обучения: модули, пакеты, доступы, тарифы.",sv2_tag1:"Модули",sv2_tag2:"Тарифы",sv2_tag3:"Доступы",
+    sv3_t:"CRM системы",sv3_d:"Системы управления клиентами, заявками, оплатами. Аналитика менеджеров и интеграции.",sv3_tag2:"Аналитика",sv3_tag3:"Оплаты",
+    sv4_t:"Редизайн сайтов",sv4_d:"Обновление внешнего вида и удобства существующих сайтов. Новая жизнь старому проекту.",sv4_tag2:"Оптимизация",
+    sv5_t:"Дизайн и обработка",sv5_d:"Дизайн сайта с нуля, обработка фото в Photoshop, подготовка визуала под проект.",sv5_tag2:"Визуал",
+    sv6_t:"Интеграции",sv6_d:"Подключение Google Sheets, учёт оплат, контроль менеджеров — всё в одной системе.",sv6_tag2:"Таблицы",sv6_tag3:"Автоматизация",
+    proc_label:"Как я работаю",proc_title:"Процесс разработки",proc_sub:"Прозрачный процесс от идеи до запуска",
+    proc_1_t:"Обсуждение",proc_1_d:"Узнаю ваши цели, целевую аудиторию и пожелания по дизайну. Определяем структуру и функционал сайта. Фиксируем ТЗ.",
+    proc_2_t:"Дизайн",proc_2_d:"Создаю уникальный дизайн, согласовываю каждый экран. Вносим правки до полного утверждения. Вы видите результат до верстки.",
+    proc_3_t:"Верстка",proc_3_d:"Превращаю макет в живой сайт: чистый код, анимации и адаптив под все устройства. Оптимизирую скорость загрузки.",
+    proc_4_t:"Запуск",proc_4_d:"Отдаю готовый проект, объясняю как всё работает. Передаю полные доступы.",
+    c_label:"Кейсы",c_title:"Мои проекты",c_sub:"Реальные проекты — сайты и системы, которые работают",c_note:"Это одни из самых масштабных и интересных проектов. Полный список по запросу.",
+    sl_main:"Главный экран",sl_ana:"Аналитика",sl_mob:"Мобильная версия",sl_prod:"Для кого подходит",sl_mod:"Модули и тарифы",sl_des:"Дизайн сайта",sl_photo:"Обработка фото",sl_land_feat:"Виды сооружений",sl_land_order:"Формирование заказа",
+    sl_mgr_main:"Главный экран менеджера",sl_adm_main:"Главный экран админа",sl_adm_ana:"Аналитика админа",sl_crm_mob:"Мобильная версия",sl_land_main:"Главный экран лендинга",sl_land_prod:"Карточки товаров",sl_crs_main:"Главный экран курса",sl_crs_mod:"Модули и тарифы",sl_des_main:"Дизайн сайта",sl_des_photo:"Обработка фото",
+    c1_type:"CRM Система",c1_title:"CRM для управления бизнесом и контроля оплат",
+    c1_desc:"Система для контроля оплат, менеджеров и статистики. Панель администратора и менеджера, учёт фактических и потенциальных оплат, аналитика по проектам, сравнение менеджеров и цели.",
+    c1_f1:"Канбан-доска с задачами (создание / удаление / перемещение)",c1_f2:"Аналитика менеджеров и контроль оплат",
+    c1_f3:"Статистика, сравнение проектов, учёт закрытых задач",c1_f4:"Загрузка / выгрузка файлов, таблицы данных",c1_f5:"Адаптивный дизайн под все устройства",
+    c2_type:"Лендинг",c2_title:"Лендинг для товара",
+    c2_desc:"Одностраничный сайт для одного товара с полной информацией о продукте. Преимущества для целевой аудитории, различные виды заказа товара, быстрый каталог и адаптивный дизайн под все устройства. Интеграция с Telegram для отправки заявок. Это один из множества созданных мной лендингов.",
+    c2_f1:"Адаптивный дизайн под все экраны",c2_f2:"Быстрый каталог товаров",c2_f3:"Преимущества для целевой аудитории",c2_f4:"Различные виды заказа товара",
+    c3_type:"Сайт курса",c3_title:"Онлайн-курс по товарному бизнесу",
+    c3_desc:"Разработка и верстка высококонверсионного одностраничного сайта для онлайн-курса по запуску товарного бизнеса и работе с Китаем. Проект выполнен в трендовом темном UI-стиле с премиальными акцентами. Структура полностью mobile-first, логически разбита на ключевые блоки (оффер, программа, тарифы, кейсы) и оптимизирована под быструю лидогенерацию.",
+    c3_f1:"Высококонверсионный одностраничный сайт",c3_f2:"Трендовый темный UI-стиль",c3_f3:"Mobile-first структура",c3_f4:"Оптимизация под лидогенерацию",
+    c_detail:"Посмотреть кейс",c_view:"Посмотреть проект (гость)",c_code:"Код по запросу",
+    a_label:"Обо мне",a_title:"Коротко о главном",
+    a_desc1:"Я веб-разработчик Влад. Создаю сайты и выстраиваю системы для бизнеса с нуля. Код пишу самостоятельно — без конструкторов.",
+    a_desc2:"Работаю быстро и по делу — простые проекты за 2-3 дня, сложные обсуждаем отдельно. Все сроки и дедлайны соблюдаю.",
+    af1_t:"Чистый код",af1_d:"Пишу код сам, без конструкторов и шаблонов",
+    af2_t:"Быстрые сроки",af2_d:"2-3 дня на простой проект, сложные — по договорённости",
+    af3_t:"Адаптивность",af3_d:"Все проекты работают на любых устройствах",
+    af4_t:"Дедлайны",af4_d:"Фиксирую сроки и всегда их соблюдаю",
+    p_label:"Цены",p_title:"Стоимость услуг",p_sub:"Ориентировочные цены — финальная стоимость фиксируется перед стартом",
+    pr1_t:"Лендинг",pr1_note:"1 страница",pr1_f1:"Продающий дизайн",pr1_f2:"Адаптив под все устройства",pr1_f3:"Быстрая загрузка",pr1_f4:"Сдача за 2-3 дня",
+    pr2_t:"Многостраничный сайт",pr2_note:"несколько страниц",pr2_f1:"Модули и тарифы",pr2_f2:"Продуманная структура",pr2_f3:"Адаптив и анимации",pr2_f4:"Помогу собрать ТЗ",
+    pr3_t:"CRM / Система",pr3_note:"зависит от сложности",pr3_f1:"CRM с аналитикой",pr3_f2:"Интеграция Google Sheets",pr3_f3:"Учёт оплат и менеджеров",pr3_f4:"Полная кастомизация",
+    price_from:"от",pr_cta:"Обсудить проект",p_info:"Финальная стоимость обсуждается и фиксируется перед стартом работы. Если в процессе добавляются дополнительные функции — стоимость корректируется по договорённости.",
+    calc_label:"Калькулятор проекта",calc_title:"Рассчитайте стоимость",calc_sub:"Выберите тип проекта и дополнительные функции для предварительной оценки",
+    calc_type_title:"Тип проекта",calc_landing:"Лендинг",calc_multipage:"Многостраничный сайт",calc_crm:"CRM / Система",
+    calc_addons_title:"Дополнительные функции",calc_seo:"SEO оптимизация",calc_analytics:"Google Analytics",calc_chat:"Чат-бот",calc_multilang:"Мультиязычность",calc_animation:"Кастомные анимации",calc_cms:"Панель управления",calc_sheets:"Google Sheets",calc_api:"API интеграции",
+    calc_total:"Итого:",calc_order:"Обсудить проект",calc_note:"Это ориентировочная цена. Финальная стоимость обсуждается индивидуально и зависит от требований проекта.",
+    fn_title:"Хотите узнать цену проекта?",fn_subtitle:"Используйте калькулятор для предварительной оценки",
+    sup_label:"Поддержка проекта",sup_title:"Полная забота о вашем проекте",sup_sub:"Запуск на платный хостинг и техподдержка",
+    sup_host_title:"Платный хостинг",sup_host_desc:"Запуск проекта на надёжном платном хостинге с SSL сертификатом. Высокая скорость работы и 99.9% uptime.",sup_host_f1:"SSL сертификат бесплатно",sup_host_f2:"Автоматические бэкапы",sup_host_f3:"24/7 мониторинг",
+    sup_tech_title:"Техподдержка",sup_tech_desc:"Минимальные правки + хостинг. Большие правки по дополнительной стоимости.",sup_tech_f1:"Исправление багов",sup_tech_f2:"Минимальные правки",sup_tech_f3:"Включён хостинг",
+    sup_info:"Можно выбрать отдельные услуги или комплексный пакет. Стоимость обсуждается индивидуально в зависимости от требований проекта.",
+    ct_title:"Готовы обсудить проект?",ct_sub:"Напишите в Telegram — отвечаю быстро. Обсудим задачу, сроки и стоимость.",
+    faq_label:"Частые вопросы",faq_title:"Ответы на популярные вопросы",
+    faq_q1:"Сколько времени занимает разработка сайта?",faq_a1:"Лендинг — примерно 2-3 дня. Многостраничный сайт — 5-10 дней. CRM или сложная система — обсуждается индивидуально. Сроки могут варьироваться в зависимости от требований проекта.",
+    faq_q2:"Что входит в стоимость?",faq_a2:"Разработка уникального дизайна и стиля. Полностью кодовый сайт, готовый к запуску со всеми необходимыми подключениями. Адаптив под все устройства, SEO оптимизация. Уникальные фотографии, визуальные элементы и стили, соответствующие вашему бренду.",
+    faq_q3:"Как происходит оплата?",faq_a3:"Оплата поэтапно: 50% предоплата перед стартом, 50% после сдачи проекта. Возможны другие варианты по договорённости. Финальная стоимость фиксируется перед началом работы.",
+    faq_q4:"Нужен ли хостинг и домен?",faq_a4:"Размещение на хостинге и регистрация домена — это дополнительные услуги. Я могу помочь с запуском на платном хостинге за отдельную плату. Также вы можете разместить сайт на любом другом хостинге по своему выбору.",
+    faq_q5:"Предоставляете ли техподдержку после запуска?",faq_a5:"Да, есть отдельные услуги техподдержки и платного хостинга. Минимальные правки и хостинг — $40/мес. Большие правки обсуждаются дополнительно. Можем обсудить индивидуальный пакет поддержки.",
+    faq_q6:"Как происходит процесс работы?",faq_a6:"Сначала обсуждаем задачу и требования. Затем создаю дизайн, согласовываем с вами. После утверждения верстаю сайт и программирую функционал. Провожу тестирование и сдачу проекта с передачей всех доступов.",
+    faq_q7:"Можно ли вносить правки после запуска?",faq_a7:"Да, можно вносить правки и изменения после запуска. Минимальные правки входят в техподдержку. Большие изменения и новый функционал обсуждаются и оплачиваются отдельно в зависимости от объёма работы.",
+    ft_copy:"© 2026 Влад. Веб-разработка.",
+    pr_badge:"Популярное",
+    per_month:"мес"
+  },
+  uk:{
+    w_hi:"Привіт!",w_sub:"Веб-розробник. Створюю сайти та CRM-системи для бізнесу з нуля.",
+    w_choose:"Оберіть мову",w_enter:"Увійти в портфоліо",
+    nav_services:"Послуги",nav_process:"Процес",nav_cases:"Кейси",nav_about:"Про мене",nav_price:"Ціни",nav_calc:"Калькулятор",nav_support:"Підтримка",
+    nav_tg:"Telegram",nav_tg_mob:"Telegram →",
+    h_open:"Відкритий для проектів",h_name:"Влад",h_role:"веб-розробник",
+    h_desc:"Створюю сайти та CRM-системи для бізнесу з нуля. Код пишу самостійно — без конструкторів. Працюю швидко і по справі.",
+    h_btn1:"Дивитись кейси",h_btn2:"Написати в Telegram",
+    h_s1:"Проектів",h_s2:"Дні на проект",h_s3:"Код без конструкторів",
+    fb1:"Дедлайни дотримую",fb2:"Чистий код",fb3:"Адаптив",
+    s_label:"Послуги",s_title:"Що я створюю",s_sub:"Сайти та системи для бізнесу — від лендингу до повноцінної CRM з аналітикою",
+    sv1_t:"Лендинги",sv1_d:"Продаючі односторінкові сайти для товарів, послуг та курсів. Швидке завантаження та адаптив.",sv1_tag1:"Товари",sv1_tag2:"Послуги",sv1_tag3:"Курси",
+    sv2_t:"Сайти з тарифами",sv2_d:"Багатосторінкові сайти для курсів та навчання: модулі, пакети, доступи, тарифи.",sv2_tag1:"Модулі",sv2_tag2:"Тарифи",sv2_tag3:"Доступи",
+    sv3_t:"CRM системи",sv3_d:"Системи управління клієнтами, заявками, оплатами. Аналітика менеджерів та інтеграції.",sv3_tag2:"Аналітика",sv3_tag3:"Оплати",
+    sv4_t:"Редизайн сайтів",sv4_d:"Оновлення зовнішнього вигляду та зручності існуючих сайтів. Нове життя старому проекту.",sv4_tag2:"Оптимізація",
+    sv5_t:"Дизайн та обробка",sv5_d:"Дизайн сайту з нуля, обробка фото в Photoshop, підготовка візуалу під проект.",sv5_tag2:"Візуал",
+    sv6_t:"Інтеграції",sv6_d:"Підключення Google Sheets, облік оплат, контроль менеджерів — все в одній системі.",sv6_tag2:"Таблиці",sv6_tag3:"Автоматизація",
+    proc_label:"Як я працюю",proc_title:"Процес розробки",proc_sub:"Прозорий процес від ідеї до запуску",
+    proc_1_t:"Обговорення",proc_1_d:"Уточнюю ваші цілі, цільову аудиторію та побажання щодо дизайну. Визначаємо структуру і функціонал сайту. Фіксуємо ТЗ.",
+    proc_2_t:"Дизайн",proc_2_d:"Створюю унікальний дизайн, погоджую кожен екран. Вносимо правки до повного затвердження. Ви бачите результат до верстки.",
+    proc_3_t:"Верстка",proc_3_d:"Перетворюю макет на живий сайт: чистий код, анімації та адаптив під усі пристрої. Оптимізую швидкість завантаження.",
+    proc_4_t:"Запуск",proc_4_d:"Віддаю готовий проект, пояснюю як все працює. Передаю повні доступи.",
+    c_label:"Кейси",c_title:"Мої проекти",c_sub:"Реальні проекти — сайти та системи, що працюють",c_note:"Це одні з наймасштабніших та найцікавіших проектів. Повний список за запитом.",
+    sl_main:"Головний екран",sl_ana:"Аналітика",sl_mob:"Мобільна версія",sl_prod:"Для кого підходить",sl_mod:"Модулі та тарифи",sl_des:"Дизайн сайту",sl_photo:"Обробка фото",sl_land_feat:"Види споруд",sl_land_order:"Оформлення замовлення",
+    sl_mgr_main:"Головний екран менеджера",sl_adm_main:"Головний екран адміністратора",sl_adm_ana:"Аналітика адміністратора",sl_crm_mob:"Мобільна версія",sl_land_main:"Головний екран лендингу",sl_land_prod:"Картки товарів",sl_crs_main:"Головний екран курсу",sl_crs_mod:"Модулі та тарифи",sl_des_main:"Дизайн сайту",sl_des_photo:"Обробка фото",
+    c1_type:"CRM Система",c1_title:"CRM для управління бізнесом і контролю оплат",
+    c1_desc:"Система для контролю оплат, менеджерів і статистики. Панель адміністратора і менеджера, облік фактичних і потенційних оплат, аналітика по проектах, порівняння менеджерів і цілі.",
+    c1_f1:"Канбан-дошка із завданнями (створення / видалення / переміщення)",c1_f2:"Аналітика менеджерів та контроль оплат",
+    c1_f3:"Статистика, порівняння проектів, облік закритих задач",c1_f4:"Завантаження / вивантаження файлів, таблиці даних",c1_f5:"Адаптивний дизайн під всі пристрої",
+    c2_type:"Лендинг",c2_title:"Лендинг для товару",
+    c2_desc:"Односторінковий сайт для одного товару з повною інформацією про продукт. Переваги для цільової аудиторії, різні види замовлення товару, швидкий каталог та адаптивний дизайн під всі пристрої. Інтеграція з Telegram для відправки заявок. Це один із багатьох створених мною лендингів.",
+    c2_f1:"Адаптивний дизайн під всі екрани",c2_f2:"Швидкий каталог товарів",c2_f3:"Переваги для цільової аудиторії",c2_f4:"Різні види замовлення товару",
+    c3_type:"Сайт курсу",c3_title:"Онлайн-курс з товарного бізнесу",
+    c3_desc:"Розробка та верстка висококонверсійного односторінкового сайту для онлайн-курсу з запуску товарного бізнесу та роботи з Китаєм. Проект виконано в трендовому темному UI-стилі з преміальними акцентами. Структура повністю mobile-first, логічно розбита на ключові блоки (оффер, програма, тарифи, кейси) та оптимізована під швидку лідогенерацію.",
+    c3_f1:"Висококонверсійний односторінковий сайт",c3_f2:"Трендовий темний UI-стиль",c3_f3:"Mobile-first структура",c3_f4:"Оптимізація під лідогенерацію",
+    c_detail:"Переглянути кейс",c_view:"Переглянути проект (гість)",c_code:"Код за запитом",
+    a_label:"Про мене",a_title:"Коротко про головне",
+    a_desc1:"Я веб-розробник Влад. Створюю сайти та вибудовую системи для бізнесу з нуля. Код пишу самостійно — без конструкторів.",
+    a_desc2:"Працюю швидко і по справі — прості проекти за 2-3 дні, складніші обговорюємо окремо. Всі терміни та дедлайни дотримую.",
+    af1_t:"Чистий код",af1_d:"Пишу код сам, без конструкторів та шаблонів",
+    af2_t:"Швидкі терміни",af2_d:"2-3 дні на простий проект, складні — за домовленістю",
+    af3_t:"Адаптивність",af3_d:"Всі проекти працюють на будь-яких пристроях",
+    af4_t:"Дедлайни",af4_d:"Фіксую терміни та завжди їх дотримую",
+    p_label:"Ціни",p_title:"Вартість послуг",p_sub:"Орієнтовні ціни — фінальна вартість фіксується перед стартом",
+    pr1_t:"Лендинг",pr1_note:"1 сторінка",pr1_f1:"Продаючий дизайн",pr1_f2:"Адаптив під всі пристрої",pr1_f3:"Швидке завантаження",pr1_f4:"Здача за 2-3 дні",
+    pr2_t:"Багатосторінковий сайт",pr2_note:"кілька сторінок",pr2_f1:"Модулі та тарифи",pr2_f2:"Продумана структура",pr2_f3:"Адаптив та анімації",pr2_f4:"Допоможу зібрати ТЗ",
+    pr3_t:"CRM / Система",pr3_note:"залежить від складності",pr3_f1:"CRM з аналітикою",pr3_f2:"Інтеграція Google Sheets",pr3_f3:"Облік оплат та менеджерів",pr3_f4:"Повна кастомізація",
+    price_from:"від",pr_cta:"Обговорити проект",p_info:"Фінальна вартість обговорюється та фіксується перед стартом роботи. Якщо в процесі додаються додаткові функції — вартість коригується за домовленістю.",
+    calc_label:"Калькулятор проекту",calc_title:"Розрахуйте вартість",calc_sub:"Оберіть тип проекту та додаткові функції для попередньої оцінки",
+    calc_type_title:"Тип проекту",calc_landing:"Лендинг",calc_multipage:"Багатосторінковий сайт",calc_crm:"CRM / Система",
+    calc_addons_title:"Додаткові функції",calc_seo:"SEO оптимізація",calc_analytics:"Google Analytics",calc_chat:"Чат-бот",calc_multilang:"Багатомовність",calc_animation:"Кастомні анімації",calc_cms:"Панель керування",calc_sheets:"Google Sheets",calc_api:"API інтеграції",
+    calc_total:"Разом:",calc_order:"Обговорити проект",calc_note:"Це орієнтовна ціна. Фінальна вартість обговорюється індивідуально і залежить від вимог проекту.",
+    fn_title:"Хочете дізнатися ціну проекту?",fn_subtitle:"Використайте калькулятор для попередньої оцінки",
+    sup_label:"Підтримка проекту",sup_title:"Повна турбота про ваш проект",sup_sub:"Запуск на платний хостинг і техпідтримка",
+    sup_host_title:"Платний хостинг",sup_host_desc:"Запуск проекту на надійному платному хостингу з SSL сертифікатом. Висока швидкість роботи та 99.9% uptime.",sup_host_f1:"SSL сертифікат безкоштовно",sup_host_f2:"Автоматичні бекапи",sup_host_f3:"24/7 моніторинг",
+    sup_tech_title:"Техпідтримка",sup_tech_desc:"Мінімальні правки + хостинг. Великі правки за додатковою вартістю.",sup_tech_f1:"Виправлення багів",sup_tech_f2:"Мінімальні правки",sup_tech_f3:"Включено хостинг",
+    sup_info:"Можна обрати окремі послуги або комплексний пакет. Вартість обговорюється індивідуально залежно від вимог проекту.",
+    ct_title:"Готові обговорити проект?",ct_sub:"Напишіть у Telegram — відповідаю швидко. Обговоримо задачу, терміни та вартість.",
+    faq_label:"Часті питання",faq_title:"Відповіді на популярні питання",
+    faq_q1:"Скільки часу займає розробка сайту?",faq_a1:"Лендинг — приблизно 2-3 дні. Багатосторінковий сайт — 5-10 днів. CRM або складна система — обговорюється індивідуально. Терміни можуть варіюватися залежно від вимог проекту.",
+    faq_q2:"Що входить у вартість?",faq_a2:"Розробка унікального дизайну та стилю. Повністю кодовий сайт, готовий до запуску з усіма необхідними підключеннями. Адаптив під всі пристрої, SEO оптимізація. Унікальні фотографії, візуальні елементи та стилі, що відповідають вашому бренду.",
+    faq_q3:"Як відбувається оплата?",faq_a3:"Оплата поетапно: 50% передоплата перед стартом, 50% після здачі проекту. Можливі інші варіанти за домовленістю. Фінальна вартість фіксується перед початком роботи.",
+    faq_q4:"Чи потрібен хостинг і домен?",faq_a4:"Розміщення на хостингу та реєстрація домену — це додаткові послуги. Можу допомогти із запуском на платному хостингу за окрему плату. Також ви можете розмістити сайт на будь-якому іншому хостингу на свій вибір.",
+    faq_q5:"Надаєте техпідтримку після запуску?",faq_a5:"Так, є окремі послуги техпідтримки та платного хостингу. Мінімальні правки та хостинг — $40/міс. Великі правки обговорюються додатково. Можемо обговорити індивідуальний пакет підтримки.",
+    faq_q6:"Як відбувається процес роботи?",faq_a6:"Спочатку обговорюємо задачу та вимоги. Потім створюю дизайн, погоджуємо з вами. Після затвердження вертаю сайт і програмую функціонал. Проводжу тестування та здачу проекту з передачею всіх доступів.",
+    faq_q7:"Чи можна вносити правки після запуску?",faq_a7:"Так, можна вносити правки та зміни після запуску. Мінімальні правки входять у техпідтримку. Великі зміни та новий функціонал обговорюються та оплачуються окремо залежно від обсягу роботи.",
+    ft_copy:"© 2026 Влад. Веб-розробка.",
+    pr_badge:"Популярне",
+    per_month:"міс"
+  },
+  en:{
+    w_hi:"Hello!",w_sub:"Web developer. I build websites and CRM systems for businesses from scratch.",
+    w_choose:"Choose language",w_enter:"Enter portfolio",
+    nav_services:"Services",nav_process:"Process",nav_cases:"Cases",nav_about:"About",nav_price:"Pricing",nav_calc:"Calculator",nav_support:"Support",
+    nav_tg:"Telegram",nav_tg_mob:"Telegram →",
+    h_open:"Available for projects",h_name:"Vlad",h_role:"web developer",
+    h_desc:"I build websites and CRM systems for businesses from scratch. I write code myself — no builders. Fast and professional.",
+    h_btn1:"View cases",h_btn2:"Message on Telegram",
+    h_s1:"Projects",h_s2:"Days per project",h_s3:"Code without builders",
+    fb1:"Deadlines met",fb2:"Clean code",fb3:"Responsive",
+    s_label:"Services",s_title:"What I create",s_sub:"Websites and systems for business — from landing pages to full CRM with analytics",
+    sv1_t:"Landing pages",sv1_d:"Selling one-page sites for products, services and courses. Fast loading and responsive.",sv1_tag1:"Products",sv1_tag2:"Services",sv1_tag3:"Courses",
+    sv2_t:"Sites with pricing",sv2_d:"Multi-page sites for courses and education: modules, packages, access, pricing.",sv2_tag1:"Modules",sv2_tag2:"Pricing",sv2_tag3:"Access",
+    sv3_t:"CRM systems",sv3_d:"Client management systems, requests, payments. Manager analytics and integrations.",sv3_tag2:"Analytics",sv3_tag3:"Payments",
+    sv4_t:"Website redesign",sv4_d:"Updating the look and usability of existing sites. New life for old projects.",sv4_tag2:"Optimization",
+    sv5_t:"Design & editing",sv5_d:"Website design from scratch, photo editing in Photoshop, visual prep for projects.",sv5_tag2:"Visuals",
+    sv6_t:"Integrations",sv6_d:"Google Sheets connection, payment tracking, manager control — all in one system.",sv6_tag2:"Spreadsheets",sv6_tag3:"Automation",
+    proc_label:"How I work",proc_title:"Development process",proc_sub:"A transparent process from idea to launch",
+    proc_1_t:"Discovery",proc_1_d:"I learn your goals, target audience and design preferences. We define the website structure and features. Then we lock the brief.",
+    proc_2_t:"Design",proc_2_d:"I create unique design and align each screen with you. We make revisions until approval. You see the result before coding.",
+    proc_3_t:"Development",proc_3_d:"I turn the design into a live website: clean code, animations and full responsiveness. I also optimize loading speed.",
+    proc_4_t:"Launch",proc_4_d:"I deliver the ready project and explain how everything works. I hand over full access.",
+    c_label:"Cases",c_title:"My projects",c_sub:"Real projects — websites and systems that work",c_note:"These are some of the most large-scale and interesting projects. Full list on request.",
+    sl_main:"Main screen",sl_ana:"Analytics",sl_mob:"Mobile version",sl_prod:"Who is it for",sl_mod:"Modules & pricing",sl_des:"Website design",sl_photo:"Photo editing",sl_land_feat:"Construction types",sl_land_order:"Order formation",
+    sl_mgr_main:"Manager Main Screen",sl_adm_main:"Admin Main Screen",sl_adm_ana:"Admin Analytics",sl_crm_mob:"Mobile Version",sl_land_main:"Landing Main Screen",sl_land_prod:"Product Cards",sl_crs_main:"Course Main Screen",sl_crs_mod:"Modules & Pricing",sl_des_main:"Website Design",sl_des_photo:"Photo Editing",
+    c1_type:"CRM System",c1_title:"CRM for business management and payment control",
+    c1_desc:"System for controlling payments, managers and statistics. Admin and manager panels, tracking actual and potential payments, project analytics, manager comparison and goals.",
+    c1_f1:"Kanban board with tasks (create / delete / move)",c1_f2:"Manager analytics and payment control",
+    c1_f3:"Statistics, project comparison, closed task tracking",c1_f4:"File upload / export, data tables",c1_f5:"Responsive design for all devices",
+    c2_type:"Landing page",c2_title:"Product landing page",
+    c2_desc:"Single-page website for one product with complete product information. Benefits for target audience, different types of product ordering, fast catalog and responsive design for all devices. Telegram integration for sending requests. This is one of many landing pages I've created.",
+    c2_f1:"Responsive design for all screens",c2_f2:"Fast product catalog",c2_f3:"Benefits for target audience",c2_f4:"Different types of product ordering",
+    c3_type:"Course website",c3_title:"Product business online course",
+    c3_desc:"Development and coding of a high-converting single-page website for an online course on launching product business and working with China. The project is executed in a trendy dark UI style with premium accents. The structure is fully mobile-first, logically divided into key blocks (offer, program, pricing, cases) and optimized for fast lead generation.",
+    c3_f1:"High-converting single-page website",c3_f2:"Trendy dark UI style",c3_f3:"Mobile-first structure",c3_f4:"Optimized for lead generation",
+    c_detail:"View case",c_view:"View project (guest)",c_code:"Code on request",
+    a_label:"About",a_title:"In brief",
+    a_desc1:"I'm Vlad, a web developer. I build websites and systems for businesses from scratch. I write code myself — no builders.",
+    a_desc2:"I work fast and professionally — simple projects in 2-3 days, complex ones we discuss separately. All deadlines are met.",
+    af1_t:"Clean code",af1_d:"I write code myself, without builders or templates",
+    af2_t:"Fast delivery",af2_d:"2-3 days for simple projects, complex ones by agreement",
+    af3_t:"Responsive",af3_d:"All projects work on any device",
+    af4_t:"Deadlines",af4_d:"I fix deadlines and always meet them",
+    p_label:"Pricing",p_title:"Service pricing",p_sub:"Estimated prices — final cost is fixed before start",
+    pr1_t:"Landing page",pr1_note:"1 page",pr1_f1:"Selling design",pr1_f2:"Responsive for all devices",pr1_f3:"Fast loading",pr1_f4:"Delivered in 2-3 days",
+    pr2_t:"Multi-page website",pr2_note:"multiple pages",pr2_f1:"Modules and pricing",pr2_f2:"Thoughtful structure",pr2_f3:"Responsive and animations",pr2_f4:"I'll help with the brief",
+    pr3_t:"CRM / System",pr3_note:"depends on complexity",pr3_f1:"CRM with analytics",pr3_f2:"Google Sheets integration",pr3_f3:"Payment and manager tracking",pr3_f4:"Full customization",
+    price_from:"from",pr_cta:"Discuss project",p_info:"The final cost is discussed and fixed before the start of work. If additional features are added during the process — the cost is adjusted by agreement.",
+    calc_label:"Project Calculator",calc_title:"Calculate the cost",calc_sub:"Choose project type and additional features for preliminary estimate",
+    calc_type_title:"Project Type",calc_landing:"Landing page",calc_multipage:"Multi-page website",calc_crm:"CRM / System",
+    calc_addons_title:"Additional Features",calc_seo:"SEO optimization",calc_analytics:"Google Analytics",calc_chat:"Chat-bot",calc_multilang:"Multi-language",calc_animation:"Custom animations",calc_cms:"Control panel",calc_sheets:"Google Sheets",calc_api:"API integrations",
+    calc_total:"Total:",calc_order:"Discuss project",calc_note:"This is an estimated price. The final cost is discussed individually and depends on project requirements.",
+    fn_title:"Want to know the project price?",fn_subtitle:"Use the calculator for a preliminary estimate",
+    sup_label:"Project Support",sup_title:"Full care for your project",sup_sub:"Launch on paid hosting and tech support",
+    sup_host_title:"Paid Hosting",sup_host_desc:"Launch project on reliable paid hosting with SSL certificate. High performance and 99.9% uptime.",sup_host_f1:"SSL certificate free",sup_host_f2:"Automatic backups",sup_host_f3:"24/7 monitoring",
+    sup_tech_title:"Tech Support",sup_tech_desc:"Minimal fixes + hosting. Major fixes at additional cost.",sup_tech_f1:"Bug fixes",sup_tech_f2:"Minimal fixes",sup_tech_f3:"Hosting included",
+    sup_info:"You can choose individual services or a comprehensive package. Cost is discussed individually depending on project requirements.",
+    ct_title:"Ready to discuss your project?",ct_sub:"Message me on Telegram — I reply fast. We'll discuss the task, timeline and cost.",
+    faq_label:"FAQ",faq_title:"Answers to popular questions",
+    faq_q1:"How long does website development take?",faq_a1:"Landing page — approximately 2-3 days. Multi-page website — 5-10 days. CRM or complex system — discussed individually. Timelines may vary depending on project requirements.",
+    faq_q2:"What's included in the cost?",faq_a2:"Unique design and style development. Fully coded website, ready to launch with all necessary connections. Responsive for all devices, SEO optimization. Unique photos, visual elements and styles that match your brand.",
+    faq_q3:"How does payment work?",faq_a3:"Payment in stages: 50% prepayment before start, 50% after project completion. Other options are available by agreement. Final cost is fixed before work begins.",
+    faq_q4:"Do I need hosting and domain?",faq_a4:"Hosting placement and domain registration are additional services. I can help with launch on paid hosting for a separate fee. You can also host the site on any other hosting of your choice.",
+    faq_q5:"Do you provide technical support after launch?",faq_a5:"Yes, there are separate technical support and paid hosting services. Minimal fixes and hosting — $40/month. Major fixes are discussed additionally. We can discuss an individual support package.",
+    faq_q6:"How does the work process work?",faq_a6:"First we discuss the task and requirements. Then I create the design and agree it with you. After approval, I code the site and program the functionality. I conduct testing and project handover with transfer of all access.",
+    faq_q7:"Can I make edits after launch?",faq_a7:"Yes, you can make edits and changes after launch. Minimal fixes are included in technical support. Major changes and new functionality are discussed and paid separately depending on the scope of work.",
+    ft_copy:"© 2026 Vlad. Web development.",
+    pr_badge:"Popular",
+    per_month:"month"
+  }
+};
+
+// ===== CURRENT LANG =====
+let currentLang = localStorage.getItem('portfolioLang') || 'ru';
+
+function setLang(lang, fromWelcome = false) {
+  currentLang = lang;
+  const t = T[lang];
+
+  // Save language to localStorage
+  localStorage.setItem('portfolioLang', lang);
+
+  // Update all data-key elements
+  document.querySelectorAll('[data-key]').forEach(el => {
+    const key = el.dataset.key;
+    if (t[key] !== undefined) el.textContent = t[key];
+  });
+
+  // Update featured pricing badge
+  const featCard = document.querySelector('.price-card.feat');
+  if (featCard) featCard.dataset.badge = t.pr_badge;
+
+  // Update all lang buttons
+  document.querySelectorAll('.lang-btn, .w-lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
+
+  // Update lightbox info if open
+  if (lightbox.classList.contains('active') && currentImages[currentIndex]) {
+    updateLightboxInfo(currentImages[currentIndex].alt);
+  }
+}
+
+// ===== WELCOME SCREEN =====
+function enterSite() {
+  const ws = document.getElementById('welcomeScreen');
+  ws.classList.add('hide');
+  setTimeout(() => { ws.style.display = 'none'; }, 800);
+  document.body.style.overflow = '';
+  localStorage.setItem('portfolioEntered', 'true');
+}
+
+// Check if user already entered
+if (localStorage.getItem('portfolioEntered') === 'true') {
+  document.getElementById('welcomeScreen').style.display = 'none';
+  document.body.style.overflow = '';
+} else {
+  // Prevent scroll while welcome is shown
+  document.body.style.overflow = 'hidden';
+}
+
+// Generate particles
+(function(){
+  const container = document.getElementById('wParticles');
+  for(let i = 0; i < 30; i++) {
+    const p = document.createElement('div');
+    p.className = 'w-particle';
+    p.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${4+Math.random()*8}s;animation-delay:${Math.random()*5}s;width:${1+Math.random()*3}px;height:${1+Math.random()*3}px;`;
+    container.appendChild(p);
+  }
+})();
+
+// ===== CURSOR GLOW =====
+const cursorGlow = document.getElementById('cursorGlow');
+if(window.innerWidth > 768) {
+  document.addEventListener('mousemove', e => {
+    cursorGlow.style.left = e.clientX + 'px';
+    cursorGlow.style.top = e.clientY + 'px';
+  });
+}
+
+// ===== PARTICLE SYSTEM =====
+const particleCanvas = document.getElementById('particleCanvas');
+const ctx = particleCanvas.getContext('2d');
+let particles = [];
+let mouseX = 0, mouseY = 0;
+
+function resizeCanvas() {
+  particleCanvas.width = window.innerWidth;
+  particleCanvas.height = window.innerHeight;
+}
+
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+document.addEventListener('mousemove', e => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+});
+
+class Particle {
+  constructor() {
+    this.reset();
+  }
+
+  reset() {
+    this.x = Math.random() * particleCanvas.width;
+    this.y = Math.random() * particleCanvas.height;
+    this.size = Math.random() * 2 + 0.5;
+    this.speedX = (Math.random() - 0.5) * 0.5;
+    this.speedY = (Math.random() - 0.5) * 0.5;
+    this.opacity = Math.random() * 0.5 + 0.2;
+    this.color = Math.random() > 0.5 ? '108, 92, 231' : '0, 206, 201';
+  }
+
+  update() {
+    // Mouse interaction
+    const dx = mouseX - this.x;
+    const dy = mouseY - this.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    
+    if (distance < 150) {
+      const force = (150 - distance) / 150;
+      this.x -= dx * force * 0.02;
+      this.y -= dy * force * 0.02;
+    }
+
+    // Regular movement
+    this.x += this.speedX;
+    this.y += this.speedY;
+
+    // Wrap around screen
+    if (this.x < 0) this.x = particleCanvas.width;
+    if (this.x > particleCanvas.width) this.x = 0;
+    if (this.y < 0) this.y = particleCanvas.height;
+    if (this.y > particleCanvas.height) this.y = 0;
+  }
+
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${this.color}, ${this.opacity})`;
+    ctx.fill();
+  }
+}
+
+// Create particles
+const particleCount = window.innerWidth > 768 ? 80 : 40;
+for (let i = 0; i < particleCount; i++) {
+  particles.push(new Particle());
+}
+
+// Draw connections between particles
+function drawConnections() {
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (distance < 120) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(108, 92, 231, ${0.15 * (1 - distance / 120)})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+// Animation loop
+function animateParticles() {
+  ctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+  
+  particles.forEach(particle => {
+    particle.update();
+    particle.draw();
+  });
+  
+  drawConnections();
+  
+  requestAnimationFrame(animateParticles);
+}
+
+if(window.innerWidth > 768) {
+  animateParticles();
+}
+
+// ===== NAV SCROLL =====
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// ===== MOBILE MENU =====
+const burger = document.getElementById('navBurger');
+const mobileMenu = document.getElementById('mobileMenu');
+burger.addEventListener('click', () => {
+  burger.classList.toggle('active');
+  mobileMenu.classList.toggle('active');
+  document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+});
+document.querySelectorAll('.mobile-link').forEach(link => {
+  link.addEventListener('click', () => {
+    burger.classList.remove('active');
+    mobileMenu.classList.remove('active');
+    document.body.style.overflow = '';
+  });
+});
+
+// Описания для CRM экранов
+const crmDescriptions = {
+  ru: {
+    'Главный экран менеджера': {
+      title: 'Главный экран менеджера',
+      description: 'Центральная панель управления для ежедневной работы с проектами и платежами',
+      features: [
+        '🎯 Установка целей на месяц и плана на день',
+        '📊 Просмотр статистики - месячной и за все время',
+        '💰 Информация о количестве оплат и заработке',
+        '📈 Графики роста заработка и аналитика',
+        '🔮 Просмотр прогнозов и аналитики по проектам',
+        '➕ Добавление оплат с указанием суммы и деталей',
+        '✏️ Редактирование и удаление оплат при необходимости',
+        '💳 Управление выплатами по проектам',
+        '📝 Добавление новых проектов и удаление завершенных',
+        '💲 Расчет выплат по проектам и суммам'
+      ]
+    },
+    'Добавление оплат': {
+      title: 'Управление оплатами',
+      description: 'Добавление и редактирование платежей от клиентов',
+      features: [
+        '➕ Добавление новой оплаты',
+        '✏️ Редактирование существующих платежей',
+        '💳 Привязка к клиенту и проекту',
+        '📅 Установка даты платежа',
+        '🏷️ Категоризация платежей'
+      ]
+    },
+    'Главный экран админа': {
+      title: 'Панель администратора',
+      description: 'Детальная аналитика менеджеров и проектов с гибкими фильтрами',
+      features: [
+        '👥 Аналитика конкретных менеджеров или сравнение нескольких',
+        '📊 Сравнение проектов конкретного менеджера',
+        '📅 Выбор периода для анализа',
+        '🎯 Прогнозы, аналитика и статистика по всем данным',
+        '💰 Количество оплат и заработок по проектам',
+        '🏆 Рейтинг менеджеров: кто лучше/хуже на каком проекте',
+        '📈 Лучшие проекты по оплатам и заработку'
+      ]
+    },
+    'Аналитика админа': {
+      title: 'Аналитика и отчеты',
+      description: 'Детальная аналитика за все время с полным контролем над действиями менеджеров',
+      features: [
+        '📊 Период за все время: количество оплат и заработок',
+        '👥 Аналитика между менеджерами: кто какой проект, где заработал',
+        '📉 Выявление просадочных дней и периодов',
+        '✏️ Редактирование действий менеджеров',
+        '🔍 Поиск по лидам и истории',
+        '➕ Добавление оплат и управление транзакциями',
+        '📈 Полная статистика по всем данным'
+      ]
+    },
+    'Мобильная версия': {
+      title: 'Мобильная версия',
+      description: 'Полностью адаптивный интерфейс для работы с CRM на мобильных устройствах',
+      features: [
+        '📱 Оптимизированный интерфейс для смартфонов',
+        '🎯 Быстрый доступ к основным функциям',
+        '💰 Добавление оплат с телефона',
+        '📊 Просмотр статистики на ходу',
+        '📈 Аналитика в карманном формате',
+        '✏️ Редактирование данных в любое время',
+        '🔄 Синхронизация с desktop версией'
+      ]
+    },
+    'Главный экран лендинга': {
+      title: 'Главный экран лендинга',
+      description: 'Быстрая навигация сверху, презентация товара с анимацией, информация о продукте и целевой аудитории',
+      features: [
+        '🚀 Быстрая навигация по сайту',
+        '🎯 Презентация товара с анимацией',
+        '📋 Подробное описание продукта',
+        '👥 Информация о целевой аудитории',
+        '⏱️ Сроки создания и внедрения',
+        '💡 Объяснение преимуществ продукта',
+        '🎨 Визуальная демонстрация возможностей'
+      ]
+    },
+    'Карточки товаров': {
+      title: 'Для кого подходит',
+      description: 'Видео с детьми, архитектурные сценарии, анимация процесса сборки',
+      features: [
+        '👦 Дети демонстрируют процесс сборки',
+        '🏗️ Десятки архитектурных сценариев',
+        '🎬 Видеоинструкции по сборке',
+        '🎨 Разнообразие вариантов сооружений',
+        '⚙️ Анимация процесса создания',
+        '📋 Подробные инструкции по сборке',
+        '💡 Польза и преимущества продукта',
+        '📦 Комплектация наборов',
+        '👶 Развивающие функции для детей',
+        '🎯 Для какого возраста подходит'
+      ]
+    },
+    'Преимущества': {
+      title: 'Виды сооружений',
+      description: 'Сооружения доступные для заказа, комплектация наборов и фото-видео демонстрация',
+      features: [
+        '🏗️ Какие сооружения можно заказать',
+        '📦 Полная комплектация наборов',
+        '👶 Для какого возраста подходит',
+        '🎬 Видео демонстрация сборки',
+        '📸 Фото готовых конструкций',
+        '💡 Преимущества каждого вида',
+        '🔧 Инструкции по сборке',
+        '⚙️ Технические характеристики',
+        '🎯 Развивающие аспекты',
+        '💰 Цены и условия заказа'
+      ]
+    },
+    'Формирование заказа': {
+      title: 'Формирование заказа',
+      description: 'Конечная страница для оформления заказа с полной формой и FAQ',
+      features: [
+        '🎯 Краткий итог: кому подходит товар и для чего он нужен',
+        '📋 Подробная информация о продукте и его назначении',
+        '🧒 Что развивает товар: навыки, творчество, моторика',
+        '📝 Форма заказа: ФИО, номер телефона',
+        '🚚 Выбор доставки: Новая Почта, адрес отделения',
+        '📦 Выбор конкретного товара для заказа',
+        '💬 Комментарий к заказу',
+        '❓ Частые вопросы и ответы',
+        '✅ Простая и понятная форма заполнения',
+        '🔒 Безопасная обработка данных'
+      ]
+    },
+    'Главный экран курса': {
+      title: 'Главный экран курса',
+      description: 'Привлекательная страница онлайн-курса с программой обучения',
+      features: [
+        '📚 Структурированная программа курса',
+        '🎯 Четкое описание целей обучения',
+        '👥 Отзывы студентов',
+        '💎 Прозрачные тарифные планы',
+        '🚀 Быстрый старт обучения'
+      ]
+    },
+    'Модули и тарифы': {
+      title: 'Модули и тарифы',
+      description: 'Интерактивный выбор модулей и тарифных планов',
+      features: [
+        '📦 Модульная структура курса',
+        '💰 Тарифы: базовый / стандарт / премиум',
+        '🎁 Сравнение пакетов',
+        '🎯 Гибкая система доступа',
+        '💳 Удобная оплата'
+      ]
+    },
+    'Дизайн сайта': {
+      title: 'Дизайн сайта',
+      description: 'Современный и эстетичный дизайн с нуля',
+      features: [
+        '🎨 Уникальный визуальный стиль',
+        '📐 Соблюдение grid-системы',
+        '🎯 Удобная навигация',
+        '🌈 Гармоничная цветовая палитра',
+        '✨ Анимации и переходы'
+      ]
+    },
+    'Обработка фото': {
+      title: 'Обработка фото',
+      description: 'Профессиональная обработка и ретушь в Photoshop',
+      features: [
+        '📸 Цветокоррекция и ретушь',
+        '🎨 Удаление дефектов',
+        '✨ Улучшение качества',
+        '🖼️ Подготовка для веб',
+        '💾 Оптимизация размера'
+      ]
+    }
+  },
+  uk: {
+    'Главный экран менеджера': {
+      title: 'Головний екран менеджера',
+      description: 'Центральна панель управління для щоденної роботи з проектами та платежами',
+      features: [
+        '🎯 Встановлення цілей на місяць та плану на день',
+        '📊 Перегляд статистики - місячної та за весь час',
+        '💰 Інформація про кількість оплат та заробітку',
+        '📈 Графіки росту заробітку та аналітика',
+        '🔮 Перегляд прогнозів та аналітики по проектах',
+        '➕ Додавання оплат із зазначенням суми та деталей',
+        '✏️ Редагування та видалення оплат за необхідності',
+        '💳 Управління виплатами по проектах',
+        '📝 Додавання нових проектів та видалення завершених',
+        '💲 Розрахунок виплат по проектах та сумах'
+      ]
+    },
+    'Добавление оплат': {
+      title: 'Управління оплатами',
+      description: 'Додавання та редагування платежів від клієнтів',
+      features: [
+        '➕ Додавання нової оплати',
+        '✏️ Редагування існуючих платежів',
+        '💳 Прив\'язка до клієнта та проекту',
+        '📅 Встановлення дати платежу',
+        '🏷️ Категоризація платежів'
+      ]
+    },
+    'Главный экран админа': {
+      title: 'Панель адміністратора',
+      description: 'Детальна аналітика менеджерів та проектів з гнучкими фільтрами',
+      features: [
+        '👥 Аналітика конкретних менеджерів або порівняння кількох',
+        '📊 Порівняння проектів конкретного менеджера',
+        '📅 Вибір періоду для аналізу',
+        '🎯 Прогнози, аналітика та статистика по всіх даних',
+        '💰 Кількість оплат та заробітків по проектах',
+        '🏆 Рейтинг менеджерів: хто краще/гірше на якому проекті',
+        '📈 Кращі проекти по оплатах та заробітку'
+      ]
+    },
+    'Аналитика админа': {
+      title: 'Аналітика та звіти',
+      description: 'Детальна аналітика за весь час з повним контролем над діями менеджерів',
+      features: [
+        '📊 Період за весь час: кількість оплат та заробіток',
+        '👥 Аналітика між менеджерами: хто який проект, де заробив',
+        '📉 Виявлення просадочних днів та періодів',
+        '✏️ Редагування дій менеджерів',
+        '🔍 Пошук по лідах та історії',
+        '➕ Додавання оплат та управління транзакціями',
+        '📈 Повна статистика по всіх даних'
+      ]
+    },
+    'Мобильная версия': {
+      title: 'Мобільна версія',
+      description: 'Повністю адаптивний інтерфейс для роботи з CRM на мобільних пристроях',
+      features: [
+        '📱 Оптимізований інтерфейс для смартфонів',
+        '🎯 Швидкий доступ до основних функцій',
+        '💰 Додавання оплат з телефону',
+        '📊 Перегляд статистики на ходу',
+        '📈 Аналітика в кишеньковому форматі',
+        '✏️ Редагування даних у будь-який час',
+        '🔄 Синхронізація з desktop версією'
+      ]
+    },
+    'Главный экран лендинга': {
+      title: 'Головний екран лендингу',
+      description: 'Швидка навігація зверху, презентація товару з анімацією, інформація про продукт та цільову аудиторію',
+      features: [
+        '🚀 Швидка навігація по сайту',
+        '🎯 Презентація товару з анімацією',
+        '📋 Детальний опис продукту',
+        '👥 Інформація про цільову аудиторію',
+        '⏱️ Терміни створення та впровадження',
+        '💡 Пояснення переваг продукту',
+        '🎨 Візуальна демонстрація можливостей'
+      ]
+    },
+    'Карточки товаров': {
+      title: 'Для кого підходить',
+      description: 'Відео з дітьми, архітектурні сценарії, варіанти споруд, анімація процесу збирання',
+      features: [
+        '👦 Діти демонструють процес збирання',
+        '🏗️ Десятки архітектурних сценаріїв',
+        '🎬 Відеоінструкції зі збирання',
+        '🎨 Різноманіття варіантів споруд',
+        '⚙️ Анімація процесу створення',
+        '📋 Детальні інструкції зі збирання',
+        '💡 Користь і переваги продукту',
+        '📦 Комплектація наборів',
+        '👶 Розвиваючі функції для дітей',
+        '🎯 Для якого віку підходить'
+      ]
+    },
+    'Преимущества': {
+      title: 'Види споруд',
+      description: 'Споруди доступні для замовлення, комплектація наборів та фото-відео демонстрація',
+      features: [
+        '🏗️ Які споруди можна замовити',
+        '📦 Повна комплектація наборів',
+        '👶 Для якого віку підходить',
+        '🎬 Відео демонстрація збирання',
+        '📸 Фото готових конструкцій',
+        '💡 Переваги кожного виду',
+        '🔧 Інструкції зі збирання',
+        '⚙️ Технічні характеристики',
+        '🎯 Розвиваючі аспекти',
+        '💰 Ціни та умови замовлення'
+      ]
+    },
+    'Формирование заказа': {
+      title: 'Оформлення замовлення',
+      description: 'Кінцева сторінка для оформлення замовлення з повною формою та FAQ',
+      features: [
+        '🎯 Короткий підсумок: кому підходить товар і для чого він потрібен',
+        '📋 Детальна інформація про продукт та його призначення',
+        '🧒 Що розвиває товар: навички, творчість, моторика',
+        '📝 Форма замовлення: ПІБ, номер телефону',
+        '🚚 Вибір доставки: Нова Пошта, адреса відділення',
+        '📦 Вибір конкретного товару для замовлення',
+        '💬 Коментар до замовлення',
+        '❓ Часті питання та відповіді',
+        '✅ Проста і зрозуміла форма заповнення',
+        '🔒 Безпечна обробка даних'
+      ]
+    },
+    'Главный экран курса': {
+      title: 'Головний екран курсу',
+      description: 'Приваблива сторінка онлайн-курсу з програмою навчання',
+      features: [
+        '📚 Структурована програма курсу',
+        '🎯 Чіткий опис цілей навчання',
+        '👥 Відгуки студентів',
+        '💎 Прозорі тарифні плани',
+        '🚀 Швидкий старт навчання'
+      ]
+    },
+    'Модули и тарифы': {
+      title: 'Модулі та тарифи',
+      description: 'Інтерактивний вибір модулів та тарифних планів',
+      features: [
+        '📦 Модульна структура курсу',
+        '💰 Тарифи: базовий / стандарт / преміум',
+        '🎁 Порівняння пакетів',
+        '🎯 Гнучка система доступу',
+        '💳 Зручна оплата'
+      ]
+    },
+    'Дизайн сайта': {
+      title: 'Дизайн сайту',
+      description: 'Сучасний та естетичний дизайн з нуля',
+      features: [
+        '🎨 Унікальний візуальний стиль',
+        '📐 Дотримання grid-системи',
+        '🎯 Зручна навігація',
+        '🌈 Гармонійна кольорова палітра',
+        '✨ Анімації та переходи'
+      ]
+    },
+    'Обработка фото': {
+      title: 'Обробка фото',
+      description: 'Професійна обробка та ретуш в Photoshop',
+      features: [
+        '📸 Кольорокорекція та ретуш',
+        '🎨 Видалення дефектів',
+        '✨ Покращення якості',
+        '🖼️ Підготовка для веб',
+        '💾 Оптимізація розміру'
+      ]
+    }
+  },
+  en: {
+    'Главный экран менеджера': {
+      title: 'Manager Main Screen',
+      description: 'Central control panel for daily work with projects and payments',
+      features: [
+        '🎯 Setting monthly goals and daily plans',
+        '📊 Viewing statistics - monthly and all time',
+        '💰 Information on payment count and earnings',
+        '📈 Earnings growth charts and analytics',
+        '🔮 Viewing forecasts and project analytics',
+        '➕ Adding payments with amount and details',
+        '✏️ Editing and deleting payments as needed',
+        '💳 Managing project payouts',
+        '📝 Adding new projects and deleting completed ones',
+        '💲 Calculating payouts by project and amounts'
+      ]
+    },
+    'Добавление оплат': {
+      title: 'Payment Management',
+      description: 'Adding and editing client payments',
+      features: [
+        '➕ Adding new payment',
+        '✏️ Editing existing payments',
+        '💳 Linking to client and project',
+        '📅 Setting payment date',
+        '🏷️ Categorizing payments'
+      ]
+    },
+    'Главный экран админа': {
+      title: 'Admin Panel',
+      description: 'Detailed analytics for managers and projects with flexible filters',
+      features: [
+        '👥 Analytics for specific managers or comparing several',
+        '📊 Comparing projects of a specific manager',
+        '📅 Selecting period for analysis',
+        '🎯 Forecasts, analytics and statistics for all data',
+        '💰 Payment count and earnings by project',
+        '🏆 Manager rating: who is better/worse on which project',
+        '📈 Best projects by payments and earnings'
+      ]
+    },
+    'Аналитика админа': {
+      title: 'Analytics and Reports',
+      description: 'Detailed analytics for all time with full control over manager actions',
+      features: [
+        '📊 All time period: payment count and earnings',
+        '👥 Analytics between managers: who which project, where earned',
+        '📉 Identifying down days and periods',
+        '✏️ Editing manager actions',
+        '🔍 Search by leads and history',
+        '➕ Adding payments and managing transactions',
+        '📈 Full statistics for all data'
+      ]
+    },
+    'Мобильная версия': {
+      title: 'Mobile Version',
+      description: 'Fully responsive interface for working with CRM on mobile devices',
+      features: [
+        '📱 Optimized interface for smartphones',
+        '🎯 Quick access to main functions',
+        '💰 Adding payments from phone',
+        '📊 Viewing statistics on the go',
+        '📈 Analytics in pocket format',
+        '✏️ Editing data anytime',
+        '🔄 Sync with desktop version'
+      ]
+    },
+    'Главный экран лендинга': {
+      title: 'Landing Main Screen',
+      description: 'Quick navigation at the top, product presentation with animation, information about product and target audience',
+      features: [
+        '🚀 Quick site navigation',
+        '🎯 Product presentation with animation',
+        '📋 Detailed product description',
+        '👥 Target audience information',
+        '⏱️ Creation and implementation timeline',
+        '💡 Explanation of product benefits',
+        '🎨 Visual demonstration of capabilities'
+      ]
+    },
+    'Карточки товаров': {
+      title: 'Who is it for',
+      description: 'Videos with children, architectural scenarios, construction options, assembly process animation',
+      features: [
+        '👦 Children demonstrate assembly process',
+        '🏗️ Dozens of architectural scenarios',
+        '🎬 Video assembly instructions',
+        '🎨 Variety of construction options',
+        '⚙️ Creation process animation',
+        '📋 Detailed assembly instructions',
+        '💡 Benefits and advantages of the product',
+        '📦 Set contents and packaging',
+        '👶 Developmental functions for children',
+        '🎯 Suitable age ranges'
+      ]
+    },
+    'Преимущества': {
+      title: 'Construction Types',
+      description: 'What constructions are available for order, set contents and photo-video demonstration',
+      features: [
+        '🏗️ What constructions can be ordered',
+        '📦 Complete set contents',
+        '👶 Suitable age ranges',
+        '🎬 Video assembly demonstration',
+        '📸 Photos of completed structures',
+        '💡 Benefits of each type',
+        '🔧 Assembly instructions',
+        '⚙️ Technical specifications',
+        '🎯 Developmental aspects',
+        '💰 Prices and ordering conditions'
+      ]
+    },
+    'Формирование заказа': {
+      title: 'Order Formation',
+      description: 'Final page for order placement with complete form and FAQ',
+      features: [
+        '🎯 Brief summary: who the product is for and what it is needed for',
+        '📋 Detailed product information and its purpose',
+        '🧒 What the product develops: skills, creativity, motor skills',
+        '📝 Order form: Full name, phone number',
+        '🚚 Delivery selection: Nova Poshta, branch address',
+        '📦 Selection of specific product for order',
+        '💬 Comment to the order',
+        '❓ Frequently asked questions and answers',
+        '✅ Simple and understandable form',
+        '🔒 Secure data processing'
+      ]
+    },
+    'Главный экран курса': {
+      title: 'Course Main Screen',
+      description: 'Attractive online course page with training program',
+      features: [
+        '📚 Structured course program',
+        '🎯 Clear description of learning goals',
+        '👥 Student reviews',
+        '💎 Transparent pricing plans',
+        '🚀 Quick start of learning'
+      ]
+    },
+    'Модули и тарифы': {
+      title: 'Modules and Pricing',
+      description: 'Interactive selection of modules and pricing plans',
+      features: [
+        '📦 Modular course structure',
+        '💰 Pricing: basic / standard / premium',
+        '🎁 Package comparison',
+        '🎯 Flexible access system',
+        '💳 Convenient payment'
+      ]
+    },
+    'Дизайн сайта': {
+      title: 'Website Design',
+      description: 'Modern and aesthetic design from scratch',
+      features: [
+        '🎨 Unique visual style',
+        '📐 Following grid system',
+        '🎯 Convenient navigation',
+        '🌈 Harmonious color palette',
+        '✨ Animations and transitions'
+      ]
+    },
+    'Обработка фото': {
+      title: 'Photo Editing',
+      description: 'Professional editing and retouching in Photoshop',
+      features: [
+        '📸 Color correction and retouching',
+        '🎨 Removing defects',
+        '✨ Quality improvement',
+        '🖼️ Web preparation',
+        '💾 Size optimization'
+      ]
+    }
+  }
+};
+
+// ===== SCROLL REVEAL =====
+const revealObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, {threshold:0.1, rootMargin:'0px 0px -50px 0px'});
+document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+// ===== SMOOTH SCROLL =====
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const t = document.querySelector(a.getAttribute('href'));
+    if(t) t.scrollIntoView({behavior:'smooth', block:'start'});
+  });
+});
+
+// ===== LANGUAGE INIT =====
+if (localStorage.getItem('portfolioLang')) {
+  setLang(localStorage.getItem('portfolioLang'));
+}
+
+// ===== CALCULATOR =====
+function initCalculator() {
+  const projectTypes = document.querySelectorAll('input[name="projectType"]');
+  const addons = document.querySelectorAll('input[name="addons"]');
+  const totalPriceEl = document.getElementById('totalPrice');
+  const calcBtn = document.getElementById('calcBtn');
+
+  function calculateTotal() {
+    let total = 0;
+
+    // Get selected project type price
+    const selectedType = document.querySelector('input[name="projectType"]:checked');
+    if (selectedType) {
+      total += parseInt(selectedType.dataset.price);
+    }
+
+    // Get selected addons prices
+    addons.forEach(addon => {
+      if (addon.checked) {
+        total += parseInt(addon.dataset.price);
+      }
+    });
+
+    // Update total price
+    totalPriceEl.textContent = '$' + total;
+
+    // Update button href with total price
+    calcBtn.href = `https://t.me/vladoss_011?text=Привет! Хочу заказать проект. Примерная стоимость: $${total}`;
+  }
+
+  // Add event listeners
+  projectTypes.forEach(type => {
+    type.addEventListener('change', calculateTotal);
+  });
+
+  addons.forEach(addon => {
+    addon.addEventListener('change', calculateTotal);
+  });
+
+  // Initial calculation
+  calculateTotal();
+}
+
+// Initialize calculator
+initCalculator();
+
+// ===== CALCULATOR INFO BUTTONS =====
+document.querySelectorAll('.calc-info-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+  });
+});
+
+// ===== FAQ ACCORDION =====
+document.querySelectorAll('.faq-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const isActive = item.classList.contains('active');
+
+    // Close all other FAQ items
+    document.querySelectorAll('.faq-item').forEach(i => {
+      i.classList.remove('active');
+    });
+
+    // Toggle current item
+    if (!isActive) {
+      item.classList.add('active');
+    }
+  });
+});
+</script>
+</body>
+</html>
