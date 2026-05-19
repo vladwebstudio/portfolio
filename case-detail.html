@@ -1,0 +1,2490 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Детальный просмотр кейса — Влад</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+/* ===== RESET ===== */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+--bg:#0a0a0b;--bg2:#111113;--bgc:#161618;--bgch:#1c1c1f;
+--b:#222225;--bl:#2a2a2d;
+--t1:#f5f5f7;--t2:#a1a1a6;--tm:#6e6e73;
+--acc:#6c5ce7;--accl:#a29bfe;--accg:rgba(108,92,231,0.15);--accgs:rgba(108,92,231,0.3);
+--gr:#00cec9;--grg:rgba(0,206,201,0.15);
+--or:#e17055;
+--g1:linear-gradient(135deg,#6c5ce7,#a29bfe);
+--rsm:8px;--rmd:12px;--rlg:16px;--rxl:24px;
+--sh:0 4px 24px rgba(0,0,0,0.4);--shl:0 8px 48px rgba(0,0,0,0.6);
+--tr:0.3s cubic-bezier(0.4,0,0.2,1);
+}
+html{scrollbar-width:thin;scrollbar-color:var(--acc) var(--bg2);}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--t1);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--acc);border-radius:3px;}
+
+/* ===== PARTICLE SYSTEM ===== */
+#particleCanvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.6;}
+
+/* ===== NAV ===== */
+.nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:0 24px;background:rgba(10,10,11,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--b);}
+.nav-inner{width:100%;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:72px;}
+.nav-logo{font-size:20px;font-weight:800;background:var(--g1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-0.5px;text-decoration:none;}
+.nav-back{display:flex;align-items:center;gap:8px;padding:8px 16px;background:var(--bgc);border:1px solid var(--b);border-radius:var(--rsm);color:var(--t2);text-decoration:none;font-size:14px;font-weight:500;transition:var(--tr);}
+.nav-back:hover{border-color:var(--acc);color:var(--t1);}
+
+/* ===== CONTAINER ===== */
+.container{width:100%;margin:0 auto;padding:0 24px;}
+
+/* ===== CASE DETAIL ===== */
+.case-detail{padding:120px 0 80px;min-height:100vh;}
+.case-header{margin-bottom:48px;}
+.case-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:100px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:20px;}
+.case-badge.crm{background:var(--accg);color:var(--accl);}
+.case-badge.landing{background:var(--grg);color:var(--gr);}
+.case-badge.course{background:rgba(253,203,110,0.15);color:#ffeaa7;}
+.case-badge.design{background:rgba(225,112,85,0.15);color:#fab1a0;}
+.case-title{font-size:clamp(32px,5vw,48px);font-weight:800;line-height:1.1;margin-bottom:16px;letter-spacing:-1px;}
+.case-desc{font-size:17px;color:var(--t2);line-height:1.8;max-width:700px;}
+
+/* ===== TIMELINE ===== */
+.timeline-section{margin-bottom:64px;}
+.timeline-label{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--accl);margin-bottom:24px;padding:6px 16px;background:var(--accg);border:1px solid rgba(108,92,231,0.2);border-radius:100px;}
+.timeline-label i{font-size:14px;}
+.timeline{position:relative;padding-left:80px;display:flex;flex-direction:column;gap:32px;}
+.timeline::before{content:'';position:absolute;left:27px;top:10px;bottom:10px;width:2px;background:linear-gradient(180deg,rgba(108,92,231,0.5),rgba(108,92,231,0.2));}
+.t-item{position:relative;}
+.t-num{position:absolute;left:-80px;top:0;width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--bgc);border:1px solid var(--bl);color:var(--accl);font-size:24px;font-weight:800;letter-spacing:-1px;box-shadow:var(--sh);}
+.t-card{background:var(--bgc);border:1px solid var(--b);border-radius:var(--rlg);padding:24px;transition:var(--tr);}
+.t-card:hover{border-color:var(--bl);box-shadow:0 4px 24px rgba(0,0,0,0.2);}
+.t-card-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.t-card-icon{width:40px;height:40px;border-radius:var(--rsm);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.t-card-icon.purple{background:var(--accg);color:var(--accl);}
+.t-card-icon.teal{background:var(--grg);color:var(--gr);}
+.t-card-icon.orange{background:rgba(225,112,85,0.15);color:var(--or);}
+.t-card-title{font-size:18px;font-weight:700;}
+.t-card-content{font-size:15px;color:var(--t2);line-height:1.8;}
+.t-card-content p{margin-bottom:12px;}
+.t-card-content p:last-child{margin-bottom:0;}
+.t-card-list{list-style:none;margin-top:12px;}
+.t-card-list li{display:flex;align-items:flex-start;gap:8px;font-size:14px;color:var(--t2);margin-bottom:8px;}
+.t-card-list li:last-child{margin-bottom:0;}
+.t-card-list li i{color:var(--gr);font-size:12px;flex-shrink:0;margin-top:4px;}
+
+/* ===== RESULT ===== */
+.result-section{margin-bottom:64px;}
+.result-label{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--gr);margin-bottom:24px;padding:6px 16px;background:var(--bgc);border:1px solid var(--b);border-radius:100px;}
+.result-label i{font-size:14px;}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.result-card{background:var(--bgc);border:1px solid var(--b);border-radius:var(--rlg);padding:24px;transition:var(--tr);position:relative;z-index:1;}
+.result-card:hover{border-color:var(--bl);}
+.result-card h4{font-size:16px;font-weight:700;margin-bottom:12px;color:var(--accl);}
+.result-card p{font-size:14px;color:var(--t2);line-height:1.6;margin-bottom:8px;}
+.result-card p:last-child{margin-bottom:0;}
+
+/* ===== GALLERY ===== */
+.gallery-section{margin-bottom:64px;}
+.gallery-label{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--accl);margin-bottom:24px;padding:6px 16px;background:var(--accg);border:1px solid rgba(108,92,231,0.2);border-radius:100px;}
+.gallery-label i{font-size:14px;}
+
+/* Gallery Slider */
+.gallery-slider-wrapper{position:relative;background:var(--bgc);border:1px solid var(--b);border-radius:var(--rxl);overflow:hidden;aspect-ratio:16/10;}
+.gallery-slider{position:relative;width:100%;height:100%;min-height:160px;}
+.gallery-slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:1px;opacity:0;transition:opacity 0.5s ease;pointer-events:none;}
+.gallery-slide.active{opacity:1;pointer-events:auto;}
+.slide-label{position:absolute;top:20px;left:12px;padding:6px 12px;background:rgba(0,0,0,0.6);backdrop-filter:blur(10px);color:white;font-size:12px;font-weight:600;border-radius:20px;border:1px solid var(--b);z-index:5;}
+.gal-controls{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:10;}
+.gal-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.4);cursor:pointer;transition:var(--tr);border:1px solid var(--b);}
+.gal-dot.active{background:var(--accl);transform:scale(1.2);}
+.gal-arr{position:absolute;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);border:1px solid var(--b);color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--tr);z-index:10;font-size:14px;}
+.gal-arr:hover{background:rgba(108,92,231,0.5);}
+.gal-arr.prev{left:12px;}
+.gal-arr.next{right:12px;}
+.gal-info{margin-top:20px;padding:20px;background:var(--bg2);border:1px solid var(--b);border-radius:var(--rlg);opacity:0;transform:translateY(10px);transition:var(--tr);}
+.gal-info.show{opacity:1;transform:translateY(0);}
+.gal-info-title{font-size:18px;font-weight:700;margin-bottom:8px;color:var(--accl);}
+.gal-info-desc{font-size:13px;line-height:1.5;color:var(--t2);margin-bottom:12px;}
+.gal-info-features{display:flex;flex-direction:column;gap:6px;}
+.gal-info-feature{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t1);}
+.gal-info-feature i{color:var(--gr);font-size:10px;flex-shrink:0;}
+
+/* Mockup styles */
+.scr{width:100%;height:100%;border-radius:var(--rmd);overflow:hidden;cursor:pointer;}
+.mck{width:100%;height:100%;background:var(--bg2);border-radius:var(--rmd);overflow:hidden;display:flex;flex-direction:column;}
+.mck-top{height:32px;background:var(--bgc);border-bottom:1px solid var(--b);display:flex;align-items:center;gap:8px;padding:0 12px;}
+.mck-dots{display:flex;gap:6px;}
+.mck-dot{width:10px;height:10px;border-radius:50%;background:var(--t1);opacity:0.3;}
+.mck-dot:nth-child(1){background:#ff5f57;}
+.mck-dot:nth-child(2){background:#ffbd2e;}
+.mck-dot:nth-child(3){background:#28c840;}
+.mck-url{flex:1;height:20px;background:var(--bg2);border-radius:4px;}
+.mck-cnt{flex:1;padding:16px;display:flex;align-items:center;justify-content:center;}
+
+/* ===== CTA ===== */
+.cta-section{margin-bottom:64px;}
+.cta-box{background:var(--bgc);border:1px solid var(--b);border-radius:var(--rxl);padding:40px;text-align:center;position:relative;z-index:1;}
+.cta-box h3{font-size:24px;font-weight:800;margin-bottom:16px;}
+.cta-box p{font-size:16px;color:var(--t2);margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto;}
+.cta-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+.cta-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:var(--rmd);font-size:15px;font-weight:600;text-decoration:none;transition:var(--tr);font-family:inherit;}
+.cta-btn.primary{background:var(--g1);color:white;box-shadow:0 4px 24px var(--accgs);}
+.cta-btn.primary:hover{box-shadow:0 8px 32px var(--accgs);}
+.cta-btn.secondary{background:var(--bgc);border:1px solid var(--b);color:var(--t1);}
+.cta-btn.secondary:hover{border-color:var(--acc);color:var(--accl);}
+
+/* ===== NAV CASES ===== */
+.nav-cases{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
+.nav-case-btn{display:flex;align-items:center;gap:8px;padding:10px 16px;background:var(--bg2);border:1px solid var(--b);border-radius:var(--rsm);color:var(--t1);text-decoration:none;font-size:14px;font-weight:500;transition:var(--tr);cursor:pointer;}
+.nav-case-btn:hover{border-color:var(--acc);color:var(--accl);}
+.nav-case-btn.disabled{opacity:0.5;pointer-events:none;}
+
+/* ===== TESTIMONIAL ===== */
+.testimonial-section{margin-bottom:64px;}
+.testimonial-label{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--gr);margin-bottom:24px;padding:6px 16px;background:var(--bgc);border:1px solid var(--b);border-radius:100px;}
+.testimonial-label i{font-size:14px;}
+.testimonial-card{background:var(--bgc);border:1px solid var(--b);border-radius:var(--rxl);padding:32px;position:relative;z-index:1;}
+.testimonial-header{display:flex;align-items:center;gap:16px;margin-bottom:20px;}
+.testimonial-avatar{width:64px;height:64px;border-radius:50%;background:var(--bg2);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--accl);}
+.testimonial-author h4{font-size:18px;font-weight:700;margin-bottom:4px;}
+.testimonial-author p{font-size:14px;color:var(--tm);}
+.testimonial-text{font-size:16px;color:var(--t2);line-height:1.8;font-style:italic;}
+.testimonial-text::before{content:'"';font-size:48px;color:var(--t2);line-height:0;vertical-align:-10px;margin-right:8px;}
+.testimonial-text::after{content:'"';font-size:48px;color:var(--t2);line-height:0;vertical-align:-30px;margin-left:8px;}
+
+/* ===== LIGHTBOX ===== */
+.lightbox{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.95);backdrop-filter:blur(20px);align-items:center;justify-content:center;cursor:pointer;}
+.lightbox.active{display:flex;}
+.lb-content{max-width:90vw;max-height:90vh;position:relative;}
+.lb-content img{max-width:100%;max-height:90vh;object-fit:contain;border-radius:var(--rmd);cursor:grab;}
+.lb-content img:active{cursor:grabbing;}
+.lb-close{position:fixed;top:20px;right:20px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;color:white;font-size:18px;cursor:pointer;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);border:1px solid var(--b);border-radius:50%;transition:var(--tr);z-index:10001;}
+.lb-close:hover{background:rgba(108,92,231,0.5);transform:scale(1.1);}
+.lb-nav{position:fixed;top:50%;left:0;right:0;transform:translateY(-50%);display:flex;justify-content:space-between;pointer-events:none;z-index:10001;}
+.lb-arr{width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);border:1px solid var(--b);color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--tr);pointer-events:auto;margin:0 20px;}
+.lb-arr:hover{background:rgba(108,92,231,0.5);transform:scale(1.1);}
+.lb-counter{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);color:var(--t2);font-size:14px;font-weight:500;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);padding:8px 16px;border-radius:20px;border:1px solid var(--b);z-index:10001;}
+.lb-zoom{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:10001;}
+.lb-zoom-btn{width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);border:1px solid var(--b);color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--tr);font-size:16px;}
+.lb-zoom-btn:hover{background:rgba(108,92,231,0.5);transform:scale(1.1);}
+.lb-info{position:fixed;top:20px;left:20px;max-width:350px;background:rgba(0,0,0,0.6);backdrop-filter:blur(20px);border:1px solid var(--b);border-radius:var(--rlg);padding:16px;color:white;z-index:10001;opacity:0;transform:translateX(-20px);transition:var(--tr);}
+.lb-info.show{opacity:1;transform:translateX(0);}
+.lb-info-title{font-size:18px;font-weight:700;margin-bottom:8px;color:var(--accl);}
+.lb-info-desc{font-size:13px;line-height:1.4;color:var(--t2);margin-bottom:10px;}
+.lb-info-features{display:flex;flex-direction:column;gap:5px;max-height:200px;overflow-y:auto;}
+.lb-info-feature{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--t1);}
+.lb-info-feature i{color:var(--gr);font-size:11px;flex-shrink:0;}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+.nav-inner{height:64px;}
+.case-detail{padding:100px 0 60px;}
+.timeline{padding-left:68px;gap:24px;}
+.timeline::before{left:23px;}
+.t-num{left:-68px;width:48px;height:48px;font-size:20px;}
+.result-grid,.gallery-grid{grid-template-columns:1fr;}
+.t-card{padding:20px;}
+.cta-box{padding:32px 24px;}
+.cta-btns{flex-direction:column;}
+.cta-btn{width:100%;justify-content:center;}
+.nav-cases{flex-direction:column;gap:16px;}
+.nav-case-btn{width:100%;justify-content:center;}
+}
+@media(max-width:480px){
+.container{padding:0 16px;}
+.nav-inner{height:56px;}
+.nav-logo{font-size:18px;}
+.nav-back{font-size:13px;padding:8px 14px;}
+.case-detail{padding:80px 0 40px;}
+.case-header{margin-bottom:40px;}
+.case-badge{padding:6px 12px;font-size:11px;}
+.case-badge span{margin-left:6px;}
+.case-title{font-size:24px;}
+.case-desc{font-size:14px;}
+.timeline{padding-left:0;gap:20px;}
+.timeline::before{display:none;}
+.t-item{padding:16px;background:var(--bgc);border:1px solid var(--b);border-radius:var(--rlg);}
+.t-num{position:static;width:40px;height:40px;font-size:18px;margin-bottom:10px;}
+.t-title{font-size:18px;}
+.t-desc{font-size:13px;}
+.result-grid,.gallery-grid{grid-template-columns:1fr;gap:16px;}
+.result-card{padding:20px;}
+.result-card h3{font-size:16px;}
+.result-card p{font-size:13px;}
+.result-feats{gap:8px;}
+.result-feat{font-size:12px;}
+.gallery-card{padding:20px;}
+.gallery-card h3{font-size:16px;}
+.gallery-card p{font-size:13px;}
+.gallery-slider{min-height:140px;}
+.scr img{max-width:95%;max-height:105%;margin:0 auto;display:block;}
+.t-card{background:transparent;border:none;padding:0;}
+.t-card h3{font-size:16px;}
+.t-card p{font-size:13px;}
+.testimonial-card{padding:24px 20px;}
+.testimonial-quote{font-size:14px;}
+.testimonial-author{font-size:13px;}
+.cta-box{padding:24px 20px;}
+.cta-title{font-size:20px;}
+.cta-desc{font-size:14px;}
+.cta-btns{flex-direction:column;}
+.cta-btn{width:100%;justify-content:center;padding:12px 20px;font-size:13px;}
+.nav-cases{flex-direction:column;gap:12px;}
+.nav-case-btn{width:100%;justify-content:center;padding:10px 16px;font-size:13px;}
+.gal-info{padding:16px;}
+.gal-info-title{font-size:16px;}
+.gal-info-desc{font-size:12px;}
+.gal-info-feature{font-size:11px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== PARTICLE CANVAS ===== -->
+<canvas id="particleCanvas"></canvas>
+
+<!-- ===== NAV ===== -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">vlad.dev</a>
+    <a href="index.html#cases" class="nav-back">
+      <i class="fas fa-arrow-left"></i>
+      <span data-key="back_to_cases">Назад к кейсам</span>
+    </a>
+  </div>
+</nav>
+
+<!-- ===== CASE DETAIL ===== -->
+<section class="case-detail">
+  <div class="container">
+    
+    <!-- Header -->
+    <div class="case-header">
+      <!-- Navigation between cases -->
+      <div class="nav-cases">
+        <a href="#" class="nav-case-btn prev" id="prevCase">
+          <i class="fas fa-chevron-left"></i>
+          <span data-key="prev_case">Предыдущий кейс</span>
+        </a>
+        <a href="#" class="nav-case-btn next" id="nextCase">
+          <span data-key="next_case">Следующий кейс</span>
+          <i class="fas fa-chevron-right"></i>
+        </a>
+      </div>
+      <div class="case-badge" id="caseBadge"><i class="fas fa-database"></i><span id="caseType">CRM Система</span></div>
+      <h1 class="case-title" id="caseTitle">CRM и контроль оплат</h1>
+      <p class="case-desc" id="caseDesc">Система для контроля оплат, менеджеров и статистики. Панель администратора и менеджера, учёт фактических и потенциальных оплат, аналитика по проектам.</p>
+    </div>
+
+    <!-- Timeline -->
+    <div class="timeline-section">
+      <div class="timeline-label">
+        <i class="fas fa-route"></i>
+        <span data-key="timeline_title">Процесс работы</span>
+      </div>
+      <div class="timeline" id="timeline">
+        <!-- Timeline items will be inserted by JS -->
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div class="result-section">
+      <div class="result-label">
+        <i class="fas fa-trophy"></i>
+        <span data-key="result_title">Результат</span>
+      </div>
+      <div class="result-grid" id="resultGrid">
+        <!-- Result cards will be inserted by JS -->
+      </div>
+    </div>
+
+    <!-- Gallery -->
+    <div class="gallery-section">
+      <div class="gallery-label">
+        <i class="fas fa-images"></i>
+        <span data-key="gallery_title">Скриншоты проекта</span>
+      </div>
+      <div class="gallery-slider-wrapper" id="gallerySliderWrapper">
+        <!-- Slider will be inserted by JS -->
+      </div>
+      <div class="gal-info" id="galleryInfo">
+        <div class="gal-info-title"></div>
+        <div class="gal-info-desc"></div>
+        <div class="gal-info-features"></div>
+      </div>
+    </div>
+
+    <!-- Testimonial -->
+    <div class="testimonial-section">
+      <div class="testimonial-label">
+        <i class="fas fa-quote-left"></i>
+        <span data-key="testimonial_title">Отзыв заказчика</span>
+      </div>
+      <div class="testimonial-card" id="testimonialCard">
+        <!-- Testimonial will be inserted by JS -->
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-section">
+      <div class="cta-box">
+        <h3 data-key="cta_title">Нужен похожий проект?</h3>
+        <p data-key="cta_desc">Обсудим вашу задачу, сроки и стоимость. Напишите в Telegram.</p>
+        <div class="cta-btns">
+          <a href="https://t.me/vladoss_011" target="_blank" class="cta-btn primary">
+            <i class="fab fa-telegram"></i>
+            <span data-key="cta_tg">Написать в Telegram</span>
+          </a>
+          <a href="index.html#pricing" class="cta-btn secondary">
+            <i class="fas fa-tag"></i>
+            <span data-key="cta_price">Посмотреть цены</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ===== LIGHTBOX ===== -->
+<div class="lightbox" id="lightbox">
+  <div class="lb-content">
+    <div class="lb-close"><i class="fas fa-times"></i></div>
+    <img src="" alt="" id="lightboxImg">
+    <div class="lb-nav">
+      <div class="lb-arr lb-prev"><i class="fas fa-chevron-left"></i></div>
+      <div class="lb-arr lb-next"><i class="fas fa-chevron-right"></i></div>
+    </div>
+    <div class="lb-counter"></div>
+    <div class="lb-zoom">
+      <div class="lb-zoom-btn lb-zoom-in" id="zoomIn"><i class="fas fa-plus"></i></div>
+      <div class="lb-zoom-btn lb-zoom-reset" id="zoomReset"><i class="fas fa-undo"></i></div>
+      <div class="lb-zoom-btn lb-zoom-out" id="zoomOut"><i class="fas fa-minus"></i></div>
+    </div>
+    <div class="lb-info">
+      <div class="lb-info-title"></div>
+      <div class="lb-info-desc"></div>
+      <div class="lb-info-features"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== TRANSLATIONS =====
+const T = {
+  ru:{
+    back_to_cases:"Назад к кейсам",
+    timeline_title:"Процесс работы",
+    result_title:"Результат",
+    gallery_title:"Скриншоты проекта",
+    testimonial_title:"Отзыв заказчика",
+    prev_case:"Предыдущий кейс",
+    next_case:"Следующий кейс",
+    cta_title:"Нужен похожий проект?",
+    cta_desc:"Обсудим вашу задачу, сроки и стоимость. Напишите в Telegram.",
+    cta_tg:"Написать в Telegram",
+    cta_price:"Посмотреть цены",
+    page_title: 'Детальный просмотр кейса — Влад'
+  },
+  uk:{
+    back_to_cases:"Повернутися до кейсів",
+    timeline_title:"Процес роботи",
+    result_title:"Результат",
+    gallery_title:"Скріншоти проекту",
+    testimonial_title:"Відгук замовника",
+    prev_case:"Попередній кейс",
+    next_case:"Наступний кейс",
+    cta_title:"Потрібен схожий проект?",
+    cta_desc:"Обговоримо ваше завдання, терміни та вартість. Напишіть у Telegram.",
+    cta_tg:"Написати в Telegram",
+    cta_price:"Переглянути ціни",
+    page_title: 'Детальний перегляд кейсу — Влад'
+  },
+  en:{
+    back_to_cases:"Back to cases",
+    timeline_title:"Work process",
+    result_title:"Result",
+    gallery_title:"Project screenshots",
+    testimonial_title:"Client testimonial",
+    prev_case:"Previous case",
+    next_case:"Next case",
+    cta_title:"Need a similar project?",
+    cta_desc:"Let's discuss your task, timeline and cost. Message me on Telegram.",
+    cta_tg:"Message on Telegram",
+    cta_price:"View pricing",
+    page_title: 'Detailed case view — Vlad'
+  }
+};
+
+// Current language (default to Russian)
+let currentLang = localStorage.getItem('portfolioLang') || 'ru';
+
+// Update page title based on language
+function updatePageTitle() {
+  document.title = T[currentLang].page_title;
+}
+
+// Apply translations
+function applyTranslations() {
+  const t = T[currentLang];
+  document.querySelectorAll('[data-key]').forEach(el => {
+    const key = el.dataset.key;
+    if (t[key]) el.textContent = t[key];
+  });
+}
+
+// Detect language from URL or default
+const langUrlParams = new URLSearchParams(window.location.search);
+const langParam = langUrlParams.get('lang');
+if (langParam && T[langParam]) {
+  currentLang = langParam;
+}
+
+applyTranslations();
+
+// Case data
+const casesData = {
+  1: {
+    type: 'crm',
+    typeLabel: 'CRM Система',
+    title: 'CRM и контроль оплат',
+    desc: 'Система для контроля оплат, менеджеров и статистики. Панель администратора и менеджера, учёт фактических и потенциальных оплат, аналитика по проектам, сравнение менеджеров, цели и прогнозы.',
+    uk: {
+      typeLabel: 'CRM Система',
+      title: 'CRM та контроль оплат',
+      desc: 'Система для контролю оплат, менеджерів і статистики. Панель адміністратора і менеджера, облік фактичних і потенційних оплат, аналітика по проектах, порівняння менеджерів, цілі і прогнози.'
+    },
+    en: {
+      typeLabel: 'CRM System',
+      title: 'CRM and payment control',
+      desc: 'System for controlling payments, managers and statistics. Admin and manager panels, tracking actual and potential payments, project analytics, manager comparison, goals and forecasts.'
+    },
+    timeline: [
+      {
+        icon: 'fa-file-alt',
+        iconColor: 'purple',
+        title: 'Техническое задание',
+        content: `
+          <p>Заказчик обратился с запросом на систему для контроля бизнеса. Основные требования:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>Учёт фактических и потенциальных оплат</li>
+            <li><i class="fas fa-check"></i>Контроль работы менеджеров</li>
+            <li><i class="fas fa-check"></i>Аналитика по проектам и месяцам</li>
+            <li><i class="fas fa-check"></i>Сравнение эффективности менеджеров</li>
+            <li><i class="fas fa-check"></i>Планирование целей и прогнозов</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Технічне завдання',
+          content: `
+            <p>Замовник звернувся з запитом на систему для контролю бізнесу. Основні вимоги:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Облік фактичних і потенційних оплат</li>
+              <li><i class="fas fa-check"></i>Контроль роботи менеджерів</li>
+              <li><i class="fas fa-check"></i>Аналітика по проектах і місяцях</li>
+              <li><i class="fas fa-check"></i>Порівняння ефективності менеджерів</li>
+              <li><i class="fas fa-check"></i>Планування цілей і прогнозів</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Technical task',
+          content: `
+            <p>Client requested a system for business control. Main requirements:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Tracking actual and potential payments</li>
+              <li><i class="fas fa-check"></i>Manager work control</li>
+              <li><i class="fas fa-check"></i>Analytics by projects and months</li>
+              <li><i class="fas fa-check"></i>Manager efficiency comparison</li>
+              <li><i class="fas fa-check"></i>Goal planning and forecasts</li>
+            </ul>
+          `
+        }
+      },
+      {
+        icon: 'fa-comments',
+        iconColor: 'teal',
+        title: 'Обсуждение деталей',
+        content: `
+          <p>Провёл несколько встреч с заказчиком для уточнения требований:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>Определены роли: администратор и менеджер</li>
+            <li><i class="fas fa-check"></i>Согласована структура данных в Google Sheets</li>
+            <li><i class="fas fa-check"></i>Уточнены метрики для аналитики</li>
+            <li><i class="fas fa-check"></i>Определён дизайн-стиль: тёмная тема с акцентами</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Обговорення деталей',
+          content: `
+            <p>Провів кілька зустрічей з замовником для уточнення вимог:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Визначені ролі: адміністратор і менеджер</li>
+              <li><i class="fas fa-check"></i>Погоджена структура даних в Google Sheets</li>
+              <li><i class="fas fa-check"></i>Уточнені метрики для аналітики</li>
+              <li><i class="fas fa-check"></i>Визначений дизайн-стиль: темна тема з акцентами</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Discussion details',
+          content: `
+            <p>Held several meetings with the client to clarify requirements:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Defined roles: administrator and manager</li>
+              <li><i class="fas fa-check"></i>Agreed on data structure in Google Sheets</li>
+              <li><i class="fas fa-check"></i>Clarified analytics metrics</li>
+              <li><i class="fas fa-check"></i>Defined design style: dark theme with accents</li>
+            </ul>
+          `
+        }
+      },
+      {
+        icon: 'fa-palette',
+        iconColor: 'orange',
+        title: 'Дизайн',
+        content: `
+          <p>Создал дизайн интерфейса:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>Панель администратора с полной статистикой</li>
+            <li><i class="fas fa-check"></i>Панель менеджера с личными данными</li>
+            <li><i class="fas fa-check"></i>Адаптивный дизайн для мобильных устройств</li>
+            <li><i class="fas fa-check"></i>Интерактивные графики и таблицы</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Дизайн',
+          content: `
+            <p>Створив дизайн інтерфейсу:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Панель адміністратора з повною статистикою</li>
+              <li><i class="fas fa-check"></i>Панель менеджера з особистими даними</li>
+              <li><i class="fas fa-check"></i>Адаптивний дизайн для мобільних пристроїв</li>
+              <li><i class="fas fa-check"></i>Інтерактивні графіки і таблиці</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Design',
+          content: `
+            <p>Created interface design:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Admin panel with full statistics</li>
+              <li><i class="fas fa-check"></i>Manager panel with personal data</li>
+              <li><i class="fas fa-check"></i>Responsive design for mobile devices</li>
+              <li><i class="fas fa-check"></i>Interactive charts and tables</li>
+            </ul>
+          `
+        }
+      },
+      {
+        icon: 'fa-handshake',
+        iconColor: 'purple',
+        title: 'Согласование сроков и цены',
+        content: `
+          <p>Фиксируем условия перед стартом:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>Срок разработки: 7-14 дней</li>
+            <li><i class="fas fa-check"></i>Стоимость: $700</li>
+            <li><i class="fas fa-check"></i>Интеграция API</li>
+            <li><i class="fas fa-check"></i>Гостевой доступ для тестирования</li>
+            <li><i class="fas fa-check"></i>Просмотр для сотрудничества</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Погодження термінів і ціни',
+          content: `
+            <p>Фіксуємо умови перед стартом:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Термін розробки: 7-14 днів</li>
+              <li><i class="fas fa-check"></i>Вартість: $700</li>
+              <li><i class="fas fa-check"></i>Інтеграція API</li>
+              <li><i class="fas fa-check"></i>Гостьовий доступ для тестування</li>
+              <li><i class="fas fa-check"></i>Перегляд для співпраці</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Agreement on terms and price',
+          content: `
+            <p>Fixing conditions before start:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Development time: 7-14 days</li>
+              <li><i class="fas fa-check"></i>Cost: $700</li>
+              <li><i class="fas fa-check"></i>API integration</li>
+              <li><i class="fas fa-check"></i>Guest access for testing</li>
+              <li><i class="fas fa-check"></i>View for cooperation</li>
+            </ul>
+          `
+        }
+      },
+      {
+        icon: 'fa-code',
+        iconColor: 'teal',
+        title: 'Разработка',
+        content: `
+          <p>Написал код системы с нуля:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>HTML/CSS/JavaScript без фреймворков</li>
+            <li><i class="fas fa-check"></i>Интеграция Google Sheets API</li>
+            <li><i class="fas fa-check"></i>Ролевая система доступа</li>
+            <li><i class="fas fa-check"></i>Аналитика и визуализация данных</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Розробка',
+          content: `
+            <p>Написав код системи з нуля:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>HTML/CSS/JavaScript без фреймворків</li>
+              <li><i class="fas fa-check"></i>Інтеграція Google Sheets API</li>
+              <li><i class="fas fa-check"></i>Рольова система доступу</li>
+              <li><i class="fas fa-check"></i>Аналітика і візуалізація даних</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Development',
+          content: `
+            <p>Wrote system code from scratch:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>HTML/CSS/JavaScript without frameworks</li>
+              <li><i class="fas fa-check"></i>Google Sheets API integration</li>
+              <li><i class="fas fa-check"></i>Role-based access system</li>
+              <li><i class="fas fa-check"></i>Analytics and data visualization</li>
+            </ul>
+          `
+        }
+      },
+      {
+        icon: 'fa-rocket',
+        iconColor: 'orange',
+        title: 'Запуск и сдача',
+        content: `
+          <p>Проект готов и полностью отдан в управление:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>Передана документация</li>
+            <li><i class="fas fa-check"></i>Заказчик удовлетворён результатом</li>
+            <li><i class="fas fa-check"></i>Договорились на поддержание проекта</li>
+            <li><i class="fas fa-check"></i>Подписка за $40/мес на поддержку проекта</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Запуск і здача',
+          content: `
+            <p>Проект готов і повністю відданий в управління:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Передана документація</li>
+              <li><i class="fas fa-check"></i>Замовник задоволений результатом</li>
+              <li><i class="fas fa-check"></i>Договорилися на підтримання проекту</li>
+              <li><i class="fas fa-check"></i>Підписка за $40/міс на підтримання проекту</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Launch and handover',
+          content: `
+            <p>Project is ready and fully handed over for management:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Documentation transferred</li>
+              <li><i class="fas fa-check"></i>Client satisfied with result</li>
+              <li><i class="fas fa-check"></i>Agreed on project maintenance</li>
+              <li><i class="fas fa-check"></i>Subscription $40/month for project support</li>
+            </ul>
+          `
+        }
+      }
+    ],
+    result: [
+      {
+        title: 'Функционал',
+        items: [
+          'Панель администратора и менеджера',
+          'Учёт фактических и потенциальных оплат',
+          'Сравнение менеджеров и аналитика',
+          'Истории по месяцам и проектам',
+          'Цели, планы и прогнозы'
+        ],
+        uk: {
+          title: 'Функціонал',
+          items: [
+            'Панель адміністратора і менеджера',
+            'Облік фактичних і потенційних оплат',
+            'Порівняння менеджерів і аналітика',
+            'Історії по місяцях і проектах',
+            'Цілі, плани і прогнози'
+          ]
+        },
+        en: {
+          title: 'Functionality',
+          items: [
+            'Admin and manager panel',
+            'Tracking actual and potential payments',
+            'Manager comparison and analytics',
+            'Histories by months and projects',
+            'Goals, plans and forecasts'
+          ]
+        }
+      },
+      {
+        title: 'Аналитика',
+        items: [
+          'Абсолютная свобода в выборе данных',
+          'Выбор конкретного менеджера или всех сразу',
+          'Выбор конкретного проекта или всех проектов',
+          'Фильтрация по датам и периодам',
+          'Обширный функционал статистики по всем параметрам'
+        ],
+        uk: {
+          title: 'Аналітика',
+          items: [
+            'Абсолютна свобода у виборі даних',
+            'Вибір конкретного менеджера або всіх одразу',
+            'Вибір конкретного проекту або всіх проектів',
+            'Фільтрація по датах і періодах',
+            'Обширний функціонал статистики по всіх параметрах'
+          ]
+        },
+        en: {
+          title: 'Analytics',
+          items: [
+            'Absolute freedom in data selection',
+            'Choose specific manager or all at once',
+            'Choose specific project or all projects',
+            'Filtering by dates and periods',
+            'Extensive statistics functionality for all parameters'
+          ]
+        }
+      },
+      {
+        title: 'Безопасность',
+        items: [
+          'Ролевая система доступа',
+          'Защита данных и авторизация',
+          'Гостевой доступ для тестирования',
+          'Безопасное хранение данных',
+          'Контроль прав доступа'
+        ],
+        uk: {
+          title: 'Безпека',
+          items: [
+            'Рольова система доступу',
+            'Захист даних і авторизація',
+            'Гостьовий доступ для тестування',
+            'Безпечне зберігання даних',
+            'Контроль прав доступу'
+          ]
+        },
+        en: {
+          title: 'Security',
+          items: [
+            'Role-based access system',
+            'Data protection and authorization',
+            'Guest access for testing',
+            'Secure data storage',
+            'Access control'
+          ]
+        }
+      },
+      {
+        title: 'Технологии',
+        items: [
+          'HTML5, CSS3, JavaScript (ES6+)',
+          'Google Sheets API',
+          'Адаптивный дизайн',
+          'Без фреймворков и конструкторов'
+        ],
+        uk: {
+          title: 'Технології',
+          items: [
+            'HTML5, CSS3, JavaScript (ES6+)',
+            'Google Sheets API',
+            'Адаптивний дизайн',
+            'Без фреймворків і конструкторів'
+          ]
+        },
+        en: {
+          title: 'Technologies',
+          items: [
+            'HTML5, CSS3, JavaScript (ES6+)',
+            'Google Sheets API',
+            'Responsive design',
+            'No frameworks or builders'
+          ]
+        }
+      }
+    ],
+    gallery: [
+      {
+        src: 'img/srm-1.png',
+        title: 'Главный экран менеджера',
+        description: 'Дашборд с полной статистикой и управлением.',
+        features: ['Цель и план', 'Статистика дохода за период', 'Активность по дням', 'История по месяцам', 'Общая касса и прогноз', 'Средний чек и оплата', 'Аналитика по проектам', 'Добавление оплат', 'История клиентов', 'Управление выплатами'],
+        uk: {
+          title: 'Головний екран менеджера',
+          description: 'Дашборд з повною статистикою та управлінням.',
+          features: ['Ціль і план', 'Статистика доходу за період', 'Активність по днях', 'Історія по місяцях', 'Загальна каса і прогноз', 'Середній чек і оплата', 'Аналітика по проектах', 'Додавання оплат', 'Історія клієнтів', 'Управління виплатами']
+        },
+        en: {
+          title: 'Manager main screen',
+          description: 'Dashboard with full statistics and management.',
+          features: ['Goal and plan', 'Income statistics for period', 'Activity by days', 'History by months', 'Total cash and forecast', 'Average check and payment', 'Project analytics', 'Adding payments', 'Client history', 'Payment management']
+        }
+      },
+      {
+        src: 'img/srm-2.jpg',
+        title: 'Панель администратора',
+        description: 'Аналитика, статистика, метрики, сравнение, графики.',
+        features: ['Аналитика', 'Статистика', 'Метрики', 'Сравнение', 'Графики'],
+        uk: {
+          title: 'Панель адміністратора',
+          description: 'Аналітика, статистика, метрики, порівняння, графіки.',
+          features: ['Аналітика', 'Статистика', 'Метрики', 'Порівняння', 'Графіки']
+        },
+        en: {
+          title: 'Admin panel',
+          description: 'Analytics, statistics, metrics, comparison, charts.',
+          features: ['Analytics', 'Statistics', 'Metrics', 'Comparison', 'Charts']
+        }
+      },
+      {
+        src: 'img/srm-3.jpg',
+        title: 'Аналитика администратора',
+        description: 'Обширная аналитика с детальным выбором данных.',
+        features: ['Выбор менеджера или всех', 'Выбор проекта или всех', 'Сравнение менеджеров по проектам', 'Рейтинг менеджеров', 'Доход менеджеров', 'Метрика оплат по менеджерам', 'Процент заработка', 'Лучший человек на проекте', 'Лучший проект', 'Метрика по заработку и количеству', 'Активность за весь период', 'Просадки и рост заработка'],
+        uk: {
+          title: 'Аналітика адміністратора',
+          description: 'Обширна аналітика з детальним вибором даних.',
+          features: ['Вибір менеджера або всіх', 'Вибір проекту або всіх', 'Порівняння менеджерів по проектах', 'Рейтинг менеджерів', 'Дохід менеджерів', 'Метрика оплат по менеджерах', 'Відсоток заробітку', 'Найкраща людина на проекті', 'Найкращий проект', 'Метрика по заробітку і кількості', 'Активність за весь період', 'Просадки і ріст заробітку']
+        },
+        en: {
+          title: 'Admin analytics',
+          description: 'Extensive analytics with detailed data selection.',
+          features: ['Choose manager or all', 'Choose project or all', 'Compare managers by projects', 'Manager rating', 'Manager income', 'Payment metrics by managers', 'Earnings percentage', 'Best person on project', 'Best project', 'Metrics by earnings and quantity', 'Activity for entire period', 'Dips and earnings growth']
+        }
+      },
+      {
+        src: 'img/srm-4.jpg',
+        title: 'Мобильная версия',
+        description: 'Полностью адаптивный интерфейс для работы с любого устройства.',
+        features: ['Все функции доступны', 'Дашборд и статистика', 'Аналитика и сравнение', 'Управление оплатами', 'Работа в любом месте'],
+        uk: {
+          title: 'Мобільна версія',
+          description: 'Повністю адаптивний інтерфейс для роботи з будь-якого пристрою.',
+          features: ['Всі функції доступні', 'Дашборд і статистика', 'Аналітика і порівняння', 'Управління оплатами', 'Робота в будь-якому місці']
+        },
+        en: {
+          title: 'Mobile version',
+          description: 'Fully responsive interface for working from any device.',
+          features: ['All functions available', 'Dashboard and statistics', 'Analytics and comparison', 'Payment management', 'Work anywhere']
+        }
+      }
+    ],
+    testimonial: {
+      name: 'Руслан В.',
+      role: 'Владелец компании ProSales',
+      text: 'Очень понравилась система аналитики, статистики, метрики — очень обширные и крутые в этом плане. Можно выбирать конкретного менеджера или всех сразу, смотреть по проектам, по датам. Всё работает стабильно, интерфейс удобный. Влад быстро понял задачу и реализовал всё как нужно. Рекомендую!',
+      uk: {
+        name: 'Руслан В.',
+        role: 'Власник компанії ProSales',
+        text: 'Дуже сподобалася система аналітики, статистики, метрик — дуже обширні і круті в цьому плані. Можна вибирати конкретного менеджера або всіх одразу, дивитися по проектах, по датах. Все працює стабільно, інтерфейс зручний. Влад швидко зрозумів задачу і реалізував все як треба. Рекомендую!'
+      },
+      en: {
+        name: 'Ruslan V.',
+        role: 'ProSales company owner',
+        text: 'I really liked the analytics, statistics, metrics system — very extensive and cool in that regard. Can choose a specific manager or all at once, view by projects, by dates. Everything works stably, the interface is convenient. Vlad quickly understood the task and implemented everything as needed. I recommend!'
+      }
+    },
+    projectUrl: 'https://vladwebstudio.github.io/crm-con-pay/'
+  },
+  2: {
+    type: 'landing',
+    typeLabel: 'Лендинг',
+    title: 'Лендинг для товара',
+    desc: 'Продающий одностраничный сайт для товара. Каталог с карточками товаров, блок преимуществ, форма заказа и контакты. Полностью адаптивный дизайн с интеграцией Telegram для отправки заявок.',
+    uk: {
+      typeLabel: 'Лендинг',
+      title: 'Лендінг для товару',
+      desc: 'Продаючий односторінковий сайт для товару. Каталог з картками товарів, блок переваг, форма замовлення і контакти. Повністю адаптивний дизайн з інтеграцією Telegram для відправки заявок.'
+    },
+    en: {
+      typeLabel: 'Landing page',
+      title: 'Product landing page',
+      desc: 'Converting single-page website for a product. Product catalog with cards, advantages block, order form and contacts. Fully responsive design with Telegram integration for sending requests.'
+    },
+    timeline: [
+      {
+        icon: 'fa-file-alt',
+        iconColor: 'purple',
+        title: 'Техническое задание',
+        content: `
+          <p>Заказчик запросил продающий сайт для товара:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>Одностраничный сайт (лендинг)</li>
+            <li><i class="fas fa-check"></i>Каталог с карточками товаров</li>
+            <li><i class="fas fa-check"></i>Блок преимуществ</li>
+            <li><i class="fas fa-check"></i>Форма заказа и контакты</li>
+            <li><i class="fas fa-check"></i>Адаптив под все устройства</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Технічне завдання',
+          content: `
+            <p>Замовник запросив продаючий сайт для товару:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Односторінковий сайт (лендинг)</li>
+              <li><i class="fas fa-check"></i>Каталог з картками товарів</li>
+              <li><i class="fas fa-check"></i>Блок переваг</li>
+              <li><i class="fas fa-check"></i>Форма замовлення і контакти</li>
+              <li><i class="fas fa-check"></i>Адаптив під всі пристрої</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Technical task',
+          content: `
+            <p>Client requested a converting website for a product:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Single-page website (landing)</li>
+              <li><i class="fas fa-check"></i>Product catalog with cards</li>
+              <li><i class="fas fa-check"></i>Advantages block</li>
+              <li><i class="fas fa-check"></i>Order form and contacts</li>
+              <li><i class="fas fa-check"></i>Responsive for all devices</li>
+            </ul>
+          `
+        }
+      },
+      {
+        icon: 'fa-comments',
+        iconColor: 'teal',
+        title: 'Обсуждение деталей',
+        content: `
+          <p>Уточнил требования к дизайну и контенту:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>Целевая аудитория: B2B клиенты</li>
+            <li><i class="fas fa-check"></i>Стиль: минималистичный, современный</li>
+            <li><i class="fas fa-check"></i>Цветовая схема: светлая с акцентами</li>
+            <li><i class="fas fa-check"></i>Структура: герой, каталог, преимущества, форма заказа</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Обговорення деталей',
+          content: `
+            <p>Уточнив вимоги до дизайну і контенту:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Цільова аудиторія: B2B клієнти</li>
+              <li><i class="fas fa-check"></i>Стиль: мінімалістичний, сучасний</li>
+              <li><i class="fas fa-check"></i>Кольорова схема: світла з акцентами</li>
+              <li><i class="fas fa-check"></i>Структура: герой, каталог, переваги, форма замовлення</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Discussion details',
+          content: `
+            <p>Clarified design and content requirements:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Target audience: B2B clients</li>
+              <li><i class="fas fa-check"></i>Style: minimalist, modern</li>
+              <li><i class="fas fa-check"></i>Color scheme: light with accents</li>
+              <li><i class="fas fa-check"></i>Structure: hero, catalog, advantages, order form</li>
+            </ul>
+          `
+        }
+      },
+      {
+        icon: 'fa-palette',
+        iconColor: 'orange',
+        title: 'Дизайн',
+        content: `
+          <p>Разработал дизайн:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>Hero-секция с сильным оффером</li>
+            <li><i class="fas fa-check"></i>Интерактивный каталог товаров</li>
+            <li><i class="fas fa-check"></i>Анимации и микро-взаимодействия</li>
+            <li><i class="fas fa-check"></i>Мобильная версия</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Дизайн',
+          content: `
+            <p>Розробив дизайн:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Hero-секція з сильним оффером</li>
+              <li><i class="fas fa-check"></i>Інтерактивний каталог товарів</li>
+              <li><i class="fas fa-check"></i>Анімації і мікро-взаємодії</li>
+              <li><i class="fas fa-check"></i>Мобільна версія</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Design',
+          content: `
+            <p>Developed design:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Hero section with strong offer</li>
+              <li><i class="fas fa-check"></i>Interactive product catalog</li>
+              <li><i class="fas fa-check"></i>Animations and micro-interactions</li>
+              <li><i class="fas fa-check"></i>Mobile version</li>
+            </ul>
+          `
+        }
+      },
+      {
+        icon: 'fa-handshake',
+        iconColor: 'purple',
+        title: 'Согласование сроков и цены',
+        content: `
+          <p>Зафиксировали условия:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>Срок разработки: 2-3 дня</li>
+            <li><i class="fas fa-check"></i>Стоимость: $120</li>
+            <li><i class="fas fa-check"></i>2 раунда правок дизайна</li>
+            <li><i class="fas fa-check"></i>Интеграция с Telegram</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Погодження термінів і ціни',
+          content: `
+            <p>Зафіксували умови:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Термін розробки: 2-3 дні</li>
+              <li><i class="fas fa-check"></i>Вартість: $120</li>
+              <li><i class="fas fa-check"></i>2 раунди правок дизайну</li>
+              <li><i class="fas fa-check"></i>Інтеграція з Telegram</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Agreement on terms and price',
+          content: `
+            <p>Fixed conditions:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Development time: 2-3 days</li>
+              <li><i class="fas fa-check"></i>Cost: $120</li>
+              <li><i class="fas fa-check"></i>2 rounds of design edits</li>
+              <li><i class="fas fa-check"></i>Telegram integration</li>
+            </ul>
+          `
+        }
+      },
+      {
+        icon: 'fa-code',
+        iconColor: 'teal',
+        title: 'Разработка',
+        content: `
+          <p>Верстка и программирование:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>Чистый HTML/CSS/JavaScript</li>
+            <li><i class="fas fa-check"></i>Анимации при скролле</li>
+            <li><i class="fas fa-check"></i>Оптимизация изображений</li>
+            <li><i class="fas fa-check"></i>Интеграция с Telegram API</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Розробка',
+          content: `
+            <p>Верстка і програмування:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Чистий HTML/CSS/JavaScript</li>
+              <li><i class="fas fa-check"></i>Анімації при скроллі</li>
+              <li><i class="fas fa-check"></i>Оптимізація зображень</li>
+              <li><i class="fas fa-check"></i>Інтеграція з Telegram API</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Development',
+          content: `
+            <p>Layout and programming:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Clean HTML/CSS/JavaScript</li>
+              <li><i class="fas fa-check"></i>Scroll animations</li>
+              <li><i class="fas fa-check"></i>Image optimization</li>
+              <li><i class="fas fa-check"></i>Telegram API integration</li>
+            </ul>
+          `
+        }
+      },
+      {
+        icon: 'fa-rocket',
+        iconColor: 'orange',
+        title: 'Запуск и сдача',
+        content: `
+          <p>Проект запущен:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>Размещён на хостинге</li>
+            <li><i class="fas fa-check"></i>Протестирован на всех устройствах</li>
+            <li><i class="fas fa-check"></i>Telegram интеграция работает</li>
+            <li><i class="fas fa-check"></i>Передан доступ к хостингу</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Запуск і здача',
+          content: `
+            <p>Проект запущено:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Розміщено на хостингу</li>
+              <li><i class="fas fa-check"></i>Протестовано на всіх пристроях</li>
+              <li><i class="fas fa-check"></i>Telegram інтеграція працює</li>
+              <li><i class="fas fa-check"></i>Передано доступ до хостингу</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Launch and handover',
+          content: `
+            <p>Project launched:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Deployed to hosting</li>
+              <li><i class="fas fa-check"></i>Tested on all devices</li>
+              <li><i class="fas fa-check"></i>Telegram integration works</li>
+              <li><i class="fas fa-check"></i>Hosting access transferred</li>
+            </ul>
+          `
+        }
+      }
+    ],
+    result: [
+      {
+        title: 'Функционал',
+        items: [
+          'Каталог с карточками товаров',
+          'Блок преимуществ',
+          'Форма заказа',
+          'Адаптивный дизайн',
+          'Интеграция с Telegram'
+        ],
+        uk: {
+          title: 'Функціонал',
+          items: [
+            'Каталог з картками товарів',
+            'Блок переваг',
+            'Форма замовлення',
+            'Адаптивний дизайн',
+            'Інтеграція з Telegram'
+          ]
+        },
+        en: {
+          title: 'Functionality',
+          items: [
+            'Product catalog with cards',
+            'Advantages block',
+            'Order form',
+            'Responsive design',
+            'Telegram integration'
+          ]
+        }
+      },
+      {
+        title: 'Технологии',
+        items: [
+          'HTML5, CSS3, JavaScript',
+          'CSS анимации',
+          'Оптимизация изображений',
+          'Telegram API',
+          'Без фреймворков'
+        ],
+        uk: {
+          title: 'Технології',
+          items: [
+            'HTML5, CSS3, JavaScript',
+            'CSS анімації',
+            'Оптимізація зображень',
+            'Telegram API',
+            'Без фреймворків'
+          ]
+        },
+        en: {
+          title: 'Technologies',
+          items: [
+            'HTML5, CSS3, JavaScript',
+            'CSS animations',
+            'Image optimization',
+            'Telegram API',
+            'No frameworks'
+          ]
+        }
+      }
+    ],
+    gallery: [
+      {
+        src: 'img/land-1.png',
+        title: 'Главный экран лендинга',
+        description: 'Баннер с навигацией, анимация, описание продукта и целевой аудитории.',
+        features: ['Баннер и навигация', 'Анимация', 'Для кого подходит', 'Описание продукта', 'Материал и формат'],
+        uk: {
+          title: 'Головний екран лендінгу',
+          description: 'Баннер з навігацією, анімація, опис продукту і цільової аудиторії.',
+          features: ['Баннер і навігація', 'Анімація', 'Для кого підходить', 'Опис продукту', 'Матеріал і формат']
+        },
+        en: {
+          title: 'Landing main screen',
+          description: 'Banner with navigation, animation, product description and target audience.',
+          features: ['Banner and navigation', 'Animation', 'Who it suits', 'Product description', 'Material and format']
+        }
+      },
+      {
+        src: 'img/land-2.png',
+        title: 'Информация о продукте',
+        description: 'Для кого нужен, что это такое, веселые моменты детей, процесс сборки, польза.',
+        features: ['Для кого подходит', 'Процесс сборки', 'Развитие навыков', 'Исторические архитектуры', 'Анимация и таймлапс'],
+        uk: {
+          title: 'Інформація про продукт',
+          description: 'Для кого потрібен, що це таке, веселі моменти дітей, процес збірки, користь.',
+          features: ['Для кого підходить', 'Процес збірки', 'Розвиток навичок', 'Історичні архітектури', 'Анімація і таймлапс']
+        },
+        en: {
+          title: 'Product information',
+          description: 'Who needs it, what it is, happy moments of children, assembly process, benefits.',
+          features: ['Who it suits', 'Assembly process', 'Skill development', 'Historical architectures', 'Animation and timelapse']
+        }
+      },
+      {
+        src: 'img/land-3.png',
+        title: 'Карточки товаров',
+        description: 'Виды товаров, цены, описания, картинки, видео, что входит в комплект.',
+        features: ['Цены и описания', 'Картинки и видео', 'Что в комплекте', 'Количество деталей', 'Для кого подходит'],
+        uk: {
+          title: 'Картки товарів',
+          description: 'Види товарів, ціни, описи, картинки, відео, що входить в комплект.',
+          features: ['Ціни і описи', 'Картинки і відео', 'Що в комплекті', 'Кількість деталей', 'Для кого підходить']
+        },
+        en: {
+          title: 'Product cards',
+          description: 'Product types, prices, descriptions, images, videos, what is included in the kit.',
+          features: ['Prices and descriptions', 'Images and videos', 'What is included', 'Number of parts', 'Who it suits']
+        }
+      },
+      {
+        src: 'img/land-4.png',
+        title: 'Формирование заказа',
+        description: 'Краткий итог, форма заказа, выбор товара, частые вопросы.',
+        features: ['Краткий итог', 'Форма заказа', 'Выбор товара', 'Частые вопросы', 'Забронировать'],
+        uk: {
+          title: 'Формування замовлення',
+          description: 'Короткий підсумок, форма замовлення, вибір товару, часті питання.',
+          features: ['Короткий підсумок', 'Форма замовлення', 'Вибір товару', 'Часті питання', 'Забронювати']
+        },
+        en: {
+          title: 'Order formation',
+          description: 'Brief summary, order form, product selection, frequently asked questions.',
+          features: ['Brief summary', 'Order form', 'Product selection', 'FAQ', 'Book']
+        }
+      }
+    ],
+    testimonial: {
+      name: 'Виталий',
+      role: 'Предприниматель',
+      text: 'Лендинг получился отличным! Конверсия выросла в 2 раза по сравнению со старым сайтом. Влад сделал всё быстро и качественно, учёл все мои пожелания. Очень доволен результатом!',
+      uk: {
+        name: 'Віталій',
+        role: 'Підприємець',
+        text: 'Лендінг вийшов відмінним! Конверсія зросла в 2 рази порівняно зі старим сайтом. Влад зробив все швидко і якісно, врахував всі мої побажання. Дуже задоволений результатом!'
+      },
+      en: {
+        name: 'Vitaliy',
+        role: 'Entrepreneur',
+        text: 'The landing page turned out great! Conversion increased 2 times compared to the old site. Vlad did everything quickly and qualitatively, took into account all my wishes. Very satisfied with the result!'
+      }
+    },
+    projectUrl: 'https://vladwebstudio.github.io/lend-castle/'
+  },
+  3: {
+    type: 'course',
+    typeLabel: 'Сайт курса',
+    title: 'Онлайн-курс по товарному бизнесу',
+    desc: 'Разработка и верстка высококонверсионного одностраничного сайта для онлайн-курса по запуску товарного бизнеса и работе с Китаем. Проект выполнен в трендовом темном UI-стиле с премиальными акцентами. Структура полностью mobile-first, логически разбита на ключевые блоки (оффер, программа, тарифы, кейсы) и оптимизирована под быструю лидогенерацию.',
+    uk: {
+      typeLabel: 'Сайт курсу',
+      title: 'Онлайн-курс з товарного бізнесу',
+      desc: 'Розробка і верстка висококонверсійного односторінкового сайту для онлайн-курсу з запуску товарного бізнесу та роботи з Китаєм. Проект виконаний в трендовому темному UI-стилі з преміальними акцентами. Структура повністю mobile-first, логічно розбита на ключові блоки (оффер, програма, тарифи, кейси) і оптимізована під швидку лідогенерацію.'
+    },
+    en: {
+      typeLabel: 'Course website',
+      title: 'Online course on product business',
+      desc: 'Development and layout of a high-conversion single-page website for an online course on launching a product business and working with China. The project is executed in a trendy dark UI style with premium accents. The structure is fully mobile-first, logically divided into key blocks (offer, program, tariffs, cases) and optimized for fast lead generation.'
+    },
+    timeline: [
+      {
+        icon: 'fa-file-alt',
+        iconColor: 'purple',
+        title: 'Техническое задание',
+        content: `
+          <p>Заказчик запросил сайт для онлайн-курса по запуску товарного бизнеса и работе с Китаем:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>Высококонверсионный одностраничный сайт</li>
+            <li><i class="fas fa-check"></i>Трендовый темный UI-стиль с премиальными акцентами</li>
+            <li><i class="fas fa-check"></i>Mobile-first структура</li>
+            <li><i class="fas fa-check"></i>Ключевые блоки: оффер, программа, тарифы, кейсы</li>
+            <li><i class="fas fa-check"></i>Оптимизация под быструю лидогенерацию</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Технічне завдання',
+          content: `
+            <p>Замовник запросив сайт для онлайн-курсу з запуску товарного бізнесу та роботи з Китаєм:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Висококонверсійний односторінковий сайт</li>
+              <li><i class="fas fa-check"></i>Трендовий темний UI-стиль з преміальними акцентами</li>
+              <li><i class="fas fa-check"></i>Mobile-first структура</li>
+              <li><i class="fas fa-check"></i>Ключові блоки: оффер, програма, тарифи, кейси</li>
+              <li><i class="fas fa-check"></i>Оптимізація під швидку лідогенерацію</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Technical task',
+          content: `
+            <p>Client requested a website for an online course on launching a product business and working with China:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>High-conversion single-page website</li>
+              <li><i class="fas fa-check"></i>Trendy dark UI style with premium accents</li>
+              <li><i class="fas fa-check"></i>Mobile-first structure</li>
+              <li><i class="fas fa-check"></i>Key blocks: offer, program, tariffs, cases</li>
+              <li><i class="fas fa-check"></i>Optimized for fast lead generation</li>
+            </ul>
+          `
+        }
+      },
+      {
+        icon: 'fa-comments',
+        iconColor: 'teal',
+        title: 'Обсуждение деталей',
+        content: `
+          <p>Уточнил требования и функционал:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>Целевая аудитория: предприниматели в товарном бизнесе</li>
+            <li><i class="fas fa-check"></i>Стиль: трендовый темный UI с премиальными акцентами</li>
+            <li><i class="fas fa-check"></i>Структура: оффер, программа, тарифы, кейсы</li>
+            <li><i class="fas fa-check"></i>Много правок и эксклюзивный контент</li>
+            <li><i class="fas fa-check"></i>Документы: договоры, публичная оферта, договор конфиденциальности</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Обговорення деталей',
+          content: `
+            <p>Уточнив вимоги і функціонал:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Цільова аудиторія: підприємці в товарному бізнесі</li>
+              <li><i class="fas fa-check"></i>Стиль: трендовий темний UI з преміальними акцентами</li>
+              <li><i class="fas fa-check"></i>Структура: оффер, програма, тарифи, кейси</li>
+              <li><i class="fas fa-check"></i>Багато правок і ексклюзивний контент</li>
+              <li><i class="fas fa-check"></i>Документи: договори, публічна оферта, договір конфіденційності</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Discussion details',
+          content: `
+            <p>Clarified requirements and functionality:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Target audience: entrepreneurs in product business</li>
+              <li><i class="fas fa-check"></i>Style: trendy dark UI with premium accents</li>
+              <li><i class="fas fa-check"></i>Structure: offer, program, tariffs, cases</li>
+              <li><i class="fas fa-check"></i>Many edits and exclusive content</li>
+              <li><i class="fas fa-check"></i>Documents: contracts, public offer, confidentiality agreement</li>
+            </ul>
+          `
+        }
+      },
+      {
+        icon: 'fa-palette',
+        iconColor: 'orange',
+        title: 'Дизайн',
+        content: `
+          <p>Разработал дизайн напрямую в коде:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>Трендовый темный UI-стиль</li>
+            <li><i class="fas fa-check"></i>Премиальные акценты и анимации</li>
+            <li><i class="fas fa-check"></i>Mobile-first подход</li>
+            <li><i class="fas fa-check"></i>Оптимизация под лидогенерацию</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Дизайн',
+          content: `
+            <p>Розробив дизайн безпосередньо в коді:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Трендовий темний UI-стиль</li>
+              <li><i class="fas fa-check"></i>Преміальні акценти і анімації</li>
+              <li><i class="fas fa-check"></i>Mobile-first підхід</li>
+              <li><i class="fas fa-check"></i>Оптимізація під лідогенерацію</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Design',
+          content: `
+            <p>Developed design directly in code:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Trendy dark UI style</li>
+              <li><i class="fas fa-check"></i>Premium accents and animations</li>
+              <li><i class="fas fa-check"></i>Mobile-first approach</li>
+              <li><i class="fas fa-check"></i>Optimized for lead generation</li>
+            </ul>
+          `
+        }
+      },
+      {
+        icon: 'fa-handshake',
+        iconColor: 'purple',
+        title: 'Согласование сроков и цены',
+        content: `
+          <p>Зафиксировали условия:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>Срок разработки: 5-7 дней</li>
+            <li><i class="fas fa-check"></i>Стоимость: $500</li>
+            <li><i class="fas fa-check"></i>Много правок и эксклюзивный контент</li>
+            <li><i class="fas fa-check"></i>Документы: договоры, публичная оферта, договор конфиденциальности</li>
+            <li><i class="fas fa-check"></i>Постоянное сотрудничество</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Погодження термінів і ціни',
+          content: `
+            <p>Зафіксували умови:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Термін розробки: 5-7 днів</li>
+              <li><i class="fas fa-check"></i>Вартість: $500</li>
+              <li><i class="fas fa-check"></i>Багато правок і ексклюзивний контент</li>
+              <li><i class="fas fa-check"></i>Документи: договори, публічна оферта, договір конфіденційності</li>
+              <li><i class="fas fa-check"></i>Постійне співпрацювання</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Agreement on terms and price',
+          content: `
+            <p>Fixed conditions:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Development time: 5-7 days</li>
+              <li><i class="fas fa-check"></i>Cost: $500</li>
+              <li><i class="fas fa-check"></i>Many edits and exclusive content</li>
+              <li><i class="fas fa-check"></i>Documents: contracts, public offer, confidentiality agreement</li>
+              <li><i class="fas fa-check"></i>Continuous cooperation</li>
+            </ul>
+          `
+        }
+      },
+      {
+        icon: 'fa-code',
+        iconColor: 'teal',
+        title: 'Разработка',
+        content: `
+          <p>Написал код сайта:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>Чистый HTML/CSS/JavaScript</li>
+            <li><i class="fas fa-check"></i>Трендовый темный UI-стиль</li>
+            <li><i class="fas fa-check"></i>Mobile-first структура</li>
+            <li><i class="fas fa-check"></i>Оптимизация под лидогенерацию</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Розробка',
+          content: `
+            <p>Написав код сайту:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Чистий HTML/CSS/JavaScript</li>
+              <li><i class="fas fa-check"></i>Трендовий темний UI-стиль</li>
+              <li><i class="fas fa-check"></i>Mobile-first структура</li>
+              <li><i class="fas fa-check"></i>Оптимізація під лідогенерацію</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Development',
+          content: `
+            <p>Wrote website code:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Clean HTML/CSS/JavaScript</li>
+              <li><i class="fas fa-check"></i>Trendy dark UI style</li>
+              <li><i class="fas fa-check"></i>Mobile-first structure</li>
+              <li><i class="fas fa-check"></i>Optimized for lead generation</li>
+            </ul>
+          `
+        }
+      },
+      {
+        icon: 'fa-rocket',
+        iconColor: 'orange',
+        title: 'Запуск и сдача',
+        content: `
+          <p>Проект готов:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>Передан готовый проект</li>
+            <li><i class="fas fa-check"></i>Объяснено как всё работает</li>
+            <li><i class="fas fa-check"></i>Переданы полные доступы</li>
+            <li><i class="fas fa-check"></i>Заказчик доволен</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Запуск і здача',
+          content: `
+            <p>Проект готовий:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Передано готовий проект</li>
+              <li><i class="fas fa-check"></i>Пояснено як все працює</li>
+              <li><i class="fas fa-check"></i>Передано повні доступи</li>
+              <li><i class="fas fa-check"></i>Замовник задоволений</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Launch and handover',
+          content: `
+            <p>Project is ready:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Ready project transferred</li>
+              <li><i class="fas fa-check"></i>Explained how everything works</li>
+              <li><i class="fas fa-check"></i>Full access transferred</li>
+              <li><i class="fas fa-check"></i>Client is satisfied</li>
+            </ul>
+          `
+        }
+      }
+    ],
+    result: [
+      {
+        title: 'Функционал',
+        items: [
+          'Высококонверсионный одностраничный сайт',
+          'Трендовый темный UI-стиль',
+          'Mobile-first структура',
+          'Ключевые блоки: оффер, программа, тарифы, кейсы',
+          'Оптимизация под лидогенерацию'
+        ],
+        uk: {
+          title: 'Функціонал',
+          items: [
+            'Висококонверсійний односторінковий сайт',
+            'Трендовий темний UI-стиль',
+            'Mobile-first структура',
+            'Ключові блоки: оффер, програма, тарифи, кейси',
+            'Оптимізація під лідогенерацію'
+          ]
+        },
+        en: {
+          title: 'Functionality',
+          items: [
+            'High-conversion single-page website',
+            'Trendy dark UI style',
+            'Mobile-first structure',
+            'Key blocks: offer, program, tariffs, cases',
+            'Optimized for lead generation'
+          ]
+        }
+      },
+      {
+        title: 'Технологии',
+        items: [
+          'HTML5, CSS3, JavaScript (ES6+)',
+          'CSS Grid и Flexbox',
+          'CSS анимации',
+          'Без фреймворков и конструкторов',
+          'Аналитика конверсии и отслеживание поведения',
+          'Мониторинг просмотров и взаимодействий'
+        ],
+        uk: {
+          title: 'Технології',
+          items: [
+            'HTML5, CSS3, JavaScript (ES6+)',
+            'CSS Grid і Flexbox',
+            'CSS анімації',
+            'Без фреймворків і конструкторів',
+            'Аналітика конверсії і відслідковування поведінки',
+            'Моніторинг переглядів і взаємодій'
+          ]
+        },
+        en: {
+          title: 'Technologies',
+          items: [
+            'HTML5, CSS3, JavaScript (ES6+)',
+            'CSS Grid and Flexbox',
+            'CSS animations',
+            'No frameworks or builders',
+            'Conversion analytics and behavior tracking',
+            'Monitoring views and interactions'
+          ]
+        }
+      }
+    ],
+    gallery: [
+      {
+        src: 'img/crs-1.png',
+        title: 'Главный экран курса',
+        description: 'Главная страница с сильным оффером, программой обучения и призывом к регистрации в трендовом темном UI-стиле.',
+        features: ['Сильный оффер', 'Программа обучения', 'CTA кнопка'],
+        uk: {
+          title: 'Головний екран курсу',
+          description: 'Головна сторінка з сильним оффером, програмою навчання і закликом до реєстрації в трендовому темному UI-стилі.',
+          features: ['Сильний оффер', 'Програма навчання', 'CTA кнопка']
+        },
+        en: {
+          title: 'Course main screen',
+          description: 'Main page with strong offer, training program and call to registration in trendy dark UI style.',
+          features: ['Strong offer', 'Training program', 'CTA button']
+        }
+      },
+      {
+        src: 'img/crs-2.png',
+        title: 'Модули и тарифы',
+        description: 'Тарифные планы с описанием модулей, доступа и стоимости в премиальном стиле.',
+        features: ['Тарифные планы', 'Описание модулей', 'Интерактивный выбор'],
+        uk: {
+          title: 'Модулі і тарифи',
+          description: 'Тарифні плани з описом модулів, доступу і вартості в преміальному стилі.',
+          features: ['Тарифні плани', 'Опис модулів', 'Інтерактивний вибір']
+        },
+        en: {
+          title: 'Modules and tariffs',
+          description: 'Tariff plans with description of modules, access and cost in premium style.',
+          features: ['Tariff plans', 'Module description', 'Interactive selection']
+        }
+      }
+    ],
+    testimonial: {
+      name: 'Неля Колесник',
+      role: 'Автор курса',
+      text: 'Влад создал сайт в быстрые сроки. После запуска были абсолютно минимальные правки, потому что менялся наш контент. По договору Влад сделал тоже быстро, в течение дня. Всё было отлично, всё понравилось. Договорились на долгое сотрудничество — это уже второй проект, который мы с ним делаем.',
+      uk: {
+        name: 'Неля Колесник',
+        role: 'Автор курсу',
+        text: 'Влад створив сайт у швидкі терміни. Після запуску були абсолютно мінімальні правки, тому що змінювся наш контент. За договором Влад зробив теж швидко, протягом дня. Все було чудово, все сподобалося. Договорилися про довгострокове співробітництво — це вже другий проект, який ми з ним робимо.'
+      },
+      en: {
+        name: 'Nelya Kolesnyk',
+        role: 'Course author',
+        text: 'Vlad created the site in fast terms. After launch there were absolutely minimal edits because our content was changing. Per contract Vlad did it quickly too, within a day. Everything was excellent, everything was liked. We agreed on long-term cooperation — this is already the second project we are doing together.'
+      }
+    },
+    projectUrl: '#'
+  },
+  4: {
+    type: 'design',
+    typeLabel: 'Дизайн',
+    title: 'Дизайн и обработка фото',
+    desc: 'Дизайн сайта с нуля и обработка фото в Photoshop. Подготовка визуала под проект, баннеры, карточки.',
+    uk: {
+      typeLabel: 'Дизайн',
+      title: 'Дизайн і обробка фото',
+      desc: 'Дизайн сайту з нуля і обробка фото в Photoshop. Підготовка візуалу під проект, банери, картки.'
+    },
+    en: {
+      typeLabel: 'Design',
+      title: 'Design and photo processing',
+      desc: 'Website design from scratch and photo processing in Photoshop. Visual preparation for the project, banners, cards.'
+    },
+    timeline: [
+      {
+        icon: 'fa-file-alt',
+        iconColor: 'purple',
+        title: 'Техническое задание',
+        content: `
+          <p>Заказчик запросил дизайн и визуал:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>Дизайн сайта с нуля</li>
+            <li><i class="fas fa-check"></i>Обработка и ретушь фото</li>
+            <li><i class="fas fa-check"></i>Подготовка баннеров</li>
+            <li><i class="fas fa-check"></i>Карточки и визуальные элементы</li>
+            <li><i class="fas fa-check"></i>Адаптив под бренд</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Технічне завдання',
+          content: `
+            <p>Замовник запросив дизайн і візуал:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Дизайн сайту з нуля</li>
+              <li><i class="fas fa-check"></i>Обробка і ретуш фото</li>
+              <li><i class="fas fa-check"></i>Підготовка банерів</li>
+              <li><i class="fas fa-check"></i>Картки і візуальні елементи</li>
+              <li><i class="fas fa-check"></i>Адаптив під бренд</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Technical task',
+          content: `
+            <p>Client requested design and visuals:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Website design from scratch</li>
+              <li><i class="fas fa-check"></i>Photo processing and retouching</li>
+              <li><i class="fas fa-check"></i>Banner preparation</li>
+              <li><i class="fas fa-check"></i>Cards and visual elements</li>
+              <li><i class="fas fa-check"></i>Adaptation to brand</li>
+            </ul>
+          `
+        }
+      },
+      {
+        icon: 'fa-comments',
+        iconColor: 'teal',
+        title: 'Обсуждение деталей',
+        content: `
+          <p>Уточнил требования к дизайну:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>Бренд-бук и цветовая палитра</li>
+            <li><i class="fas fa-check"></i>Стиль: минималистичный, чистый</li>
+            <li><i class="fas fa-check"></i>Типографика и отступы</li>
+            <li><i class="fas fa-check"></i>Формат изображений</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Обговорення деталей',
+          content: `
+            <p>Уточнив вимоги до дизайну:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Бренд-бук і кольорова палітра</li>
+              <li><i class="fas fa-check"></i>Стиль: мінімалістичний, чистий</li>
+              <li><i class="fas fa-check"></i>Типографіка і відступи</li>
+              <li><i class="fas fa-check"></i>Формат зображень</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Discussion details',
+          content: `
+            <p>Clarified design requirements:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Brand book and color palette</li>
+              <li><i class="fas fa-check"></i>Style: minimalist, clean</li>
+              <li><i class="fas fa-check"></i>Typography and spacing</li>
+              <li><i class="fas fa-check"></i>Image format</li>
+            </ul>
+          `
+        }
+      },
+      {
+        icon: 'fa-palette',
+        iconColor: 'orange',
+        title: 'Дизайн в Figma',
+        content: `
+          <p>Создал дизайн макетов:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>Главная страница</li>
+            <li><i class="fas fa-check"></i>Внутренние страницы</li>
+            <li><i class="fas fa-check"></i>Мобильные версии</li>
+            <li><i class="fas fa-check"></i>Компоненты и элементы</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Дизайн в Figma',
+          content: `
+            <p>Створив дизайн макетів:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Головна сторінка</li>
+              <li><i class="fas fa-check"></i>Внутрішні сторінки</li>
+              <li><i class="fas fa-check"></i>Мобільні версії</li>
+              <li><i class="fas fa-check"></i>Компоненти і елементи</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Design in Figma',
+          content: `
+            <p>Created design mockups:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Main page</li>
+              <li><i class="fas fa-check"></i>Inner pages</li>
+              <li><i class="fas fa-check"></i>Mobile versions</li>
+              <li><i class="fas fa-check"></i>Components and elements</li>
+            </ul>
+          `
+        }
+      },
+      {
+        icon: 'fa-handshake',
+        iconColor: 'purple',
+        title: 'Согласование сроков и цены',
+        content: `
+          <p>Зафиксировали условия:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>Срок: 3-4 дня</li>
+            <li><i class="fas fa-check"></i>Стоимость: 100€</li>
+            <li><i class="fas fa-check"></i>3 раунда правок</li>
+            <li><i class="fas fa-check"></i>Исходники в Figma и PSD</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Погодження термінів і ціни',
+          content: `
+            <p>Зафіксували умови:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Термін: 3-4 дні</li>
+              <li><i class="fas fa-check"></i>Вартість: 100€</li>
+              <li><i class="fas fa-check"></i>3 раунди правок</li>
+              <li><i class="fas fa-check"></i>Вихідні файли в Figma і PSD</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Agreement on terms and price',
+          content: `
+            <p>Fixed conditions:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Time: 3-4 days</li>
+              <li><i class="fas fa-check"></i>Cost: 100€</li>
+              <li><i class="fas fa-check"></i>3 rounds of edits</li>
+              <li><i class="fas fa-check"></i>Source files in Figma and PSD</li>
+            </ul>
+          `
+        }
+      },
+      {
+        icon: 'fa-magic',
+        iconColor: 'teal',
+        title: 'Обработка фото в Photoshop',
+        content: `
+          <p>Обработал изображения:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>Ретушь и цветокоррекция</li>
+            <li><i class="fas fa-check"></i>Удаление дефектов</li>
+            <li><i class="fas fa-check"></i>Оптимизация размера</li>
+            <li><i class="fas fa-check"></i>Подготовка для веба</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Обробка фото в Photoshop',
+          content: `
+            <p>Обробив зображення:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Ретуш і кольорокорекція</li>
+              <li><i class="fas fa-check"></i>Видалення дефектів</li>
+              <li><i class="fas fa-check"></i>Оптимізація розміру</li>
+              <li><i class="fas fa-check"></i>Підготовка для вебу</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Photo processing in Photoshop',
+          content: `
+            <p>Processed images:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Retouching and color correction</li>
+              <li><i class="fas fa-check"></i>Defect removal</li>
+              <li><i class="fas fa-check"></i>Size optimization</li>
+              <li><i class="fas fa-check"></i>Web preparation</li>
+            </ul>
+          `
+        }
+      },
+      {
+        icon: 'fa-rocket',
+        iconColor: 'orange',
+        title: 'Сдача проекта',
+        content: `
+          <p>Проект завершён:</p>
+          <ul class="t-card-list">
+            <li><i class="fas fa-check"></i>Переданы исходники Figma</li>
+            <li><i class="fas fa-check"></i>Переданы PSD файлы</li>
+            <li><i class="fas fa-check"></i>Экспорт в веб-форматы</li>
+            <li><i class="fas fa-check"></i>Заказчик удовлетворён</li>
+          </ul>
+        `,
+        uk: {
+          title: 'Здача проекту',
+          content: `
+            <p>Проект завершено:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Передано вихідні файли Figma</li>
+              <li><i class="fas fa-check"></i>Передано PSD файли</li>
+              <li><i class="fas fa-check"></i>Експорт у веб-формати</li>
+              <li><i class="fas fa-check"></i>Замовник задоволений</li>
+            </ul>
+          `
+        },
+        en: {
+          title: 'Project handover',
+          content: `
+            <p>Project completed:</p>
+            <ul class="t-card-list">
+              <li><i class="fas fa-check"></i>Figma source files transferred</li>
+              <li><i class="fas fa-check"></i>PSD files transferred</li>
+              <li><i class="fas fa-check"></i>Export to web formats</li>
+              <li><i class="fas fa-check"></i>Client satisfied</li>
+            </ul>
+          `
+        }
+      }
+    ],
+    result: [
+      {
+        title: 'Функционал',
+        items: [
+          'Дизайн сайта с нуля',
+          'Обработка и ретушь фото',
+          'Подготовка визуала',
+          'Баннеры и карточки',
+          'Адаптив под бренд'
+        ],
+        uk: {
+          title: 'Функціонал',
+          items: [
+            'Дизайн сайту з нуля',
+            'Обробка і ретуш фото',
+            'Підготовка візуалу',
+            'Банери і картки',
+            'Адаптив під бренд'
+          ]
+        },
+        en: {
+          title: 'Functionality',
+          items: [
+            'Website design from scratch',
+            'Photo processing and retouching',
+            'Visual preparation',
+            'Banners and cards',
+            'Brand adaptation'
+          ]
+        }
+      },
+      {
+        title: 'Технологии',
+        items: [
+          'Figma (дизайн)',
+          'Adobe Photoshop',
+          'Цветокоррекция',
+          'Веб-оптимизация'
+        ],
+        uk: {
+          title: 'Технології',
+          items: [
+            'Figma (дизайн)',
+            'Adobe Photoshop',
+            'Кольорокорекція',
+            'Веб-оптимізація'
+          ]
+        },
+        en: {
+          title: 'Technologies',
+          items: [
+            'Figma (design)',
+            'Adobe Photoshop',
+            'Color correction',
+            'Web optimization'
+          ]
+        }
+      }
+    ],
+    gallery: [
+      {
+        src: 'img/des-1.png',
+        title: 'Дизайн сайта',
+        description: 'Дизайн макета сайта с нуля в Figma. Современный минималистичный стиль.',
+        features: ['Дизайн в Figma', 'Минималистичный стиль', 'Адаптивная версия'],
+        uk: {
+          title: 'Дизайн сайту',
+          description: 'Дизайн макету сайту з нуля в Figma. Сучасний мінімалістичний стиль.',
+          features: ['Дизайн в Figma', 'Мінімалістичний стиль', 'Адаптивна версія']
+        },
+        en: {
+          title: 'Website design',
+          description: 'Website mockup design from scratch in Figma. Modern minimalist style.',
+          features: ['Design in Figma', 'Minimalist style', 'Responsive version']
+        }
+      },
+      {
+        src: 'img/des-2.png',
+        title: 'Обработка фото',
+        description: 'Ретушь и цветокоррекция фотографий для использования на сайте.',
+        features: ['Ретушь в Photoshop', 'Цветокоррекция', 'Веб-оптимизация'],
+        uk: {
+          title: 'Обробка фото',
+          description: 'Ретуш і кольорокорекція фотографій для використання на сайті.',
+          features: ['Ретуш в Photoshop', 'Кольорокорекція', 'Веб-оптимізація']
+        },
+        en: {
+          title: 'Photo processing',
+          description: 'Retouching and color correction of photos for use on the website.',
+          features: ['Retouching in Photoshop', 'Color correction', 'Web optimization']
+        }
+      }
+    ],
+    testimonial: {
+      name: 'Елена М.',
+      role: 'Маркетолог',
+      text: 'Влад сделал потрясающий дизайн и обработал фотографии для нашего сайта! Всё выглядит профессионально и современно. Работал быстро, учёл все правки. Рекомендую как дизайнера!',
+      uk: {
+        name: 'Олена М.',
+        role: 'Маркетолог',
+        text: 'Влад зробив неймовірний дизайн і обробив фотографії для нашого сайту! Все виглядає професійно і сучасно. Працював швидко, врахував всі правки. Рекомендую як дизайнера!'
+      },
+      en: {
+        name: 'Elena M.',
+        role: 'Marketer',
+        text: 'Vlad did amazing design and processed photos for our website! Everything looks professional and modern. He worked quickly, took into account all edits. I recommend him as a designer!'
+      }
+    },
+    projectUrl: '#'
+  }
+};
+
+// Get case ID from URL
+const urlParams = new URLSearchParams(window.location.search);
+const caseId = parseInt(urlParams.get('id')) || 1;
+
+// Helper function to get translated value
+function getTranslated(obj, key, fallbackKey) {
+  if (currentLang === 'ru') return obj[fallbackKey || key];
+  return obj[currentLang]?.[key] || obj[key];
+}
+
+// Helper function to get translated array
+function getTranslatedArray(obj, key, fallbackKey) {
+  if (currentLang === 'ru') return obj[fallbackKey || key];
+  return obj[currentLang]?.[key] || obj[key];
+}
+
+// Load case data
+function loadCase(id) {
+  const caseData = casesData[id];
+  if (!caseData) return;
+
+  // Update header
+  document.getElementById('caseBadge').className = `case-badge ${caseData.type}`;
+  document.getElementById('caseBadge').innerHTML = `<i class="fas fa-${caseData.type === 'crm' ? 'database' : caseData.type === 'landing' ? 'shopping-bag' : caseData.type === 'course' ? 'book-open' : 'palette'}"></i><span>${getTranslated(caseData, 'typeLabel', 'typeLabel')}</span>`;
+  document.getElementById('caseTitle').textContent = getTranslated(caseData, 'title', 'title');
+  document.getElementById('caseDesc').textContent = getTranslated(caseData, 'desc', 'desc');
+
+  // Update timeline
+  const timelineEl = document.getElementById('timeline');
+  timelineEl.innerHTML = caseData.timeline.map((item, index) => `
+    <div class="t-item">
+      <div class="t-num">${index + 1}</div>
+      <div class="t-card">
+        <div class="t-card-header">
+          <div class="t-card-icon ${item.iconColor}"><i class="fas ${item.icon}"></i></div>
+          <div class="t-card-title">${getTranslated(item, 'title', 'title')}</div>
+        </div>
+        <div class="t-card-content">${getTranslated(item, 'content', 'content')}</div>
+      </div>
+    </div>
+  `).join('');
+
+  // Update result
+  const resultEl = document.getElementById('resultGrid');
+  resultEl.innerHTML = caseData.result.map(card => {
+    const translatedTitle = getTranslated(card, 'title', 'title');
+    const translatedItems = getTranslatedArray(card, 'items', 'items');
+    return `
+    <div class="result-card">
+      <h4>${translatedTitle}</h4>
+      ${translatedItems.map(item => `<p>${item}</p>`).join('')}
+    </div>
+  `;
+  }).join('');
+
+  // Update gallery - all images in one slider
+  const gallerySliderWrapper = document.getElementById('gallerySliderWrapper');
+  const galleryInfo = document.getElementById('galleryInfo');
+
+  if (caseData.gallery.length > 0) {
+    gallerySliderWrapper.innerHTML = `
+      <div class="gallery-slider">
+        ${caseData.gallery.map((item, index) => {
+          const translatedTitle = getTranslated(item, 'title', 'title');
+          const translatedDesc = getTranslated(item, 'description', 'description');
+          const translatedFeatures = getTranslatedArray(item, 'features', 'features');
+          return `
+          <div class="gallery-slide ${index === 0 ? 'active' : ''}" data-slide="${index}">
+            <div class="slide-label">${translatedTitle}</div>
+            <div class="scr">
+              <div class="mck">
+                <div class="mck-top"><div class="mck-dots"><div class="mck-dot"></div><div class="mck-dot"></div><div class="mck-dot"></div></div><div class="mck-url"></div><div style="width:20px"></div></div>
+                <div class="mck-cnt">
+                  <img src="${item.src}" alt="${translatedTitle}" style="width:100%;height:100%;object-fit:contain;border-radius:6px;">
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        }).join('')}
+      </div>
+      <div class="gal-controls">
+        ${caseData.gallery.map((_, index) => `<div class="gal-dot ${index === 0 ? 'active' : ''}" data-slide="${index}"></div>`).join('')}
+      </div>
+      <div class="gal-arr prev"><i class="fas fa-chevron-left"></i></div>
+      <div class="gal-arr next"><i class="fas fa-chevron-right"></i></div>
+    `;
+  } else {
+    gallerySliderWrapper.style.display = 'none';
+  }
+
+  // Initialize slider functionality
+  initGallerySlider(gallerySliderWrapper, caseData.gallery);
+
+  // Update testimonial
+  const testimonialEl = document.getElementById('testimonialCard');
+  if (caseData.testimonial) {
+    const translatedName = getTranslated(caseData.testimonial, 'name', 'name');
+    const translatedRole = getTranslated(caseData.testimonial, 'role', 'role');
+    const translatedText = getTranslated(caseData.testimonial, 'text', 'text');
+    testimonialEl.innerHTML = `
+      <div class="testimonial-header">
+        <div class="testimonial-avatar"><i class="fas fa-user"></i></div>
+        <div class="testimonial-author">
+          <h4>${translatedName}</h4>
+          <p>${translatedRole}</p>
+        </div>
+      </div>
+      <div class="testimonial-text">${translatedText}</div>
+    `;
+  } else {
+    const translatedMessage = currentLang === 'uk' ? 'Відзив тимчасово недоступний' : currentLang === 'en' ? 'Review temporarily unavailable' : 'Отзыв временно недоступен';
+    testimonialEl.innerHTML = `<p style="color:var(--t2)">${translatedMessage}</p>`;
+  }
+
+  // Update navigation
+  const prevBtn = document.getElementById('prevCase');
+  const nextBtn = document.getElementById('nextCase');
+
+  if (id > 1) {
+    prevBtn.href = `case-detail.html?id=${id - 1}`;
+    prevBtn.classList.remove('disabled');
+  } else {
+    prevBtn.href = '#';
+    prevBtn.classList.add('disabled');
+  }
+
+  if (id < Object.keys(casesData).length) {
+    nextBtn.href = `case-detail.html?id=${id + 1}`;
+    nextBtn.classList.remove('disabled');
+  } else {
+    nextBtn.href = '#';
+    nextBtn.classList.add('disabled');
+  }
+
+  // Update URL without reload
+  const newUrl = new URL(window.location);
+  newUrl.searchParams.set('id', id);
+  window.history.replaceState({}, '', newUrl);
+}
+
+// Initialize gallery slider
+function initGallerySlider(wrapper, images) {
+  if (!wrapper || images.length === 0) return;
+
+  const slides = wrapper.querySelectorAll('.gallery-slide');
+  const dots = wrapper.querySelectorAll('.gal-dot');
+  const prev = wrapper.querySelector('.gal-arr.prev');
+  const next = wrapper.querySelector('.gal-arr.next');
+  const infoPanel = document.getElementById('galleryInfo');
+  const infoTitle = wrapper.parentElement.querySelector('.gal-info-title');
+  const infoDesc = wrapper.parentElement.querySelector('.gal-info-desc');
+  const infoFeatures = wrapper.parentElement.querySelector('.gal-info-features');
+  let cur = 0;
+
+  function go(idx) {
+    slides[cur].classList.remove('active');
+    dots[cur].classList.remove('active');
+    cur = (idx + slides.length) % slides.length;
+    slides[cur].classList.add('active');
+    dots[cur].classList.add('active');
+    updateGalleryInfo(cur);
+  }
+
+  function updateGalleryInfo(slideIndex) {
+    const activeSlide = slides[slideIndex];
+    const img = activeSlide.querySelector('.scr img');
+    const slideLabel = activeSlide.querySelector('.slide-label');
+
+    if (infoPanel && img) {
+      const imageData = images[slideIndex];
+      if (imageData) {
+        const translatedTitle = getTranslated(imageData, 'title', 'title');
+        const translatedDesc = getTranslated(imageData, 'description', 'description');
+        const translatedFeatures = getTranslatedArray(imageData, 'features', 'features');
+        infoTitle.textContent = translatedTitle;
+        infoDesc.textContent = translatedDesc;
+        infoFeatures.innerHTML = translatedFeatures.map(f => `<div class="gal-info-feature"><i class="fas fa-check"></i><span>${f}</span></div>`).join('');
+        infoPanel.classList.add('show');
+      }
+    }
+  }
+
+  // Lightbox functionality - click on image to open
+  slides.forEach((slide, index) => {
+    const img = slide.querySelector('.scr img');
+    if (img) {
+      img.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openLightbox(index);
+      });
+    }
+  });
+
+  if (prev) prev.addEventListener('click', () => go(cur - 1));
+  if (next) next.addEventListener('click', () => go(cur + 1));
+
+  dots.forEach((dot, idx) => {
+    dot.addEventListener('click', () => go(idx));
+  });
+
+  // Show initial info
+  updateGalleryInfo(0);
+}
+
+// Initialize
+loadCase(caseId);
+
+// ===== LIGHTBOX =====
+let currentImages = [];
+let currentIndex = 0;
+let zoomLevel = 1;
+
+const lightbox = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+const lbClose = document.querySelector('.lb-close');
+const lbPrev = document.querySelector('.lb-prev');
+const lbNext = document.querySelector('.lb-next');
+const lbCounter = document.querySelector('.lb-counter');
+const lbInfo = document.querySelector('.lb-info');
+const lbInfoTitle = document.querySelector('.lb-info-title');
+const lbInfoDesc = document.querySelector('.lb-info-desc');
+const lbInfoFeatures = document.querySelector('.lb-info-features');
+
+let translateX = 0;
+let translateY = 0;
+let isDragging = false;
+let startX, startY;
+
+function openLightbox(index) {
+  const caseData = casesData[caseId];
+  currentImages = caseData.gallery;
+  currentIndex = index;
+  zoomLevel = 1;
+  translateX = 0;
+  translateY = 0;
+
+  lightboxImg.src = currentImages[currentIndex].src;
+  lightboxImg.alt = currentImages[currentIndex].title;
+  lightboxImg.style.transform = 'scale(1) translate(0, 0)';
+  lbCounter.textContent = `${currentIndex + 1} / ${currentImages.length}`;
+
+  updateLightboxInfo();
+
+  lightbox.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  lightbox.classList.remove('active');
+  document.body.style.overflow = '';
+  zoomLevel = 1;
+  translateX = 0;
+  translateY = 0;
+  lightboxImg.style.transform = 'scale(1) translate(0, 0)';
+}
+
+function updateLightboxInfo() {
+  const img = currentImages[currentIndex];
+  const translatedTitle = getTranslated(img, 'title', 'title');
+  const translatedDesc = getTranslated(img, 'description', 'description');
+  const translatedFeatures = getTranslatedArray(img, 'features', 'features');
+  lbInfoTitle.textContent = translatedTitle;
+  lbInfoDesc.textContent = translatedDesc;
+  lbInfoFeatures.innerHTML = translatedFeatures.map(f => `<div class="lb-info-feature"><i class="fas fa-check"></i><span>${f}</span></div>`).join('');
+  lbInfo.classList.add('show');
+}
+
+function navigateLightbox(direction) {
+  currentIndex += direction;
+  if (currentIndex < 0) currentIndex = currentImages.length - 1;
+  if (currentIndex >= currentImages.length) currentIndex = 0;
+
+  lightboxImg.src = currentImages[currentIndex].src;
+  lightboxImg.alt = currentImages[currentIndex].title;
+  zoomLevel = 1;
+  translateX = 0;
+  translateY = 0;
+  lightboxImg.style.transform = 'scale(1) translate(0, 0)';
+  lbCounter.textContent = `${currentIndex + 1} / ${currentImages.length}`;
+  updateLightboxInfo();
+}
+
+lbClose.addEventListener('click', closeLightbox);
+lbPrev.addEventListener('click', (e) => { e.stopPropagation(); navigateLightbox(-1); });
+lbNext.addEventListener('click', (e) => { e.stopPropagation(); navigateLightbox(1); });
+
+lightbox.addEventListener('click', (e) => {
+  if (e.target === lightbox || e.target.closest('.lb-content') === lightboxImg.parentElement) {
+    closeLightbox();
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (!lightbox.classList.contains('active')) return;
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') navigateLightbox(-1);
+  if (e.key === 'ArrowRight') navigateLightbox(1);
+});
+
+// Zoom controls
+document.getElementById('zoomIn').addEventListener('click', (e) => {
+  e.stopPropagation();
+  zoomLevel = Math.min(zoomLevel + 0.25, 3);
+  lightboxImg.style.transform = `scale(${zoomLevel}) translate(${translateX}px, ${translateY}px)`;
+});
+
+document.getElementById('zoomOut').addEventListener('click', (e) => {
+  e.stopPropagation();
+  zoomLevel = Math.max(zoomLevel - 0.25, 0.5);
+  lightboxImg.style.transform = `scale(${zoomLevel}) translate(${translateX}px, ${translateY}px)`;
+});
+
+document.getElementById('zoomReset').addEventListener('click', (e) => {
+  e.stopPropagation();
+  zoomLevel = 1;
+  translateX = 0;
+  translateY = 0;
+  lightboxImg.style.transform = 'scale(1) translate(0, 0)';
+});
+
+lightboxImg.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  if (e.deltaY < 0) {
+    zoomLevel = Math.min(zoomLevel + 0.1, 3);
+  } else {
+    zoomLevel = Math.max(zoomLevel - 0.1, 0.5);
+  }
+  lightboxImg.style.transform = `scale(${zoomLevel}) translate(${translateX}px, ${translateY}px)`;
+});
+
+// Drag functionality with requestAnimationFrame
+let animationFrame = null;
+
+lightboxImg.addEventListener('mousedown', (e) => {
+  if (zoomLevel > 1) {
+    isDragging = true;
+    startX = e.clientX - translateX;
+    startY = e.clientY - translateY;
+    lightboxImg.style.cursor = 'grabbing';
+    e.preventDefault();
+  }
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (isDragging) {
+    e.preventDefault();
+    translateX = e.clientX - startX;
+    translateY = e.clientY - startY;
+    lightboxImg.style.transform = `scale(${zoomLevel}) translate(${translateX}px, ${translateY}px)`;
+  }
+});
+
+document.addEventListener('mouseup', () => {
+  if (isDragging) {
+    isDragging = false;
+    lightboxImg.style.cursor = zoomLevel > 1 ? 'grab' : 'default';
+    if (animationFrame) {
+      cancelAnimationFrame(animationFrame);
+      animationFrame = null;
+    }
+  }
+});
+
+lightboxImg.addEventListener('mouseleave', () => {
+  if (isDragging) {
+    isDragging = false;
+    lightboxImg.style.cursor = zoomLevel > 1 ? 'grab' : 'default';
+  }
+});
+
+lightboxImg.addEventListener('click', (e) => {
+  e.stopPropagation();
+});
+
+// Touch events for mobile with improved handling
+lightboxImg.addEventListener('touchstart', (e) => {
+  if (zoomLevel > 1 && e.touches.length === 1) {
+    isDragging = true;
+    startX = e.touches[0].clientX - translateX;
+    startY = e.touches[0].clientY - translateY;
+  }
+});
+
+lightboxImg.addEventListener('touchmove', (e) => {
+  if (isDragging && e.touches.length === 1) {
+    e.preventDefault();
+    translateX = e.touches[0].clientX - startX;
+    translateY = e.touches[0].clientY - startY;
+    lightboxImg.style.transform = `scale(${zoomLevel}) translate(${translateX}px, ${translateY}px)`;
+  }
+});
+
+lightboxImg.addEventListener('touchend', () => {
+  isDragging = false;
+  if (animationFrame) {
+    cancelAnimationFrame(animationFrame);
+    animationFrame = null;
+  }
+});
+
+// ===== PARTICLE SYSTEM =====
+const particleCanvas = document.getElementById('particleCanvas');
+const ctx = particleCanvas.getContext('2d');
+let particles = [];
+let mouseX = 0, mouseY = 0;
+
+function resizeCanvas() {
+  particleCanvas.width = window.innerWidth;
+  particleCanvas.height = window.innerHeight;
+}
+
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+class Particle {
+  constructor() {
+    this.x = Math.random() * particleCanvas.width;
+    this.y = Math.random() * particleCanvas.height;
+    this.size = Math.random() * 2 + 0.5;
+    this.speedX = (Math.random() - 0.5) * 0.5;
+    this.speedY = (Math.random() - 0.5) * 0.5;
+    this.opacity = Math.random() * 0.5 + 0.3;
+  }
+
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+
+    // Wrap around screen
+    if (this.x < 0) this.x = particleCanvas.width;
+    if (this.x > particleCanvas.width) this.x = 0;
+    if (this.y < 0) this.y = particleCanvas.height;
+    if (this.y > particleCanvas.height) this.y = 0;
+  }
+
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(108, 92, 231, ${this.opacity})`;
+    ctx.fill();
+  }
+}
+
+// Create particles
+for (let i = 0; i < 100; i++) {
+  particles.push(new Particle());
+}
+
+function animateParticles() {
+  ctx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+  
+  particles.forEach(particle => {
+    particle.update();
+    particle.draw();
+  });
+  
+  requestAnimationFrame(animateParticles);
+}
+
+animateParticles();
+</script>
+
+</body>
+</html>
