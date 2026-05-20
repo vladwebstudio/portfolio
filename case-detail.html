@@ -143,6 +143,16 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 
 /* ===== TESTIMONIAL ===== */
 .testimonial-section{margin-bottom:64px;}
+
+/* ===== PROJECT LINK ===== */
+.project-link-section{margin-bottom:64px;}
+.project-link-box{background:#161618;border:1px solid var(--b);border-radius:var(--rxl);padding:32px;text-align:center;position:relative;z-index:1;}
+.project-link-box h3{font-size:20px;font-weight:700;margin-bottom:12px;color:var(--t1);}
+.project-link-box p{font-size:14px;color:var(--t2);line-height:1.6;margin-bottom:24px;}
+.project-link-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:var(--g1);color:#fff;border:none;border-radius:var(--rmd);font-size:15px;font-weight:600;text-decoration:none;transition:var(--tr);cursor:pointer;}
+.project-link-btn:hover{box-shadow:0 8px 32px var(--accgs);}
+.project-link-btn i{font-size:16px;}
+
 .testimonial-label{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--gr);margin-bottom:24px;padding:6px 16px;background:var(--bgc);border:1px solid var(--b);border-radius:100px;}
 .testimonial-label i{font-size:14px;}
 .testimonial-card{background:var(--bgc);border:1px solid var(--b);border-radius:var(--rxl);padding:32px;position:relative;z-index:1;}
@@ -153,9 +163,12 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .testimonial-text{font-size:16px;color:var(--t2);line-height:1.8;font-style:italic;}
 .testimonial-text::before{content:'"';font-size:48px;color:var(--t2);line-height:0;vertical-align:-10px;margin-right:8px;}
 .testimonial-text::after{content:'"';font-size:48px;color:var(--t2);line-height:0;vertical-align:-30px;margin-left:8px;}
+.testimonial-rating{display:flex;gap:3px;margin-top:16px;}
+.testimonial-rating i{font-size:12px;color:#ffd700;transition:var(--tr);filter:drop-shadow(0 0 6px rgba(255,215,0,0.3));}
+.testimonial-rating i:hover{transform:scale(1.3);filter:drop-shadow(0 0 12px rgba(255,215,0,0.8));}
 
 /* ===== LIGHTBOX ===== */
-.lightbox{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.95);backdrop-filter:blur(20px);align-items:center;justify-content:center;cursor:pointer;}
+.lightbox{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.95);backdrop-filter:blur(20px);align-items:center;justify-content:center;cursor:pointer;touch-action:none;}
 .lightbox.active{display:flex;}
 .lb-content{max-width:90vw;max-height:90vh;position:relative;}
 .lb-content img{max-width:100%;max-height:90vh;object-fit:contain;border-radius:var(--rmd);cursor:grab;}
@@ -224,6 +237,10 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .testimonial-card{padding:24px 20px;}
 .testimonial-quote{font-size:14px;}
 .testimonial-author{font-size:13px;}
+.project-link-box{padding:24px 20px;}
+.project-link-box h3{font-size:18px;}
+.project-link-box p{font-size:13px;}
+.project-link-btn{width:100%;justify-content:center;padding:12px 20px;font-size:14px;}
 .cta-box{padding:24px 20px;}
 .cta-title{font-size:20px;}
 .cta-desc{font-size:14px;}
@@ -327,6 +344,18 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       </div>
     </div>
 
+    <!-- Project Link -->
+    <div class="project-link-section">
+      <div class="project-link-box">
+        <h3 data-key="project_link_title">Хотите посмотреть проект в действии?</h3>
+        <p data-key="project_link_desc">Перейдите в режим гостя, чтобы посмотреть проект, пролистать страницы и изучить интерфейс. Режим гостя позволяет просматривать контент, но не позволяет делать заказы, писать сообщения или вносить изменения.</p>
+        <a href="#" id="projectLinkBtn" class="project-link-btn" target="_blank">
+          <i class="fas fa-external-link-alt"></i>
+          <span data-key="project_link_btn">Открыть проект (режим гостя)</span>
+        </a>
+      </div>
+    </div>
+
     <!-- Testimonial -->
     <div class="testimonial-section">
       <div class="testimonial-label">
@@ -391,6 +420,9 @@ const T = {
     result_title:"Результат",
     gallery_title:"Скриншоты проекта",
     testimonial_title:"Отзыв заказчика",
+    project_link_title:"Хотите посмотреть проект в действии?",
+    project_link_desc:"Посмотрите проект, пролистайте страницы и изучите интерфейс. В этом режиме можно просматривать контент, но нельзя делать заказы, писать сообщения или вносить изменения.",
+    project_link_btn:"Открыть проект (режим гостя)",
     prev_case:"Предыдущий кейс",
     next_case:"Следующий кейс",
     cta_title:"Нужен похожий проект?",
@@ -405,6 +437,9 @@ const T = {
     result_title:"Результат",
     gallery_title:"Скріншоти проекту",
     testimonial_title:"Відгук замовника",
+    project_link_title:"Хочете переглянути проект в дії?",
+    project_link_desc:"Перегляньте проект, пролистайте сторінки та вивчіть інтерфейс. У цьому режимі можна переглядати контент, але не можна робити замовлення, писати повідомлення або вносити зміни.",
+    project_link_btn:"Відкрити проект (режим гостя)",
     prev_case:"Попередній кейс",
     next_case:"Наступний кейс",
     cta_title:"Потрібен схожий проект?",
@@ -419,6 +454,9 @@ const T = {
     result_title:"Result",
     gallery_title:"Project screenshots",
     testimonial_title:"Client testimonial",
+    project_link_title:"Want to see the project in action?",
+    project_link_desc:"View the project, browse pages and explore the interface. In this mode you can view content, but cannot place orders, send messages or make changes.",
+    project_link_btn:"Open project (guest mode)",
     prev_case:"Previous case",
     next_case:"Next case",
     cta_title:"Need a similar project?",
@@ -462,6 +500,7 @@ const casesData = {
     typeLabel: 'CRM Система',
     title: 'CRM и контроль оплат',
     desc: 'Система для контроля оплат, менеджеров и статистики. Панель администратора и менеджера, учёт фактических и потенциальных оплат, аналитика по проектам, сравнение менеджеров, цели и прогнозы.',
+    projectLink: 'https://vladwebstudio.github.io/crm-con-pay/',
     uk: {
       typeLabel: 'CRM Система',
       title: 'CRM та контроль оплат',
@@ -896,6 +935,7 @@ const casesData = {
     testimonial: {
       name: 'Руслан В.',
       role: 'Владелец компании ProSales',
+      rating: 5,
       text: 'Очень понравилась система аналитики, статистики, метрики — очень обширные и крутые в этом плане. Можно выбирать конкретного менеджера или всех сразу, смотреть по проектам, по датам. Всё работает стабильно, интерфейс удобный. Влад быстро понял задачу и реализовал всё как нужно. Рекомендую!',
       uk: {
         name: 'Руслан В.',
@@ -915,6 +955,7 @@ const casesData = {
     typeLabel: 'Лендинг',
     title: 'Лендинг для товара',
     desc: 'Продающий одностраничный сайт для товара. Каталог с карточками товаров, блок преимуществ, форма заказа и контакты. Полностью адаптивный дизайн с интеграцией Telegram для отправки заявок.',
+    projectLink: 'https://vladwebstudio.github.io/lend-castle/',
     uk: {
       typeLabel: 'Лендинг',
       title: 'Лендінг для товару',
@@ -1289,6 +1330,7 @@ const casesData = {
     testimonial: {
       name: 'Виталий',
       role: 'Предприниматель',
+      rating: 5,
       text: 'Лендинг получился отличным! Конверсия выросла в 2 раза по сравнению со старым сайтом. Влад сделал всё быстро и качественно, учёл все мои пожелания. Очень доволен результатом!',
       uk: {
         name: 'Віталій',
@@ -1307,6 +1349,7 @@ const casesData = {
     type: 'course',
     typeLabel: 'Сайт курса',
     title: 'Онлайн-курс по товарному бизнесу',
+    projectLink: '',
     desc: 'Разработка и верстка высококонверсионного одностраничного сайта для онлайн-курса по запуску товарного бизнеса и работе с Китаем. Проект выполнен в трендовом темном UI-стиле с премиальными акцентами. Структура полностью mobile-first, логически разбита на ключевые блоки (оффер, программа, тарифы, кейсы) и оптимизирована под быструю лидогенерацию.',
     uk: {
       typeLabel: 'Сайт курсу',
@@ -1659,6 +1702,7 @@ const casesData = {
     testimonial: {
       name: 'Неля Колесник',
       role: 'Автор курса',
+      rating: 5,
       text: 'Влад создал сайт в быстрые сроки. После запуска были абсолютно минимальные правки, потому что менялся наш контент. По договору Влад сделал тоже быстро, в течение дня. Всё было отлично, всё понравилось. Договорились на долгое сотрудничество — это уже второй проект, который мы с ним делаем.',
       uk: {
         name: 'Неля Колесник',
@@ -1769,12 +1813,24 @@ function loadCase(id) {
   // Initialize slider functionality
   initGallerySlider(gallerySliderWrapper, caseData.gallery);
 
+  // Update project link
+  const projectLinkSection = document.querySelector('.project-link-section');
+  const projectLinkBtn = document.getElementById('projectLinkBtn');
+  if (caseData.projectLink) {
+    projectLinkBtn.href = caseData.projectLink;
+  } else {
+    projectLinkBtn.href = '#';
+  }
+  projectLinkSection.style.display = 'block';
+
   // Update testimonial
   const testimonialEl = document.getElementById('testimonialCard');
   if (caseData.testimonial) {
     const translatedName = getTranslated(caseData.testimonial, 'name', 'name');
     const translatedRole = getTranslated(caseData.testimonial, 'role', 'role');
     const translatedText = getTranslated(caseData.testimonial, 'text', 'text');
+    const rating = caseData.testimonial.rating || 5;
+    const stars = Array(5).fill(0).map((_, i) => `<i class="fas fa-star"></i>`).join('');
     testimonialEl.innerHTML = `
       <div class="testimonial-header">
         <div class="testimonial-avatar"><i class="fas fa-user"></i></div>
@@ -1784,6 +1840,7 @@ function loadCase(id) {
         </div>
       </div>
       <div class="testimonial-text">${translatedText}</div>
+      <div class="testimonial-rating">${stars}</div>
     `;
   } else {
     const translatedMessage = currentLang === 'uk' ? 'Відзив тимчасово недоступний' : currentLang === 'en' ? 'Review temporarily unavailable' : 'Отзыв временно недоступен';
@@ -2058,27 +2115,49 @@ lightboxImg.addEventListener('click', (e) => {
   e.stopPropagation();
 });
 
-// Touch events for mobile
+// Touch events for mobile with pinch-to-zoom
+let initialPinchDistance = 0;
+let initialZoomLevel = 1;
+
 lightboxImg.addEventListener('touchstart', (e) => {
-  if (zoomLevel > 1 && e.touches.length === 1) {
-    isDragging = true;
-    startX = e.touches[0].clientX - translateX;
-    startY = e.touches[0].clientY - translateY;
-    e.preventDefault();
+  if (e.touches.length === 1) {
+    if (zoomLevel > 1) {
+      isDragging = true;
+      startX = e.touches[0].clientX - translateX;
+      startY = e.touches[0].clientY - translateY;
+    }
+  } else if (e.touches.length === 2) {
+    initialPinchDistance = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+    initialZoomLevel = zoomLevel;
   }
-});
+  e.preventDefault();
+}, { passive: false });
 
 lightboxImg.addEventListener('touchmove', (e) => {
-  if (isDragging && e.touches.length === 1) {
-    e.preventDefault();
+  e.preventDefault();
+  if (e.touches.length === 1 && isDragging) {
     translateX = e.touches[0].clientX - startX;
     translateY = e.touches[0].clientY - startY;
     updateTransform();
+  } else if (e.touches.length === 2) {
+    const currentPinchDistance = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+    const scaleRatio = currentPinchDistance / initialPinchDistance;
+    zoomLevel = Math.max(0.5, Math.min(3, initialZoomLevel * scaleRatio));
+    updateTransform();
   }
-});
+}, { passive: false });
 
-lightboxImg.addEventListener('touchend', () => {
+lightboxImg.addEventListener('touchend', (e) => {
   isDragging = false;
+  if (e.touches.length < 2) {
+    initialPinchDistance = 0;
+  }
   updateTransform();
 });
 
