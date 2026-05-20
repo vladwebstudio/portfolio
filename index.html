@@ -190,7 +190,7 @@ section{position:relative;z-index:1;}
 .gallery-slide.active{opacity:1;pointer-events:auto;}
 .slide-label{position:absolute;top:16px;left:16px;padding:4px 12px;background:rgba(0,0,0,0.6);backdrop-filter:blur(10px);border-radius:100px;font-size:11px;color:var(--t2);font-weight:500;z-index:10;}
 .scr{width:100%;height:100%;min-height:140px;border-radius:var(--rmd);display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--b);cursor:pointer;transition:var(--tr);position:relative;overflow:hidden;}
-.scr img{max-height:100%;object-fit:contain;border-radius:12px;}
+.scr img{max-height:100%;object-fit:contain;border-radius:12px;touch-action:manipulation;}
 .scr:hover{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc);}
 .scr.crm-mgr-main{background:linear-gradient(135deg,#1a1a2e,#16213e);}
 .scr.crm-mgr-pay{background:linear-gradient(135deg,#0f3460,#1a1a2e);}
