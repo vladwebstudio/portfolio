@@ -99,7 +99,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 /* ===== COMMON ===== */
 section{position:relative;z-index:1;}
 .container{max-width:1200px;margin:0 auto;padding:0 24px;}
-.section-label{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--accl);margin-bottom:16px;padding:6px 16px;background:var(--accg);border:1px solid rgba(108,92,231,0.2);border-radius:100px;}
+.section-label{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--accl);margin-bottom:16px;padding:6px 16px;background:var(--accg);border:1px solid rgba(108,92,231,0.2);border-radius:100px;width:fit-content;}
 .section-title{font-size:clamp(32px,5vw,48px);font-weight:800;line-height:1.1;margin-bottom:16px;letter-spacing:-1px;}
 .section-subtitle{font-size:16px;color:var(--t2);max-width:560px;line-height:1.7;}
 .section-note{font-size:14px;color:var(--t2);max-width:640px;margin:12px auto 0;line-height:1.6;font-style:italic;}
@@ -121,16 +121,15 @@ section{position:relative;z-index:1;}
 .hero-title{font-size:clamp(40px,6vw,64px);font-weight:900;line-height:1.05;letter-spacing:-2px;margin-bottom:24px;animation:fadeInUp 0.6s ease 0.1s both;}
 .hero-title .gradient-text{background:var(--g1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .hero-desc{font-size:17px;color:var(--t2);line-height:1.7;margin-bottom:40px;max-width:480px;animation:fadeInUp 0.6s ease 0.2s both;}
-.hero-btns{display:flex;gap:16px;flex-wrap:wrap;animation:fadeInUp 0.6s ease 0.3s both;}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:var(--rmd);font-size:15px;font-weight:600;text-decoration:none;transition:var(--tr);cursor:pointer;border:none;font-family:inherit;}
 .btn-primary{background:var(--g1);color:white;box-shadow:0 4px 24px var(--accgs);}
 .btn-primary:hover{box-shadow:0 8px 32px var(--accgs);}
 .btn-secondary{background:var(--bgc);color:var(--t1);border:1px solid var(--b);}
 .btn-secondary:hover{background:var(--bgch);border-color:var(--bl);}
-.hero-stats{display:flex;gap:40px;margin-top:48px;animation:fadeInUp 0.6s ease 0.4s both;}
-.stat-item{display:flex;flex-direction:column;}
-.stat-num{font-size:28px;font-weight:800;background:var(--g1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.stat-lbl{font-size:13px;color:var(--tm);font-weight:500;}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:40px;}
+.stat-item{display:flex;flex-direction:column;gap:4px;text-align:center;}
+.stat-num{font-size:32px;font-weight:800;background:var(--g1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.stat-lbl{font-size:12px;color:var(--tm);text-transform:uppercase;letter-spacing:1px;font-weight:600;}
 .hero-visual{position:relative;animation:fadeInUp 0.6s ease 0.3s both;}
 .code-window{background:var(--bgc);border:1px solid var(--b);border-radius:var(--rlg);overflow:hidden;box-shadow:var(--shl);}
 .code-hdr{display:flex;align-items:center;gap:8px;padding:16px 20px;background:var(--bg2);border-bottom:1px solid var(--b);}
@@ -261,13 +260,41 @@ section{position:relative;z-index:1;}
 
 /* ===== ABOUT ===== */
 .about{padding:60px 0;background:var(--bg2);border-top:1px solid var(--b);border-bottom:1px solid var(--b);}
-.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+.about-grid{display:grid;grid-template-columns:1fr 1.5fr;gap:40px;align-items:start;}
+.about-left{display:flex;flex-direction:column;gap:16px;}
+.about-photo{position:relative;height:500px;border-radius:var(--rxl);overflow:hidden;}
+.about-content{display:flex;flex-direction:column;gap:24px;padding-top:48px;}
 .about-feats{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 .about-feat{padding:24px;background:var(--bgc);border:1px solid var(--b);border-radius:var(--rlg);transition:var(--tr);}
 .about-feat:hover{border-color:var(--bl);}
 .about-feat-icon{width:40px;height:40px;border-radius:var(--rsm);display:flex;align-items:center;justify-content:center;margin-bottom:16px;font-size:18px;}
 .about-feat h4{font-size:15px;font-weight:700;margin-bottom:8px;}
 .about-feat p{font-size:13px;color:var(--tm);line-height:1.6;}
+
+/* ===== TESTIMONIALS ===== */
+.testimonials{padding:80px 0;background:linear-gradient(180deg,var(--bg2) 0%,rgba(108,92,231,0.03) 50%,var(--bg2) 100%);}
+.testimonials-chat{width:100%;max-width:900px;margin:0 auto;padding:0 20px;display:grid;grid-template-columns:1fr;gap:32px;}
+.chat-message{display:flex;align-items:flex-end;gap:12px;}
+.chat-message-left{flex-direction:row;justify-self:start;}
+.chat-message-right{flex-direction:row-reverse;justify-self:end;}
+.chat-message-left .chat-bubble{margin-left:0;}
+.chat-message-right .chat-bubble{margin-right:0;}
+.chat-avatar{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white;flex-shrink:0;}
+.chat-bubble{max-width:550px;padding:16px 20px;border-radius:18px;position:relative;}
+.chat-message-left .chat-bubble{background:var(--bgc);border:1px solid var(--b);border-bottom-left-radius:4px;}
+.chat-message-right .chat-bubble{background:#5a4fcf;border-bottom-right-radius:4px;}
+.chat-name{font-size:14px;font-weight:700;margin-bottom:8px;}
+.chat-message-left .chat-name{color:var(--accl);}
+.chat-message-right .chat-name{color:white;}
+.chat-text{font-size:15px;line-height:1.6;margin-bottom:12px;}
+.chat-message-left .chat-text{color:var(--t1);}
+.chat-message-right .chat-text{color:white;}
+.chat-rating{display:flex;gap:4px;margin-bottom:8px;}
+.chat-message-left .chat-rating i{font-size:12px;color:#ffd700;transition:var(--tr);filter:drop-shadow(0 0 6px rgba(255,215,0,0.3));}
+.chat-message-left .chat-rating i:hover{transform:scale(1.3);filter:drop-shadow(0 0 12px rgba(255,215,0,0.8));}
+.chat-message-right .chat-rating i{font-size:12px;color:#ffeaa7;transition:var(--tr);filter:drop-shadow(0 0 6px rgba(255,234,167,0.3));}
+.chat-message-right .chat-rating i:hover{transform:scale(1.3);filter:drop-shadow(0 0 12px rgba(255,234,167,0.8));}
+.chat-project{font-size:12px;color:#fdcb6e;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.1);}
 
 /* ===== PRICING ===== */
 .pricing{padding:60px 0;background:linear-gradient(180deg,var(--bg2) 0%,rgba(108,92,231,0.03) 10%);}
@@ -364,17 +391,18 @@ section{position:relative;z-index:1;}
 .faq-item.active .faq-answer{max-height:200px;margin-top:16px;}
 
 /* ===== CONTACT ===== */
-.contact{padding:80px 0;background:linear-gradient(180deg,var(--bg2) 0%,rgba(108,92,231,0.03) 50%,var(--bg2) 100%);border-top:1px solid var(--b);position:relative;}
-.contact-box{max-width:600px;margin:0 auto;text-align:center;padding:48px 40px;background:var(--bgc);border:1px solid var(--b);border-radius:var(--rxl);position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.3);}
-.contact-box::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--acc),var(--gr));}
-.contact-box .section-subtitle{margin:0 auto 32px;font-size:15px;}
-.contact-title{font-size:28px;font-weight:800;margin-bottom:12px;background:var(--g1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.contact-desc{font-size:14px;color:var(--t2);margin-bottom:32px;line-height:1.6;}
-.tg-btn{display:inline-flex;align-items:center;gap:12px;padding:18px 48px;background:var(--g1);color:white;text-decoration:none;border-radius:var(--rmd);font-size:16px;font-weight:700;transition:var(--tr);box-shadow:0 8px 32px var(--accgs);position:relative;overflow:hidden;}
-.tg-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.1),transparent);opacity:0;transition:var(--tr);}
-.tg-btn:hover{box-shadow:0 12px 40px var(--accgs);}
-.tg-btn:hover::before{opacity:1;}
-.tg-btn i{font-size:22px;}
+.contact{padding:60px 0;background:linear-gradient(180deg,var(--bg2) 0%,rgba(108,92,231,0.03) 50%,var(--bg2) 100%);border-top:1px solid var(--b);border-bottom:1px solid var(--b);}
+.contact-box{max-width:700px;margin:0 auto;padding:40px;background:var(--bgc);border:1px solid var(--b);border-radius:var(--rxl);text-align:center;}
+.contact-title{font-size:28px;font-weight:700;margin-bottom:16px;color:var(--t1);}
+.contact-desc{font-size:16px;line-height:1.6;color:var(--t2);margin-bottom:32px;}
+.contact-buttons{display:flex;gap:16px;justify-content:center;margin-bottom:32px;flex-wrap:wrap;}
+.tg-btn{display:inline-flex;align-items:center;gap:12px;padding:18px 48px;background:linear-gradient(135deg,#6c5ce7,#a29bfe);color:white;text-decoration:none;border-radius:var(--rmd);font-size:16px;font-weight:700;transition:var(--tr);border:none;}
+.tg-btn:hover{box-shadow:0 8px 32px rgba(108,92,231,0.4);}
+.email-btn{display:inline-flex;align-items:center;gap:12px;padding:18px 48px;background:var(--bg2);color:var(--t1);border:1px solid var(--b);text-decoration:none;border-radius:var(--rmd);font-size:16px;font-weight:700;transition:var(--tr);cursor:pointer;}
+.email-btn:hover{border-color:var(--acc);color:var(--accl);box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+.email-btn i{font-size:22px;}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--g1);color:white;padding:12px 24px;border-radius:var(--rmd);font-size:14px;font-weight:600;opacity:0;visibility:hidden;transition:var(--tr);z-index:1000;box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+.toast.show{opacity:1;visibility:visible;bottom:50px;}
 
 /* ===== FOOTER ===== */
 .footer{padding:32px 0;background:linear-gradient(180deg,var(--bg2) 0%,rgba(108,92,231,0.08) 50%,var(--bg2) 100%);border-top:1px solid var(--b);}
@@ -427,12 +455,14 @@ section{position:relative;z-index:1;}
 @media(max-width:1024px){
 .hero-inner{grid-template-columns:1fr;gap:48px;}
 .hero-visual{display:none;}
+.hero-stats{grid-template-columns:repeat(2,1fr);}
 .services-grid{grid-template-columns:repeat(2,1fr);}
 .case-inner,.case-inner.rev{grid-template-columns:1fr;}
 .case-inner.rev .case-gallery{order:1;}
 .case-inner.rev .case-info{order:2;}
 .gallery-slider{min-height:160px;}
 .about-grid{grid-template-columns:1fr;gap:48px;}
+.testimonials-grid{grid-template-columns:repeat(2,1fr);}
 .pricing-grid{grid-template-columns:repeat(2,1fr);}
 .price-card:last-child{grid-column:span 2;}
 .calc-type-options{grid-template-columns:1fr;}
@@ -444,7 +474,9 @@ section{position:relative;z-index:1;}
 .nav-burger{display:flex;}
 .hero{padding:100px 0 60px;}
 .hero-title{font-size:36px;letter-spacing:-1px;}
-.hero-stats{gap:24px;}
+.hero-stats{grid-template-columns:repeat(2,1fr);gap:16px;}
+.stat-num{font-size:24px;}
+.stat-lbl{font-size:10px;}
 .services-grid{grid-template-columns:1fr;}
 .timeline{padding-left:74px;gap:32px;}
 .timeline::before{left:25px;}
@@ -454,9 +486,22 @@ section{position:relative;z-index:1;}
 .case-title{font-size:22px;}
 .gallery-slider{min-height:140px;}
 .about-feats{grid-template-columns:1fr;}
+.about-photo{max-width:400px; max-height: 300px;}
+.testimonials-chat{gap:24px;}
+.chat-message{gap:8px;}
+.chat-avatar{width:40px;height:40px;font-size:14px;}
+.chat-bubble{max-width:100%;padding:12px 16px;border-radius:14px;}
+.chat-message-left .chat-bubble{border-bottom-left-radius:4px;}
+.chat-message-right .chat-bubble{border-bottom-right-radius:4px;}
+.chat-name{font-size:13px;margin-bottom:6px;}
+.chat-text{font-size:14px;line-height:1.5;margin-bottom:8px;}
+.chat-rating i{font-size:11px;}
+.chat-project{font-size:11px;}
 .pricing-grid{grid-template-columns:1fr;}
 .price-card:last-child{grid-column:auto;}
 .contact-box{padding:40px 24px;}
+.contact-buttons{flex-direction:column;gap:12px;}
+.tg-btn,.email-btn{width:100%;justify-content:center;}
 .footer-inner{flex-direction:column;gap:16px;text-align:center;}
 .section-header{margin-bottom:40px;}
 .services,.cases,.about,.pricing,.calculator,.support,.contact{padding:40px 0;}
@@ -472,19 +517,20 @@ section{position:relative;z-index:1;}
 
 
 .container{max-width:100%;padding:0 16px;}
-.hero{padding:20px 0 40px;text-align:center;margin-top: -140px;}
+.hero{padding:20px 0 40px;text-align:center;margin-top: -140px;margin-bottom: -40px;}
 .hero-title{font-size:36px;letter-spacing:-0.5px;margin-top: 30px;margin-bottom: 40px;}
-.hero-desc{font-size:15px;margin-bottom:42px;}
+.hero-title span:first-child{margin-bottom:-5%;display:block}
+.hero-desc{font-size:15px;margin-bottom:42px;margin-top: 30px;}
 .hero-btns{flex-direction:column;}
 .hero-btns .btn{width:100%;justify-content:center;padding:12px 20px;}
-.hero-stats{gap:16px;justify-content:space-between;margin-bottom: -200px;}
-.stat-item{text-align:center;align-items:center;max-width:33%;}
-.stat-item-center .stat-num{text-align:center;margin-left: 50px;}
-.stat-item-center .stat-lbl{word-break:break-word;margin-left: 50px;}
-.stat-num{text-align:center;}
-.stat-lbl{word-break:break-word;}
+.hero-stats{gap:8px;justify-content:center;margin-bottom: -200px;grid-template-columns:repeat(4,1fr);}
+.stat-item{text-align:center;align-items:center;max-width:none;}
+.stat-item-center .stat-num{text-align:center;margin-left: 0;}
+.stat-item-center .stat-lbl{word-break:break-word;margin-left: 0;}
+.stat-num{font-size:18px;text-align:center;}
+.stat-lbl{font-size:10px;text-align:center;}
 .nav-logo{font-size:18px;}
-.section-label{font-size:11px;padding:5px 12px;text-align:center;}
+.section-label{font-size:11px;padding:5px 12px;text-align:center;margin:0 auto;}
 .section-title{font-size:28px;text-align:center;}
 .section-subtitle{font-size:14px;text-align:center;}
 .services,.cases,.about,.pricing,.calculator,.support,.contact{padding:32px 0;}
@@ -510,7 +556,11 @@ section{position:relative;z-index:1;}
 .case-link{width:100%;text-align:center;justify-content:center;}
 .case-tech{flex-wrap:wrap;}
 .tech-tag{font-size:11px;padding:4px 10px;}
-.about-feats{grid-template-columns:1fr;}
+.about-feats{grid-template-columns:1fr 1fr;}
+.about-grid{grid-template-columns:1fr;gap:32px;}
+.about-left{text-align:center;}
+.about-photo{height:400px;margin:0 auto;}
+.about-content{padding-top:0;text-align:left;}
 .about-text-center{text-align:center;}
 .af-item{padding:20px;}
 .af-icon{width:48px;height:48px;font-size:20px;}
@@ -600,9 +650,9 @@ section{position:relative;z-index:1;}
     <p class="w-sub" data-key="w_sub">Веб-разработчик. Создаю сайты и CRM-системы для бизнеса с нуля.</p>
     <div class="w-lang-label" data-key="w_choose">Выберите язык / Choose language</div>
     <div class="w-langs">
-      <button class="w-lang-btn active" data-lang="ru" onclick="setLang('ru',true)">🇷🇺 Русский</button>
-      <button class="w-lang-btn" data-lang="uk" onclick="setLang('uk',true)">🇺🇦 Українська</button>
-      <button class="w-lang-btn" data-lang="en" onclick="setLang('en',true)">🇬🇧 English</button>
+      <button class="w-lang-btn active" data-lang="ru" onclick="setLang('ru',true)">Русский</button>
+      <button class="w-lang-btn" data-lang="uk" onclick="setLang('uk',true)">Українська</button>
+      <button class="w-lang-btn" data-lang="en" onclick="setLang('en',true)">English</button>
     </div>
     <button class="w-enter-btn" onclick="enterSite()">
       <span data-key="w_enter">Войти в портфолио</span>
@@ -625,6 +675,7 @@ section{position:relative;z-index:1;}
       <li><a href="#services" data-key="nav_services">Услуги</a></li>
       <li><a href="#process" data-key="nav_process">Процесс</a></li>
       <li><a href="#cases" data-key="nav_cases">Кейсы</a></li>
+      <li><a href="#testimonials" data-key="nav_testimonials">Отзывы</a></li>
       <li><a href="#about" data-key="nav_about">Обо мне</a></li>
       <li><a href="#pricing" data-key="nav_price">Цены</a></li>
       <li><a href="#calculator" data-key="nav_calc">Калькулятор</a></li>
@@ -649,6 +700,7 @@ section{position:relative;z-index:1;}
   <a href="#services" class="mobile-link" data-key="nav_services">Услуги</a>
   <a href="#process" class="mobile-link" data-key="nav_process">Процесс</a>
   <a href="#cases" class="mobile-link" data-key="nav_cases">Кейсы</a>
+  <a href="#testimonials" class="mobile-link" data-key="nav_testimonials">Отзывы</a>
   <a href="#about" class="mobile-link" data-key="nav_about">Обо мне</a>
   <a href="#pricing" class="mobile-link" data-key="nav_price">Цены</a>
   <a href="#calculator" class="mobile-link" data-key="nav_calc">Калькулятор</a>
@@ -691,17 +743,21 @@ section{position:relative;z-index:1;}
           </a>
         </div>
         <div class="hero-stats">
-          <div class="stat-item stat-item-left">
-            <span class="stat-num">10+</span>
-            <span class="stat-lbl" data-key="h_s1">Проектов</span>
+          <div class="stat-item">
+            <span class="stat-num">5</span>
+            <span class="stat-lbl" data-key="h_s1">Лет опыта</span>
           </div>
-          <div class="stat-item stat-item-center">
-            <span class="stat-num">2-3</span>
-            <span class="stat-lbl" data-key="h_s2">Дня на проект</span>
+          <div class="stat-item">
+            <span class="stat-num">50K+</span>
+            <span class="stat-lbl" data-key="h_s2">Строк кода</span>
           </div>
-          <div class="stat-item stat-item-right">
-            <span class="stat-num">100%</span>
-            <span class="stat-lbl" data-key="h_s3">Код без конструкторов</span>
+          <div class="stat-item">
+            <span class="stat-num">20+</span>
+            <span class="stat-lbl" data-key="h_s3">Довольных клиентов</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num">5+</span>
+            <span class="stat-lbl" data-key="h_s4">Повторных заказов</span>
           </div>
         </div>
       </div>
@@ -914,36 +970,99 @@ section{position:relative;z-index:1;}
   </div>
 </section>
 
+<!-- ===== TESTIMONIALS ===== -->
+<section class="testimonials" id="testimonials">
+  <div class="container">
+    <div class="section-header reveal">
+      <div class="section-label"><i class="fas fa-quote-left"></i><span data-key="t_label">Отзывы</span></div>
+      <h2 class="section-title" data-key="t_title">Что говорят клиенты</h2>
+      <p class="section-subtitle" data-key="t_sub">Реальные отзывы от людей, с которыми я работал</p>
+    </div>
+    <div class="testimonials-chat">
+      <div class="chat-message chat-message-left reveal rd1">
+        <div class="chat-avatar" style="background: #6c5ce7;">РВ</div>
+        <div class="chat-bubble">
+          <div class="chat-name" data-key="t1_name">Руслана</div>
+          <div class="chat-text" data-key="t1_text">Очень понравилась система аналитики, статистики, метрики — очень обширные и крутые в этом плане. Можно выбирать конкретного менеджера или всех сразу, смотреть по проектам, по датам. Всё работает стабильно, интерфейс удобный. Влад быстро понял задачу и реализовал всё как нужно. Рекомендую!</div>
+          <div class="chat-rating">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div>
+          <div class="chat-project" data-key="t1_project">CRM система</div>
+        </div>
+      </div>
+      <div class="chat-message chat-message-right reveal rd2">
+        <div class="chat-avatar" style="background: #00cec9;">В</div>
+        <div class="chat-bubble">
+          <div class="chat-name" data-key="t2_name">Виталий</div>
+          <div class="chat-text" data-key="t2_text">Лендинг получился отличным! Конверсия выросла в 2 раза по сравнению со старым сайтом. Влад сделал всё быстро и качественно, учёл все мои пожелания. Очень доволен результатом!</div>
+          <div class="chat-rating">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div>
+          <div class="chat-project" data-key="t2_project">Лендинг товара</div>
+        </div>
+      </div>
+      <div class="chat-message chat-message-left reveal rd3">
+        <div class="chat-avatar" style="background: #e17055;">НК</div>
+        <div class="chat-bubble">
+          <div class="chat-name" data-key="t3_name">Неля Колесник</div>
+          <div class="chat-text" data-key="t3_text">Влад создал сайт в быстрые сроки. После запуска были абсолютно минимальные правки, потому что менялся наш контент. По договору Влад сделал тоже быстро, в течение дня. Всё было отлично, всё понравилось. Договорились на долгое сотрудничество — это уже второй проект, который мы с ним делаем.</div>
+          <div class="chat-rating">
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+            <i class="fas fa-star"></i>
+          </div>
+          <div class="chat-project" data-key="t3_project">Сайт курса</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ===== ABOUT ===== -->
 <section class="about" id="about">
   <div class="container">
     <div class="about-grid">
-      <div class="reveal about-text-center">
+      <div class="about-left reveal">
         <div class="section-label"><i class="fas fa-user"></i><span data-key="a_label">Обо мне</span></div>
-        <h2 class="section-title" data-key="a_title">Коротко о главном</h2>
-        <p class="section-subtitle" style="margin-bottom:24px" data-key="a_desc1">Я веб-разработчик Влад. Создаю сайты и выстраиваю системы для бизнеса с нуля. Код пишу самостоятельно — без конструкторов.</p>
-        <p class="section-subtitle" data-key="a_desc2">Работаю быстро и по делу — простые проекты за 2-3 дня, сложные обсуждаем отдельно. Все сроки и дедлайны соблюдаю.</p>
+        <h2 class="section-title" data-key="a_title">Обо мне</h2>
+        <div class="about-photo">
+          <img src="img/me-inf.jpg" alt="Влад - веб-разработчик" style="width: 100%; height: 100%; object-fit: cover; border-radius: var(--rxl); border: 3px solid var(--acc); box-shadow: var(--sh);">
+        </div>
       </div>
-      <div class="about-feats">
-        <div class="about-feat reveal rd1">
-          <div class="about-feat-icon" style="background:var(--accg);color:var(--accl)"><i class="fas fa-code"></i></div>
-          <h4 data-key="af1_t">Чистый код</h4>
-          <p data-key="af1_d">Пишу код сам, без конструкторов и шаблонов</p>
-        </div>
-        <div class="about-feat reveal rd2">
-          <div class="about-feat-icon" style="background:var(--grg);color:var(--gr)"><i class="fas fa-clock"></i></div>
-          <h4 data-key="af2_t">Быстрые сроки</h4>
-          <p data-key="af2_d">2-3 дня на простой проект, сложные — по договорённости</p>
-        </div>
-        <div class="about-feat reveal rd3">
-          <div class="about-feat-icon" style="background:rgba(225,112,85,0.15);color:var(--or)"><i class="fas fa-mobile-alt"></i></div>
-          <h4 data-key="af3_t">Адаптивность</h4>
-          <p data-key="af3_d">Все проекты работают на любых устройствах</p>
-        </div>
-        <div class="about-feat reveal rd4">
-          <div class="about-feat-icon" style="background:rgba(253,203,110,0.15);color:#ffeaa7"><i class="fas fa-handshake"></i></div>
-          <h4 data-key="af4_t">Дедлайны</h4>
-          <p data-key="af4_d">Фиксирую сроки и всегда их соблюдаю</p>
+      <div class="about-content">
+        <p class="section-subtitle" style="margin-bottom:24px" data-key="a_desc1">Я веб-разработчик Влад. Создаю сайты и выстраиваю системы для бизнеса с нуля. Код пишу самостоятельно — без конструкторов.</p>
+        <p class="section-subtitle" style="margin-bottom:32px" data-key="a_desc2">Работаю быстро и по делу — простые проекты за 2-3 дня, сложные обсуждаем отдельно. Все сроки и дедлайны соблюдаю.</p>
+        <div class="about-feats">
+          <div class="about-feat reveal rd1">
+            <div class="about-feat-icon" style="background:var(--accg);color:var(--accl)"><i class="fas fa-code"></i></div>
+            <h4 data-key="af1_t">Чистый код</h4>
+            <p data-key="af1_d">Пишу код сам, без конструкторов и шаблонов</p>
+          </div>
+          <div class="about-feat reveal rd2">
+            <div class="about-feat-icon" style="background:var(--grg);color:var(--gr)"><i class="fas fa-clock"></i></div>
+            <h4 data-key="af2_t">Быстрые сроки</h4>
+            <p data-key="af2_d">2-3 дня на простой проект, сложные — по договорённости</p>
+          </div>
+          <div class="about-feat reveal rd3">
+            <div class="about-feat-icon" style="background:rgba(225,112,85,0.15);color:var(--or)"><i class="fas fa-mobile-alt"></i></div>
+            <h4 data-key="af3_t">Адаптивность</h4>
+            <p data-key="af3_d">Все проекты работают на любых устройствах</p>
+          </div>
+          <div class="about-feat reveal rd4">
+            <div class="about-feat-icon" style="background:rgba(253,203,110,0.15);color:#ffeaa7"><i class="fas fa-handshake"></i></div>
+            <h4 data-key="af4_t">Дедлайны</h4>
+            <p data-key="af4_d">Фиксирую сроки и всегда их соблюдаю</p>
+          </div>
         </div>
       </div>
     </div>
@@ -1204,11 +1323,17 @@ section{position:relative;z-index:1;}
   <div class="container">
     <div class="contact-box reveal">
       <h2 class="contact-title" data-key="ct_title">Готовы обсудить проект?</h2>
-      <p class="contact-desc" data-key="ct_sub">Напишите в Telegram — отвечаю быстро. Обсудим задачу, сроки и стоимость для Вашего проекта.</p>
-      <a href="https://t.me/vladoss_011" target="_blank" class="tg-btn">
-        <i class="fab fa-telegram"></i>
-        @vladoss_011
-      </a>
+      <p class="contact-desc" data-key="ct_sub">Выберите удобный способ связи — Telegram или почта. Отвечу быстро. Обсудим задачу, сроки и стоимость для Вашего проекта.</p>
+      <div class="contact-buttons">
+        <a href="https://t.me/vladoss_011" target="_blank" class="tg-btn">
+          <i class="fab fa-telegram"></i>
+          @vladoss_011
+        </a>
+        <button class="email-btn" onclick="copyEmail()" id="emailBtn">
+          <i class="fas fa-envelope"></i>
+          vladpetrenko66@gmail.com
+        </button>
+      </div>
     </div>
   </div>
 </section>
@@ -1283,6 +1408,7 @@ section{position:relative;z-index:1;}
         <a href="#services" data-key="nav_services">Услуги</a>
         <a href="#process" data-key="nav_process">Процесс</a>
         <a href="#cases" data-key="nav_cases">Кейсы</a>
+        <a href="#testimonials" data-key="nav_testimonials">Отзывы</a>
         <a href="#calculator" data-key="nav_calc">Калькулятор</a>
         <a href="#support" data-key="nav_support">Поддержка</a>
         <a href="https://t.me/vladoss_011" target="_blank">Telegram</a>
@@ -1290,6 +1416,9 @@ section{position:relative;z-index:1;}
     </div>
   </div>
 </footer>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast">Скопировано</div>
 
 <!-- ===== LIGHTBOX ===== -->
 <div class="lightbox" id="lightbox">
@@ -1320,13 +1449,17 @@ const T = {
   ru:{
     w_hi:"Привет!",w_sub:"Веб-разработчик. Создаю сайты и CRM-системы для бизнеса с нуля.",
     w_choose:"Выберите язык",w_enter:"Войти в портфолио",
-    nav_services:"Услуги",nav_process:"Процесс",nav_cases:"Кейсы",nav_about:"Обо мне",nav_price:"Цены",nav_calc:"Калькулятор",nav_support:"Поддержка",
+    nav_services:"Услуги",nav_process:"Процесс",nav_cases:"Кейсы",nav_testimonials:"Отзывы",nav_about:"Обо мне",nav_price:"Цены",nav_calc:"Калькулятор",nav_support:"Поддержка",
     nav_tg:"Telegram",nav_tg_mob:"Telegram →",
     h_open:"Открыт для проектов",h_name:"Влад",h_role:"веб-разработчик",
     h_desc:"Создаю сайты и CRM-системы под бизнес с нуля. Код пишу самостоятельно — без конструкторов. Работаю быстро и по делу.",
     h_btn1:"Смотреть кейсы",h_btn2:"Написать в Telegram",
-    h_s1:"Проектов",h_s2:"Дня на проект",h_s3:"Код без конструкторов",
+    h_s1:"Лет опыта",h_s2:"Строк кода",h_s3:"Довольных клиентов",h_s4:"Повторных заказов",
     fb1:"Дедлайны соблюдаю",fb2:"Чистый код",fb3:"Адаптив",
+    t_label:"Отзывы",t_title:"Что говорят клиенты",t_sub:"Реальные отзывы от людей, с которыми я работал",
+    t1_name:"Руслана",t1_text:"Очень понравилась система аналитики, статистики, метрики — очень обширные и крутые в этом плане. Можно выбирать конкретного менеджера или всех сразу, смотреть по проектам, по датам. Всё работает стабильно, интерфейс удобный. Влад быстро понял задачу и реализовал всё как нужно. Рекомендую!",t1_project:"CRM система",
+    t2_name:"Виталий",t2_text:"Лендинг получился отличным! Конверсия выросла в 2 раза по сравнению со старым сайтом. Влад сделал всё быстро и качественно, учёл все мои пожелания. Очень доволен результатом!",t2_project:"Лендинг товара",
+    t3_name:"Неля Колесник",t3_text:"Влад создал сайт в быстрые сроки. После запуска были абсолютно минимальные правки, потому что менялся наш контент. По договору Влад сделал тоже быстро, в течение дня. Всё было отлично, всё понравилось. Договорились на долгое сотрудничество — это уже второй проект, который мы с ним делаем.",t3_project:"Сайт курса",
     s_label:"Услуги",s_title:"Что я создаю",s_sub:"Сайты и системы для бизнеса — от лендинга до полноценной CRM с аналитикой",
     sv1_t:"Лендинги",sv1_d:"Продающие одностраничники для товаров, услуг и курсов. Быстрая загрузка и адаптив.",sv1_tag1:"Товары",sv1_tag2:"Услуги",sv1_tag3:"Курсы",
     sv2_t:"Сайты с тарифами",sv2_d:"Многостраничные сайты для курсов и обучения: модули, пакеты, доступы, тарифы.",sv2_tag1:"Модули",sv2_tag2:"Тарифы",sv2_tag3:"Доступы",
@@ -1353,7 +1486,7 @@ const T = {
     c3_desc:"Разработка и верстка высококонверсионного одностраничного сайта для онлайн-курса по запуску товарного бизнеса и работе с Китаем. Проект выполнен в трендовом темном UI-стиле с премиальными акцентами. Структура полностью mobile-first, логически разбита на ключевые блоки (оффер, программа, тарифы, кейсы) и оптимизирована под быструю лидогенерацию.",
     c3_f1:"Высококонверсионный одностраничный сайт",c3_f2:"Трендовый темный UI-стиль",c3_f3:"Mobile-first структура",c3_f4:"Оптимизация под лидогенерацию",
     c_detail:"Посмотреть кейс",c_view:"Посмотреть проект (гость)",c_code:"Код по запросу",
-    a_label:"Обо мне",a_title:"Коротко о главном",
+    a_label:"Обо мне",a_title:"Кто я такой",
     a_desc1:"Я веб-разработчик Влад. Создаю сайты и выстраиваю системы для бизнеса с нуля. Код пишу самостоятельно — без конструкторов.",
     a_desc2:"Работаю быстро и по делу — простые проекты за 2-3 дня, сложные обсуждаем отдельно. Все сроки и дедлайны соблюдаю.",
     af1_t:"Чистый код",af1_d:"Пишу код сам, без конструкторов и шаблонов",
@@ -1367,14 +1500,15 @@ const T = {
     price_from:"от",pr_cta:"Обсудить проект",p_info:"Финальная стоимость обсуждается и фиксируется перед стартом работы. Если в процессе добавляются дополнительные функции — стоимость корректируется по договорённости.",
     calc_label:"Калькулятор проекта",calc_title:"Рассчитайте стоимость",calc_sub:"Выберите тип проекта и дополнительные функции для предварительной оценки",
     calc_type_title:"Тип проекта",calc_landing:"Лендинг",calc_multipage:"Многостраничный сайт",calc_crm:"CRM / Система",
-    calc_addons_title:"Дополнительные функции",calc_seo:"SEO оптимизация",calc_analytics:"Google Analytics",calc_chat:"Чат-бот",calc_multilang:"Мультиязычность",calc_animation:"Кастомные анимации",calc_cms:"Панель управления",calc_sheets:"Google Sheets",calc_api:"API интеграции",
+    calc_addons_title:"Дополнительные функции",calc_seo:"SEO оптимизация",calc_analytics:"Google Analytics",calc_chat:"Чат-бот",calc_multilang:"Мультиязычность",calc_animation:"Кастомные анимации",calc_cms:"Админ-панель (CMS)",calc_sheets:"Google Sheets",calc_api:"API интеграции",
+    calc_msg_intro:"Привет! Хочу заказать проект.",calc_msg_selected:"Выбрано:",calc_msg_total:"Примерная стоимость:",
     calc_total:"Итого:",calc_order:"Обсудить проект",calc_note:"Это ориентировочная цена. Финальная стоимость обсуждается индивидуально и зависит от требований проекта.",
     fn_title:"Хотите узнать цену проекта?",fn_subtitle:"Используйте калькулятор для предварительной оценки",
     sup_label:"Поддержка проекта",sup_title:"Полная забота о вашем проекте",sup_sub:"Запуск на платный хостинг и техподдержка",
     sup_host_title:"Платный хостинг",sup_host_desc:"Запуск проекта на надёжном платном хостинге с SSL сертификатом. Высокая скорость работы и 99.9% uptime.",sup_host_f1:"SSL сертификат бесплатно",sup_host_f2:"Автоматические бэкапы",sup_host_f3:"24/7 мониторинг",
     sup_tech_title:"Техподдержка",sup_tech_desc:"Минимальные правки + хостинг. Большие правки по дополнительной стоимости.",sup_tech_f1:"Исправление багов",sup_tech_f2:"Минимальные правки",sup_tech_f3:"Включён хостинг",
     sup_info:"Можно выбрать отдельные услуги или комплексный пакет. Стоимость обсуждается индивидуально в зависимости от требований проекта.",
-    ct_title:"Готовы обсудить проект?",ct_sub:"Напишите в Telegram — отвечаю быстро. Обсудим задачу, сроки и стоимость.",
+    ct_title:"Готовы обсудить проект?",ct_sub:"Выберите удобный способ связи — Telegram или почта. Отвечу быстро. Обсудим задачу, сроки и стоимость.",
     faq_label:"Частые вопросы",faq_title:"Ответы на популярные вопросы",
     faq_q1:"Сколько времени занимает разработка сайта?",faq_a1:"Лендинг — примерно 2-3 дня. Многостраничный сайт — 5-10 дней. CRM или сложная система — обсуждается индивидуально. Сроки могут варьироваться в зависимости от требований проекта.",
     faq_q2:"Что входит в стоимость?",faq_a2:"Разработка уникального дизайна и стиля. Полностью кодовый сайт, готовый к запуску со всеми необходимыми подключениями. Адаптив под все устройства, SEO оптимизация. Уникальные фотографии, визуальные элементы и стили, соответствующие вашему бренду.",
@@ -1385,18 +1519,23 @@ const T = {
     faq_q7:"Можно ли вносить правки после запуска?",faq_a7:"Да, можно вносить правки и изменения после запуска. Минимальные правки входят в техподдержку. Большие изменения и новый функционал обсуждаются и оплачиваются отдельно в зависимости от объёма работы.",
     ft_copy:"© 2026 Влад. Веб-разработка.",
     pr_badge:"Популярное",
-    per_month:"мес"
+    per_month:"мес",
+    copied:"Скопировано"
   },
   uk:{
     w_hi:"Привіт!",w_sub:"Веб-розробник. Створюю сайти та CRM-системи для бізнесу з нуля.",
     w_choose:"Оберіть мову",w_enter:"Увійти в портфоліо",
-    nav_services:"Послуги",nav_process:"Процес",nav_cases:"Кейси",nav_about:"Про мене",nav_price:"Ціни",nav_calc:"Калькулятор",nav_support:"Підтримка",
+    nav_services:"Послуги",nav_process:"Процес",nav_cases:"Кейси",nav_testimonials:"Відгуки",nav_about:"Про мене",nav_price:"Ціни",nav_calc:"Калькулятор",nav_support:"Підтримка",
     nav_tg:"Telegram",nav_tg_mob:"Telegram →",
     h_open:"Відкритий для проектів",h_name:"Влад",h_role:"веб-розробник",
     h_desc:"Створюю сайти та CRM-системи для бізнесу з нуля. Код пишу самостійно — без конструкторів. Працюю швидко і по справі.",
     h_btn1:"Дивитись кейси",h_btn2:"Написати в Telegram",
-    h_s1:"Проектів",h_s2:"Дні на проект",h_s3:"Код без конструкторів",
+    h_s1:"Років досвіду",h_s2:"Рядків коду",h_s3:"Задоволених клієнтів",h_s4:"Повторних замовлень",
     fb1:"Дедлайни дотримую",fb2:"Чистий код",fb3:"Адаптив",
+    t_label:"Відгуки",t_title:"Що кажуть клієнти",t_sub:"Реальні відгуки від людей, з якими я працював",
+    t1_name:"Руслана",t1_text:"Дуже сподобалася система аналітики, статистики, метрик — дуже обширні і круті в цьому плані. Можна вибирати конкретного менеджера або всіх одразу, дивитися по проектах, по датах. Все працює стабільно, інтерфейс зручний. Влад швидко зрозумів задачу і реалізував все як треба. Рекомендую!",t1_project:"CRM система",
+    t2_name:"Віталій",t2_text:"Лендінг вийшов відмінним! Конверсія зросла в 2 рази порівняно зі старим сайтом. Влад зробив все швидко і якісно, врахував всі мої побажання. Дуже задоволений результатом!",t2_project:"Лендинг товару",
+    t3_name:"Неля Колесник",t3_text:"Влад створив сайт у швидкі терміни. Після запуску були абсолютно мінімальні правки, тому що змінювся наш контент. За договором Влад зробив теж швидко, протягом дня. Все було чудово, все сподобалося. Договорилися про довгострокове співпрацю — це вже другий проект, який ми з ним робимо.",t3_project:"Сайт курсу",
     s_label:"Послуги",s_title:"Що я створюю",s_sub:"Сайти та системи для бізнесу — від лендингу до повноцінної CRM з аналітикою",
     sv1_t:"Лендинги",sv1_d:"Продаючі односторінкові сайти для товарів, послуг та курсів. Швидке завантаження та адаптив.",sv1_tag1:"Товари",sv1_tag2:"Послуги",sv1_tag3:"Курси",
     sv2_t:"Сайти з тарифами",sv2_d:"Багатосторінкові сайти для курсів та навчання: модулі, пакети, доступи, тарифи.",sv2_tag1:"Модулі",sv2_tag2:"Тарифи",sv2_tag3:"Доступи",
@@ -1423,7 +1562,7 @@ const T = {
     c3_desc:"Розробка та верстка висококонверсійного односторінкового сайту для онлайн-курсу з запуску товарного бізнесу та роботи з Китаєм. Проект виконано в трендовому темному UI-стилі з преміальними акцентами. Структура повністю mobile-first, логічно розбита на ключові блоки (оффер, програма, тарифи, кейси) та оптимізована під швидку лідогенерацію.",
     c3_f1:"Висококонверсійний односторінковий сайт",c3_f2:"Трендовий темний UI-стиль",c3_f3:"Mobile-first структура",c3_f4:"Оптимізація під лідогенерацію",
     c_detail:"Переглянути кейс",c_view:"Переглянути проект (гість)",c_code:"Код за запитом",
-    a_label:"Про мене",a_title:"Коротко про головне",
+    a_label:"Про мене",a_title:"Хто я такий",
     a_desc1:"Я веб-розробник Влад. Створюю сайти та вибудовую системи для бізнесу з нуля. Код пишу самостійно — без конструкторів.",
     a_desc2:"Працюю швидко і по справі — прості проекти за 2-3 дні, складніші обговорюємо окремо. Всі терміни та дедлайни дотримую.",
     af1_t:"Чистий код",af1_d:"Пишу код сам, без конструкторів та шаблонів",
@@ -1438,13 +1577,14 @@ const T = {
     calc_label:"Калькулятор проекту",calc_title:"Розрахуйте вартість",calc_sub:"Оберіть тип проекту та додаткові функції для попередньої оцінки",
     calc_type_title:"Тип проекту",calc_landing:"Лендинг",calc_multipage:"Багатосторінковий сайт",calc_crm:"CRM / Система",
     calc_addons_title:"Додаткові функції",calc_seo:"SEO оптимізація",calc_analytics:"Google Analytics",calc_chat:"Чат-бот",calc_multilang:"Багатомовність",calc_animation:"Кастомні анімації",calc_cms:"Панель керування",calc_sheets:"Google Sheets",calc_api:"API інтеграції",
+    calc_msg_intro:"Привіт! Хочу замовити проект.",calc_msg_selected:"Вибрано:",calc_msg_total:"Орієнтовна вартість:",
     calc_total:"Разом:",calc_order:"Обговорити проект",calc_note:"Це орієнтовна ціна. Фінальна вартість обговорюється індивідуально і залежить від вимог проекту.",
     fn_title:"Хочете дізнатися ціну проекту?",fn_subtitle:"Використайте калькулятор для попередньої оцінки",
     sup_label:"Підтримка проекту",sup_title:"Повна турбота про ваш проект",sup_sub:"Запуск на платний хостинг і техпідтримка",
     sup_host_title:"Платний хостинг",sup_host_desc:"Запуск проекту на надійному платному хостингу з SSL сертифікатом. Висока швидкість роботи та 99.9% uptime.",sup_host_f1:"SSL сертифікат безкоштовно",sup_host_f2:"Автоматичні бекапи",sup_host_f3:"24/7 моніторинг",
     sup_tech_title:"Техпідтримка",sup_tech_desc:"Мінімальні правки + хостинг. Великі правки за додатковою вартістю.",sup_tech_f1:"Виправлення багів",sup_tech_f2:"Мінімальні правки",sup_tech_f3:"Включено хостинг",
     sup_info:"Можна обрати окремі послуги або комплексний пакет. Вартість обговорюється індивідуально залежно від вимог проекту.",
-    ct_title:"Готові обговорити проект?",ct_sub:"Напишіть у Telegram — відповідаю швидко. Обговоримо задачу, терміни та вартість.",
+    ct_title:"Готові обговорити проект?",ct_sub:"Оберіть зручний спосіб зв'язку — Telegram або пошта. Відповідаю швидко. Обговоримо задачу, терміни та вартість.",
     faq_label:"Часті питання",faq_title:"Відповіді на популярні питання",
     faq_q1:"Скільки часу займає розробка сайту?",faq_a1:"Лендинг — приблизно 2-3 дні. Багатосторінковий сайт — 5-10 днів. CRM або складна система — обговорюється індивідуально. Терміни можуть варіюватися залежно від вимог проекту.",
     faq_q2:"Що входить у вартість?",faq_a2:"Розробка унікального дизайну та стилю. Повністю кодовий сайт, готовий до запуску з усіма необхідними підключеннями. Адаптив під всі пристрої, SEO оптимізація. Унікальні фотографії, візуальні елементи та стилі, що відповідають вашому бренду.",
@@ -1455,18 +1595,23 @@ const T = {
     faq_q7:"Чи можна вносити правки після запуску?",faq_a7:"Так, можна вносити правки та зміни після запуску. Мінімальні правки входять у техпідтримку. Великі зміни та новий функціонал обговорюються та оплачуються окремо залежно від обсягу роботи.",
     ft_copy:"© 2026 Влад. Веб-розробка.",
     pr_badge:"Популярне",
-    per_month:"міс"
+    per_month:"міс",
+    copied:"Скопійовано"
   },
   en:{
     w_hi:"Hello!",w_sub:"Web developer. I build websites and CRM systems for businesses from scratch.",
     w_choose:"Choose language",w_enter:"Enter portfolio",
-    nav_services:"Services",nav_process:"Process",nav_cases:"Cases",nav_about:"About",nav_price:"Pricing",nav_calc:"Calculator",nav_support:"Support",
+    nav_services:"Services",nav_process:"Process",nav_cases:"Cases",nav_testimonials:"Testimonials",nav_about:"About",nav_price:"Pricing",nav_calc:"Calculator",nav_support:"Support",
     nav_tg:"Telegram",nav_tg_mob:"Telegram →",
     h_open:"Available for projects",h_name:"Vlad",h_role:"web developer",
     h_desc:"I build websites and CRM systems for businesses from scratch. I write code myself — no builders. Fast and professional.",
     h_btn1:"View cases",h_btn2:"Message on Telegram",
-    h_s1:"Projects",h_s2:"Days per project",h_s3:"Code without builders",
+    h_s1:"Years experience",h_s2:"Lines of code",h_s3:"Happy clients",h_s4:"Repeat orders",
     fb1:"Deadlines met",fb2:"Clean code",fb3:"Responsive",
+    t_label:"Testimonials",t_title:"What clients say",t_sub:"Real reviews from people I've worked with",
+    t1_name:"Ruslan",t1_text:"I really liked the analytics, statistics, metrics system — very extensive and cool in that regard. Can choose a specific manager or all at once, view by projects, by dates. Everything works stably, the interface is convenient. Vlad quickly understood the task and implemented everything as needed. I recommend!",t1_project:"CRM system",
+    t2_name:"Vitaliy",t2_text:"The landing page turned out great! Conversion increased 2 times compared to the old site. Vlad did everything quickly and qualitatively, took into account all my wishes. Very satisfied with the result!",t2_project:"Product landing",
+    t3_name:"Nelya Kolesnyk",t3_text:"Vlad created the site in fast terms. After launch there were absolutely minimal edits because our content was changing. Per contract Vlad did it quickly too, within a day. Everything was excellent, everything was liked. We agreed on long-term cooperation — this is already the second project we are doing together.",t3_project:"Course website",
     s_label:"Services",s_title:"What I create",s_sub:"Websites and systems for business — from landing pages to full CRM with analytics",
     sv1_t:"Landing pages",sv1_d:"Selling one-page sites for products, services and courses. Fast loading and responsive.",sv1_tag1:"Products",sv1_tag2:"Services",sv1_tag3:"Courses",
     sv2_t:"Sites with pricing",sv2_d:"Multi-page sites for courses and education: modules, packages, access, pricing.",sv2_tag1:"Modules",sv2_tag2:"Pricing",sv2_tag3:"Access",
@@ -1493,7 +1638,7 @@ const T = {
     c3_desc:"Development and coding of a high-converting single-page website for an online course on launching product business and working with China. The project is executed in a trendy dark UI style with premium accents. The structure is fully mobile-first, logically divided into key blocks (offer, program, pricing, cases) and optimized for fast lead generation.",
     c3_f1:"High-converting single-page website",c3_f2:"Trendy dark UI style",c3_f3:"Mobile-first structure",c3_f4:"Optimized for lead generation",
     c_detail:"View case",c_view:"View project (guest)",c_code:"Code on request",
-    a_label:"About",a_title:"In brief",
+    a_label:"About",a_title:"Who I am",
     a_desc1:"I'm Vlad, a web developer. I build websites and systems for businesses from scratch. I write code myself — no builders.",
     a_desc2:"I work fast and professionally — simple projects in 2-3 days, complex ones we discuss separately. All deadlines are met.",
     af1_t:"Clean code",af1_d:"I write code myself, without builders or templates",
@@ -1508,13 +1653,14 @@ const T = {
     calc_label:"Project Calculator",calc_title:"Calculate the cost",calc_sub:"Choose project type and additional features for preliminary estimate",
     calc_type_title:"Project Type",calc_landing:"Landing page",calc_multipage:"Multi-page website",calc_crm:"CRM / System",
     calc_addons_title:"Additional Features",calc_seo:"SEO optimization",calc_analytics:"Google Analytics",calc_chat:"Chat-bot",calc_multilang:"Multi-language",calc_animation:"Custom animations",calc_cms:"Control panel",calc_sheets:"Google Sheets",calc_api:"API integrations",
+    calc_msg_intro:"Hello! I want to order a project.",calc_msg_selected:"Selected:",calc_msg_total:"Estimated cost:",
     calc_total:"Total:",calc_order:"Discuss project",calc_note:"This is an estimated price. The final cost is discussed individually and depends on project requirements.",
     fn_title:"Want to know the project price?",fn_subtitle:"Use the calculator for a preliminary estimate",
     sup_label:"Project Support",sup_title:"Full care for your project",sup_sub:"Launch on paid hosting and tech support",
     sup_host_title:"Paid Hosting",sup_host_desc:"Launch project on reliable paid hosting with SSL certificate. High performance and 99.9% uptime.",sup_host_f1:"SSL certificate free",sup_host_f2:"Automatic backups",sup_host_f3:"24/7 monitoring",
     sup_tech_title:"Tech Support",sup_tech_desc:"Minimal fixes + hosting. Major fixes at additional cost.",sup_tech_f1:"Bug fixes",sup_tech_f2:"Minimal fixes",sup_tech_f3:"Hosting included",
     sup_info:"You can choose individual services or a comprehensive package. Cost is discussed individually depending on project requirements.",
-    ct_title:"Ready to discuss your project?",ct_sub:"Message me on Telegram — I reply fast. We'll discuss the task, timeline and cost.",
+    ct_title:"Ready to discuss your project?",ct_sub:"Choose a convenient way to connect — Telegram or email. I reply fast. We'll discuss the task, timeline and cost.",
     faq_label:"FAQ",faq_title:"Answers to popular questions",
     faq_q1:"How long does website development take?",faq_a1:"Landing page — approximately 2-3 days. Multi-page website — 5-10 days. CRM or complex system — discussed individually. Timelines may vary depending on project requirements.",
     faq_q2:"What's included in the cost?",faq_a2:"Unique design and style development. Fully coded website, ready to launch with all necessary connections. Responsive for all devices, SEO optimization. Unique photos, visual elements and styles that match your brand.",
@@ -1525,7 +1671,8 @@ const T = {
     faq_q7:"Can I make edits after launch?",faq_a7:"Yes, you can make edits and changes after launch. Minimal fixes are included in technical support. Major changes and new functionality are discussed and paid separately depending on the scope of work.",
     ft_copy:"© 2026 Vlad. Web development.",
     pr_badge:"Popular",
-    per_month:"month"
+    per_month:"month",
+    copied:"Copied"
   }
 };
 
@@ -1560,6 +1707,23 @@ function setLang(lang, fromWelcome = false) {
   }
 }
 
+// ===== COPY EMAIL =====
+function copyEmail() {
+  const email = 'vladpetrenko66@gmail.com';
+  const toast = document.getElementById('toast');
+  const t = T[currentLang];
+  
+  navigator.clipboard.writeText(email).then(() => {
+    toast.textContent = t.copied;
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 1000);
+  }).catch(err => {
+    console.error('Failed to copy email: ', err);
+  });
+}
+
 // ===== WELCOME SCREEN =====
 function enterSite() {
   const ws = document.getElementById('welcomeScreen');
@@ -1567,6 +1731,7 @@ function enterSite() {
   setTimeout(() => { ws.style.display = 'none'; }, 800);
   document.body.style.overflow = '';
   localStorage.setItem('portfolioEntered', 'true');
+  window.scrollTo(0, 0);
 }
 
 // Check if user already entered
@@ -2281,25 +2446,39 @@ function initCalculator() {
 
   function calculateTotal() {
     let total = 0;
+    const t = T[currentLang];
 
-    // Get selected project type price
+    // Get selected project type price and name
     const selectedType = document.querySelector('input[name="projectType"]:checked');
+    let selectedItems = [];
+    
     if (selectedType) {
       total += parseInt(selectedType.dataset.price);
+      const typeKey = 'calc_' + selectedType.value;
+      selectedItems.push(t[typeKey] || selectedType.value);
     }
 
-    // Get selected addons prices
+    // Get selected addons prices and names
     addons.forEach(addon => {
       if (addon.checked) {
         total += parseInt(addon.dataset.price);
+        const addonKey = 'calc_' + addon.value;
+        selectedItems.push(t[addonKey] || addon.value);
       }
     });
 
     // Update total price
     totalPriceEl.textContent = '$' + total;
 
-    // Update button href with total price
-    calcBtn.href = `https://t.me/vladoss_011?text=Привет! Хочу заказать проект. Примерная стоимость: $${total}`;
+    // Build message in current language
+    const intro = t.calc_msg_intro;
+    const selectedLabel = t.calc_msg_selected;
+    const totalLabel = t.calc_msg_total;
+    
+    let message = intro + '\n\n' + selectedLabel + '\n' + selectedItems.join(', ') + '\n\n' + totalLabel + ' $' + total;
+    
+    // Update button href with message
+    calcBtn.href = `https://t.me/vladoss_011?text=${encodeURIComponent(message)}`;
   }
 
   // Add event listeners
