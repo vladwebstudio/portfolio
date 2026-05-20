@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Детальный просмотр кейса — Влад</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -168,7 +168,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .testimonial-rating i:hover{transform:scale(1.3);filter:drop-shadow(0 0 12px rgba(255,215,0,0.8));}
 
 /* ===== LIGHTBOX ===== */
-.lightbox{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.95);backdrop-filter:blur(20px);align-items:center;justify-content:center;cursor:pointer;touch-action:none;}
+.lightbox{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.95);backdrop-filter:blur(20px);align-items:center;justify-content:center;cursor:pointer;}
 .lightbox.active{display:flex;}
 .lb-content{max-width:90vw;max-height:90vh;position:relative;}
 .lb-content img{max-width:100%;max-height:90vh;object-fit:contain;border-radius:var(--rmd);cursor:grab;}
@@ -179,14 +179,19 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .lb-arr{width:48px;height:48px;border-radius:50%;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);border:1px solid var(--b);color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--tr);pointer-events:auto;margin:0 20px;}
 .lb-arr:hover{background:rgba(108,92,231,0.5);transform:scale(1.1);}
 .lb-counter{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);color:var(--t2);font-size:14px;font-weight:500;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);padding:8px 16px;border-radius:20px;border:1px solid var(--b);z-index:10001;}
-.lb-zoom{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;gap:8px;z-index:10001;}
+.lb-zoom{position:fixed;bottom:20px;right:20px;display:flex;flex-direction:column;align-items:center;gap:8px;z-index:10001;}
 .lb-zoom-btn{width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);border:1px solid var(--b);color:white;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--tr);font-size:16px;}
 .lb-zoom-btn:hover{background:rgba(108,92,231,0.5);transform:scale(1.1);}
+.lb-zoom-hint{font-size:10px;color:var(--t2);text-align:center;background:rgba(0,0,0,0.5);backdrop-filter:blur(10px);border:1px solid var(--b);border-radius:8px;padding:4px 8px;white-space:nowrap;}
 .lb-info{position:fixed;top:10px;left:10px;right:10px;max-width:300px;background:rgba(0,0,0,0.7);backdrop-filter:blur(15px);border:1px solid var(--b);border-radius:var(--rmd);padding:12px;color:white;z-index:10001;opacity:0;transform:translateY(-10px);transition:var(--tr);max-height:30vh;overflow-y:auto;}
 .lb-info.show{opacity:1;transform:translateY(0);}
-.lb-info-title{font-size:14px;font-weight:700;margin-bottom:6px;color:var(--accl);}
-.lb-info-desc{font-size:11px;line-height:1.3;color:var(--t2);margin-bottom:8px;}
-.lb-info-features{display:flex;flex-direction:column;gap:3px;max-height:15vh;overflow-y:auto;}
+.lb-info-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.lb-info-title{font-size:14px;font-weight:700;color:var(--accl);}
+.lb-info-toggle{width:32px;height:32px;border-radius:50%;color:var(--acc);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;}
+.lb-info-desc{font-size:11px;line-height:1.3;color:var(--t2);margin-bottom:8px;transition:var(--tr);}
+.lb-info-desc.hidden{display:none;}
+.lb-info-features{display:flex;flex-direction:column;gap:3px;max-height:15vh;overflow-y:auto;transition:var(--tr);}
+.lb-info-features.hidden{display:none;}
 .lb-info-feature{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--t1);}
 .lb-info-feature i{color:var(--gr);font-size:9px;flex-shrink:0;}
 
@@ -263,6 +268,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .lb-counter{bottom:8px;font-size:12px;padding:6px 12px;}
 .lb-zoom{bottom:8px;right:8px;gap:6px;}
 .lb-zoom-btn{width:36px;height:36px;font-size:14px;}
+.lb-zoom-hint{display:none;}
 .lb-content{max-width:95vw;max-height:75vh;}
 .lb-content img{max-height:70vh;}
 }
@@ -402,9 +408,13 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="lb-zoom-btn lb-zoom-in" id="zoomIn"><i class="fas fa-plus"></i></div>
       <div class="lb-zoom-btn lb-zoom-reset" id="zoomReset"><i class="fas fa-undo"></i></div>
       <div class="lb-zoom-btn lb-zoom-out" id="zoomOut"><i class="fas fa-minus"></i></div>
+      <div class="lb-zoom-hint" id="zoomHint">Ctrl + колёсико</div>
     </div>
     <div class="lb-info">
-      <div class="lb-info-title"></div>
+      <div class="lb-info-header">
+        <div class="lb-info-title"></div>
+        <div class="lb-info-toggle" id="lbInfoToggle"><i class="fas fa-minus"></i></div>
+      </div>
       <div class="lb-info-desc"></div>
       <div class="lb-info-features"></div>
     </div>
@@ -429,7 +439,8 @@ const T = {
     cta_desc:"Обсудим вашу задачу, сроки и стоимость. Напишите в Telegram.",
     cta_tg:"Написать в Telegram",
     cta_price:"Посмотреть цены",
-    page_title: 'Детальный просмотр кейса — Влад'
+    page_title: 'Детальный просмотр кейса — Влад',
+    zoom_hint: 'Ctrl + колёсико'
   },
   uk:{
     back_to_cases:"Повернутися до кейсів",
@@ -446,7 +457,8 @@ const T = {
     cta_desc:"Обговоримо ваше завдання, терміни та вартість. Напишіть у Telegram.",
     cta_tg:"Написати в Telegram",
     cta_price:"Переглянути ціни",
-    page_title: 'Детальний перегляд кейсу — Влад'
+    page_title: 'Детальний перегляд кейсу — Влад',
+    zoom_hint: 'Ctrl + коліщатко'
   },
   en:{
     back_to_cases:"Back to cases",
@@ -463,7 +475,8 @@ const T = {
     cta_desc:"Let's discuss your task, timeline and cost. Message me on Telegram.",
     cta_tg:"Message on Telegram",
     cta_price:"View pricing",
-    page_title: 'Detailed case view — Vlad'
+    page_title: 'Detailed case view — Vlad',
+    zoom_hint: 'Ctrl + scroll'
   }
 };
 
@@ -482,6 +495,9 @@ function applyTranslations() {
     const key = el.dataset.key;
     if (t[key]) el.textContent = t[key];
   });
+  // Update zoom hint
+  const zoomHint = document.getElementById('zoomHint');
+  if (zoomHint && t.zoom_hint) zoomHint.textContent = t.zoom_hint;
 }
 
 // Detect language from URL or default
@@ -1955,11 +1971,23 @@ const lbInfo = document.querySelector('.lb-info');
 const lbInfoTitle = document.querySelector('.lb-info-title');
 const lbInfoDesc = document.querySelector('.lb-info-desc');
 const lbInfoFeatures = document.querySelector('.lb-info-features');
+const lbInfoToggle = document.getElementById('lbInfoToggle');
 
 let translateX = 0;
 let translateY = 0;
 let isDragging = false;
 let startX, startY;
+let isInfoExpanded = true;
+
+// Toggle info description
+if (lbInfoToggle) {
+  lbInfoToggle.addEventListener('click', () => {
+    isInfoExpanded = !isInfoExpanded;
+    lbInfoDesc.classList.toggle('hidden', !isInfoExpanded);
+    lbInfoFeatures.classList.toggle('hidden', !isInfoExpanded);
+    lbInfoToggle.innerHTML = isInfoExpanded ? '<i class="fas fa-minus"></i>' : '<i class="fas fa-plus"></i>';
+  });
+}
 
 function openLightbox(index) {
   const caseData = casesData[caseId];
@@ -2019,8 +2047,9 @@ lbClose.addEventListener('click', closeLightbox);
 lbPrev.addEventListener('click', (e) => { e.stopPropagation(); navigateLightbox(-1); });
 lbNext.addEventListener('click', (e) => { e.stopPropagation(); navigateLightbox(1); });
 
+// Close lightbox when clicking on empty space (background), not on content
 lightbox.addEventListener('click', (e) => {
-  if (e.target === lightbox || e.target.closest('.lb-content') === lightboxImg.parentElement) {
+  if (e.target === lightbox) {
     closeLightbox();
   }
 });
@@ -2065,15 +2094,18 @@ function updateTransform() {
   lightboxImg.style.cursor = zoomLevel > 1 ? 'grab' : 'default';
 }
 
+// Wheel zoom - only with Ctrl/Cmd key (trackpad scroll won't zoom)
 lightboxImg.addEventListener('wheel', (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-  if (e.deltaY < 0) {
-    zoomLevel = Math.min(zoomLevel + 0.1, 3);
-  } else {
-    zoomLevel = Math.max(zoomLevel - 0.1, 0.5);
+  if (e.ctrlKey || e.metaKey) {
+    e.preventDefault();
+    if (e.deltaY < 0) {
+      zoomLevel = Math.min(zoomLevel + 0.1, 3);
+    } else {
+      zoomLevel = Math.max(zoomLevel - 0.1, 0.5);
+    }
+    updateTransform();
   }
-  updateTransform();
+  // Allow normal scrolling without Ctrl/Cmd
 });
 
 // Drag functionality
@@ -2115,7 +2147,7 @@ lightboxImg.addEventListener('click', (e) => {
   e.stopPropagation();
 });
 
-// Touch events for mobile with pinch-to-zoom
+// Touch events for mobile pinch-zoom
 let initialPinchDistance = 0;
 let initialZoomLevel = 1;
 
@@ -2133,12 +2165,11 @@ lightboxImg.addEventListener('touchstart', (e) => {
     );
     initialZoomLevel = zoomLevel;
   }
-  e.preventDefault();
-}, { passive: false });
+}, { passive: true });
 
 lightboxImg.addEventListener('touchmove', (e) => {
-  e.preventDefault();
   if (e.touches.length === 1 && isDragging) {
+    e.preventDefault();
     translateX = e.touches[0].clientX - startX;
     translateY = e.touches[0].clientY - startY;
     updateTransform();
@@ -2147,9 +2178,15 @@ lightboxImg.addEventListener('touchmove', (e) => {
       e.touches[0].clientX - e.touches[1].clientX,
       e.touches[0].clientY - e.touches[1].clientY
     );
-    const scaleRatio = currentPinchDistance / initialPinchDistance;
-    zoomLevel = Math.max(0.5, Math.min(3, initialZoomLevel * scaleRatio));
-    updateTransform();
+    const distanceChange = Math.abs(currentPinchDistance - initialPinchDistance);
+    
+    // Only zoom if distance changes significantly (> 20px) - true pinch gesture on mobile
+    if (distanceChange > 20) {
+      e.preventDefault();
+      const scaleRatio = currentPinchDistance / initialPinchDistance;
+      zoomLevel = Math.max(0.5, Math.min(3, initialZoomLevel * scaleRatio));
+      updateTransform();
+    }
   }
 }, { passive: false });
 
@@ -2158,7 +2195,6 @@ lightboxImg.addEventListener('touchend', (e) => {
   if (e.touches.length < 2) {
     initialPinchDistance = 0;
   }
-  updateTransform();
 });
 
 // ===== PARTICLE SYSTEM =====
