@@ -2583,9 +2583,14 @@ async function loadAnalyticsData() {
     document.getElementById('uniqueVisitors').textContent = data.uniqueVisitors || data.totalVisits;
     document.getElementById('repeatVisits').textContent = data.repeatVisits || 0;
     document.getElementById('avgTime').textContent = data.avgTime + ' сек';
-    document.getElementById('conversion').textContent = data.conversion + '%';
     document.getElementById('returnRate').textContent = data.returnRate + '%';
     document.getElementById('avgScroll').textContent = data.avgScroll + '%';
+    
+    // Пересчитываем конверсию локально (игнорируем серверную)
+    const totalCaseClicksLocal = data.caseClickStats ? Object.values(data.caseClickStats).reduce((sum, count) => sum + count, 0) : 0;
+    const effectiveClicksLocal = Math.min(totalCaseClicksLocal, data.uniqueVisitors || data.totalVisits);
+    const conversionLocal = (data.uniqueVisitors || data.totalVisits) > 0 ? ((effectiveClicksLocal / (data.uniqueVisitors || data.totalVisits)) * 100).toFixed(1) : 0;
+    document.getElementById('conversion').textContent = conversionLocal + '%';
     
     // Статистика по страницам
     const pageStats = document.getElementById('pageStats');
@@ -2821,9 +2826,11 @@ function processLocalStorageData(visits) {
   const totalTime = visits.reduce((sum, v) => sum + (parseFloat(v.timeOnPage) || 0), 0);
   const avgTime = totalVisits > 0 ? (totalTime / totalVisits).toFixed(0) : 0;
   
-  // Конверсия (уникальные пользователи, кликнувшие на кейсы / уникальные посетители)
-  const uniqueCaseClicks = caseClickStatsUnique.size;
-  const conversion = uniqueVisitors > 0 ? ((uniqueCaseClicks / uniqueVisitors) * 100).toFixed(1) : 0;
+  // Конверсия (клики на кейсы / уникальные посетители)
+  const totalCaseClicks = Object.values(caseClickStats).reduce((sum, count) => sum + count, 0);
+  // Ограничиваем количество кликов количеством уникальных пользователей (чтобы не было > 100%)
+  const effectiveClicks = Math.min(totalCaseClicks, uniqueVisitors);
+  const conversion = uniqueVisitors > 0 ? ((effectiveClicks / uniqueVisitors) * 100).toFixed(1) : 0;
   
   // Возвращаемость пользователей
   const returningUsers = Object.values(clientVisits).filter(visits => visits > 1).length;
