@@ -2123,6 +2123,13 @@ const sectionsToTrack = [
   { id: 'faq', name: 'FAQ' }
 ];
 
+// Маппинг секций к процентам скролла
+const sectionToScrollPercent = {
+  'Услуги': 25,
+  'Кейсы': 50,
+  'FAQ': 100
+};
+
 // Отслеживание скролла
 window.addEventListener('scroll', () => {
   const scrollTop = window.scrollY;
@@ -2182,9 +2189,20 @@ document.addEventListener('click', (e) => {
 function sendAnalyticsData() {
   const timeOnPage = Math.round((Date.now() - analyticsData.startTime) / 1000);
   
+  // Определяем скролл на основе достигнутых секций
+  let sectionBasedScroll = 0;
+  analyticsData.sectionsReached.forEach(section => {
+    const percent = sectionToScrollPercent[section];
+    if (percent && percent > sectionBasedScroll) {
+      sectionBasedScroll = percent;
+    }
+  });
+  // Используем скролл на основе секций, если он больше фактического скролла
+  const effectiveScroll = Math.max(analyticsData.maxScroll, sectionBasedScroll);
+  
   const data = {
     page: analyticsData.page,
-    maxScroll: analyticsData.maxScroll,
+    maxScroll: effectiveScroll,
     timeOnPage: timeOnPage,
     country: 'Неизвестно',
     language: navigator.language,
@@ -2316,18 +2334,27 @@ async function loadAnalyticsData() {
     const sectionStats = document.getElementById('sectionStats');
     sectionStats.innerHTML = '';
     const sectionData = data.sectionStatsUnique || data.sectionStats;
-    if (sectionData && Object.keys(sectionData).length > 0) {
-      for (const [section, value] of Object.entries(sectionData)) {
-        const item = document.createElement('div');
-        item.className = 'analytics-list-item';
-        const count = Array.isArray(value) ? value.length : (typeof value === 'object' && value.size !== undefined ? value.size : value);
-        const percentage = data.uniqueVisitors > 0 ? ((count / data.uniqueVisitors) * 100).toFixed(1) : 0;
-        item.innerHTML = `<span>${section}</span><span>${count} (${percentage}%)</span>`;
-        sectionStats.appendChild(item);
-      }
-    } else {
-      sectionStats.innerHTML = '<div class="analytics-list-item"><span>Нет данных</span></div>';
-    }
+    const allSections = [
+      { name: 'Услуги' },
+      { name: 'Процесс' },
+      { name: 'Кейсы' },
+      { name: 'Отзывы' },
+      { name: 'О себе' },
+      { name: 'Цены' },
+      { name: 'Калькулятор' },
+      { name: 'Поддержка' },
+      { name: 'Контакты' },
+      { name: 'FAQ' }
+    ];
+    allSections.forEach(section => {
+      const item = document.createElement('div');
+      item.className = 'analytics-list-item';
+      const value = sectionData ? sectionData[section.name] : null;
+      const count = value ? (Array.isArray(value) ? value.length : (typeof value === 'object' && value.size !== undefined ? value.size : value)) : 0;
+      const percentage = data.uniqueVisitors > 0 ? ((count / data.uniqueVisitors) * 100).toFixed(1) : 0;
+      item.innerHTML = `<span>${section.name}</span><span>${count} (${percentage}%)</span>`;
+      sectionStats.appendChild(item);
+    });
     
     // Статистика по кликам на кейсы
     const caseClickStats = document.getElementById('caseClickStats');
@@ -2353,28 +2380,74 @@ async function loadAnalyticsData() {
       pageStats.appendChild(item);
     }
     
-    // Статистика по скроллу (по уникальным пользователям)
+    // Статистика по скроллу (отображаем как секции с процентами)
     const scrollStats = document.getElementById('scrollStats');
     scrollStats.innerHTML = '';
-    const scrollLabels = {0: '0-25%', 25: '25-50%', 50: '50-75%', 75: '75-100%', 100: '100%'};
-    const scrollData = data.scrollStatsUnique || data.scrollStats;
-    for (const [percent, value] of Object.entries(scrollData)) {
-      const item = document.createElement('div');
-      item.className = 'analytics-list-item';
-      const count = Array.isArray(value) ? value.length : (typeof value === 'object' ? value.size : value);
-      const percentage = data.uniqueVisitors > 0 ? ((count / data.uniqueVisitors) * 100).toFixed(1) : 0;
-      item.innerHTML = `<span>${scrollLabels[percent] || percent + '%'}</span><span>${count} (${percentage}%)</span>`;
-      scrollStats.appendChild(item);
+    const scrollSectionData = data.sectionStatsUnique || data.sectionStats;
+    // Маппинг имен секций к процентам
+    const sectionToPercentLabel = {
+      'Услуги': '25%',
+      'Процесс': '35%',
+      'Кейсы': '50%',
+      'Отзывы': '60%',
+      'О себе': '70%',
+      'Цены': '80%',
+      'Калькулятор': '85%',
+      'Поддержка': '90%',
+      'Контакты': '95%',
+      'FAQ': '100%'
+    };
+    if (scrollSectionData && Object.keys(scrollSectionData).length > 0) {
+      for (const [section, value] of Object.entries(scrollSectionData)) {
+        const item = document.createElement('div');
+        item.className = 'analytics-list-item';
+        const count = Array.isArray(value) ? value.length : (typeof value === 'object' && value.size !== undefined ? value.size : value);
+        const percentage = data.uniqueVisitors > 0 ? ((count / data.uniqueVisitors) * 100).toFixed(1) : 0;
+        const label = sectionToPercentLabel[section] || section;
+        item.innerHTML = `<span>${label}</span><span>${count} (${percentage}%)</span>`;
+        scrollStats.appendChild(item);
+      }
+    } else {
+      scrollStats.innerHTML = '<div class="analytics-list-item"><span>Нет данных</span></div>';
     }
     
     // Последние посещения
     const recentVisits = document.getElementById('recentVisits');
     recentVisits.innerHTML = '';
+    console.log('Recent visits data from server:', data.recentVisits);
     data.recentVisits.forEach(visit => {
       const item = document.createElement('div');
       item.className = 'analytics-list-item';
       const date = new Date(visit.date).toLocaleDateString();
-      const scroll = visit.scroll !== undefined ? visit.scroll + '%' : '0%';
+      // Определяем скролл на основе достижений секций из данных о секциях
+      let sectionBasedScroll = 0;
+      const sectionStats = data.sectionStatsUnique || data.sectionStats;
+      const sectionToScrollPercent = {
+        'Услуги': 25,
+        'Процесс': 35,
+        'Кейсы': 50,
+        'Отзывы': 60,
+        'О себе': 70,
+        'Цены': 80,
+        'Калькулятор': 85,
+        'Поддержка': 90,
+        'Контакты': 95,
+        'FAQ': 100
+      };
+      if (sectionStats) {
+        Object.keys(sectionStats).forEach(section => {
+          const value = sectionStats[section];
+          const count = Array.isArray(value) ? value.length : (typeof value === 'object' && value.size !== undefined ? value.size : value);
+          if (count > 0) {
+            const percent = sectionToScrollPercent[section];
+            if (percent && percent > sectionBasedScroll) {
+              sectionBasedScroll = percent;
+            }
+          }
+        });
+      }
+      const scroll = sectionBasedScroll > 0 ? sectionBasedScroll + '%' : (visit.scroll !== undefined && visit.scroll !== null ? visit.scroll + '%' : '0%');
+      console.log('Recent visit debug:', visit, 'sectionBasedScroll:', sectionBasedScroll);
       item.innerHTML = `<span>${date} - ${visit.page}</span><span>${scroll}</span>`;
       recentVisits.appendChild(item);
     });
@@ -2418,25 +2491,51 @@ function processLocalStorageData(visits) {
   const sectionStatsUnique = {};
   const caseClickStats = {};
   
+  // Маппинг секций к процентам скролла
+  const sectionToScrollPercent = {
+    'Услуги': 25,
+    'Кейсы': 50,
+    'FAQ': 100
+  };
+  
   visits.forEach(visit => {
     if (!pageStats[visit.page]) pageStats[visit.page] = 0;
     pageStats[visit.page]++;
     
-    const scroll = visit.maxScroll || 0;
-    if (scroll <= 25) scrollStats[0]++;
-    else if (scroll <= 50) scrollStats[25]++;
-    else if (scroll <= 75) scrollStats[50]++;
-    else if (scroll < 100) scrollStats[75]++;
-    else scrollStats[100]++;
+    // Определяем скролл на основе достигнутых секций
+    let sectionBasedScroll = 0;
+    if (visit.sectionsReached) {
+      visit.sectionsReached.forEach(section => {
+        const percent = sectionToScrollPercent[section];
+        if (percent && percent > sectionBasedScroll) {
+          sectionBasedScroll = percent;
+        }
+      });
+    }
+    // Используем скролл на основе секций, если он больше фактического скролла
+    const scroll = Math.max(visit.maxScroll || 0, sectionBasedScroll);
+    
+    // Логирование для отладки
+    if (sectionBasedScroll > 0) {
+      console.log(`[Аналитика] Scroll debug: visit.maxScroll=${visit.maxScroll}, sectionBasedScroll=${sectionBasedScroll}, effectiveScroll=${scroll}, sectionsReached=${visit.sectionsReached}`);
+    }
+    
+    // Категоризация скролла (по всем записям)
+    // Если пользователь достиг X%, то он считается во всех категориях до X%
+    if (scroll >= 0) scrollStats[0]++;
+    if (scroll >= 25) scrollStats[25]++;
+    if (scroll >= 50) scrollStats[50]++;
+    if (scroll >= 75) scrollStats[75]++;
+    if (scroll >= 100) scrollStats[100]++;
     
     // Категоризация скролла (по уникальным пользователям)
-    // Если пользователь пролистал до X%, то он считается в категории X
+    // Если пользователь достиг X%, то он считается во всех категориях до X%
     if (visit.clientId) {
-      if (scroll <= 25) scrollStatsUnique[0].add(visit.clientId);
-      else if (scroll <= 50) scrollStatsUnique[25].add(visit.clientId);
-      else if (scroll <= 75) scrollStatsUnique[50].add(visit.clientId);
-      else if (scroll < 100) scrollStatsUnique[75].add(visit.clientId);
-      else scrollStatsUnique[100].add(visit.clientId);
+      if (scroll >= 0) scrollStatsUnique[0].add(visit.clientId);
+      if (scroll >= 25) scrollStatsUnique[25].add(visit.clientId);
+      if (scroll >= 50) scrollStatsUnique[50].add(visit.clientId);
+      if (scroll >= 75) scrollStatsUnique[75].add(visit.clientId);
+      if (scroll >= 100) scrollStatsUnique[100].add(visit.clientId);
     }
     
     // Статистика по секциям
@@ -2474,7 +2573,18 @@ function processLocalStorageData(visits) {
   // Средний скролл (средний максимальный скролл по уникальным пользователям)
   const clientMaxScroll = {};
   visits.forEach(visit => {
-    const scroll = parseFloat(visit.maxScroll) || 0;
+    // Определяем скролл на основе достигнутых секций
+    let sectionBasedScroll = 0;
+    if (visit.sectionsReached) {
+      visit.sectionsReached.forEach(section => {
+        const percent = sectionToScrollPercent[section];
+        if (percent && percent > sectionBasedScroll) {
+          sectionBasedScroll = percent;
+        }
+      });
+    }
+    // Используем скролл на основе секций, если он больше фактического скролла
+    const scroll = Math.max(visit.maxScroll || 0, sectionBasedScroll);
     const clientId = visit.clientId;
     
     if (clientId) {
@@ -2500,11 +2610,63 @@ function processLocalStorageData(visits) {
   const returningUsers = Object.values(clientVisits).filter(visits => visits > 1).length;
   const returnRate = uniqueVisitors > 0 ? ((returningUsers / uniqueVisitors) * 100).toFixed(1) : 0;
   
-  const recentVisits = visits.slice(-7).reverse().map(v => ({
-    date: v.date,
-    page: v.page,
-    scroll: v.maxScroll || 0
-  }));
+  // Последние посещения (по уникальным пользователям с максимальным скроллом)
+  const clientLastVisit = {};
+  visits.forEach(visit => {
+    const clientId = visit.clientId;
+    if (clientId) {
+      if (!clientLastVisit[clientId] || visit.date > clientLastVisit[clientId].date) {
+        clientLastVisit[clientId] = visit;
+      } else if (visit.date === clientLastVisit[clientId].date) {
+        // Определяем скролл на основе достигнутых секций
+        let sectionBasedScroll = 0;
+        if (visit.sectionsReached) {
+          visit.sectionsReached.forEach(section => {
+            const percent = sectionToScrollPercent[section];
+            if (percent && percent > sectionBasedScroll) {
+              sectionBasedScroll = percent;
+            }
+          });
+        }
+        const scroll = Math.max(visit.maxScroll || 0, sectionBasedScroll);
+        
+        let existingSectionBasedScroll = 0;
+        if (clientLastVisit[clientId].sectionsReached) {
+          clientLastVisit[clientId].sectionsReached.forEach(section => {
+            const percent = sectionToScrollPercent[section];
+            if (percent && percent > existingSectionBasedScroll) {
+              existingSectionBasedScroll = percent;
+            }
+          });
+        }
+        const existingScroll = Math.max(clientLastVisit[clientId].maxScroll || 0, existingSectionBasedScroll);
+        
+        // Если дата та же, берем с большим скроллом
+        if (scroll > existingScroll) {
+          clientLastVisit[clientId] = visit;
+        }
+      }
+    }
+  });
+  const recentVisits = Object.values(clientLastVisit)
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 7)
+    .map(v => ({
+      date: v.date,
+      page: v.page,
+      scroll: (() => {
+        let sectionBasedScroll = 0;
+        if (v.sectionsReached) {
+          v.sectionsReached.forEach(section => {
+            const percent = sectionToScrollPercent[section];
+            if (percent && percent > sectionBasedScroll) {
+              sectionBasedScroll = percent;
+            }
+          });
+        }
+        return Math.max(v.maxScroll || 0, sectionBasedScroll);
+      })()
+    }));
   
   return { totalVisits, uniqueVisitors, repeatVisits, avgTime, conversion, returnRate, pageStats, scrollStats, scrollStatsUnique, avgScroll, recentVisits, sectionStats, sectionStatsUnique, caseClickStats };
 }
