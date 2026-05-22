@@ -2421,33 +2421,35 @@ function sendAnalyticsData() {
     if (SYNC_TO_GOOGLE) {
       console.log('🌐 [Аналитика] Попытка отправки в Google Sheets...');
       
-      // Используем GET запрос с параметрами в URL
-      const url = `${GOOGLE_SCRIPT_URL}?action=track&data=${encodeURIComponent(JSON.stringify(data))}`;
+      // Используем POST с no-cors (обходит CORS)
+      const formData = new FormData();
+      formData.append('action', 'track');
+      formData.append('data', JSON.stringify(data));
       
-      fetch(url)
-      .then(response => response.json())
-      .then(result => {
-        if (result.success) {
-          console.log('✅ [Аналитика] Данные отправлены в Google Sheets');
-        } else {
-          console.error('❌ [Аналитика] Ошибка сервера:', result.error);
-        }
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: formData
+      })
+      .then(() => {
+        console.log('✅ [Аналитика] Данные отправлены в Google Sheets (без подтверждения из-за no-cors)');
       })
       .catch(e => console.error('❌ [Аналитика] Ошибка отправки в Google Sheets:', e));
     }
   } else {
     console.log('🌐 [Аналитика] Попытка отправки в Google Sheets...');
     
-    const url = `${GOOGLE_SCRIPT_URL}?action=track&data=${encodeURIComponent(JSON.stringify(data))}`;
+    const formData = new FormData();
+    formData.append('action', 'track');
+    formData.append('data', JSON.stringify(data));
     
-    fetch(url)
-    .then(response => response.json())
-    .then(result => {
-      if (result.success) {
-        console.log('✅ [Аналитика] Данные отправлены в Google Sheets');
-      } else {
-        console.error('❌ [Аналитика] Ошибка сервера:', result.error);
-      }
+    fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: formData
+    })
+    .then(() => {
+      console.log('✅ [Аналитика] Данные отправлены в Google Sheets (без подтверждения из-за no-cors)');
     })
     .catch(e => console.error('❌ [Аналитика] Ошибка отправки в Google Sheets:', e));
   }
