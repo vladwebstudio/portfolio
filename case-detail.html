@@ -2586,11 +2586,20 @@ async function loadAnalyticsData() {
     document.getElementById('returnRate').textContent = data.returnRate + '%';
     document.getElementById('avgScroll').textContent = data.avgScroll + '%';
     
-    // Пересчитываем конверсию локально (игнорируем серверную)
-    const totalCaseClicksLocal = data.caseClickStats ? Object.values(data.caseClickStats).reduce((sum, count) => sum + count, 0) : 0;
-    const effectiveClicksLocal = Math.min(totalCaseClicksLocal, data.uniqueVisitors || data.totalVisits);
-    const conversionLocal = (data.uniqueVisitors || data.totalVisits) > 0 ? ((effectiveClicksLocal / (data.uniqueVisitors || data.totalVisits)) * 100).toFixed(1) : 0;
-    document.getElementById('conversion').textContent = conversionLocal + '%';
+    // Конверсия (уникальные пользователи, кликнувшие на кейсы / уникальные посетители)
+    if (USE_LOCAL_STORAGE) {
+      document.getElementById('conversion').textContent = data.conversion + '%';
+    } else {
+      let uniqueCaseClicks;
+      if (data.caseClickStatsUnique && Array.isArray(data.caseClickStatsUnique)) {
+        uniqueCaseClicks = data.caseClickStatsUnique.length;
+      } else {
+        const totalCaseClicksLocal = data.caseClickStats ? Object.values(data.caseClickStats).reduce((sum, count) => sum + count, 0) : 0;
+        uniqueCaseClicks = Math.min(totalCaseClicksLocal, data.uniqueVisitors || data.totalVisits);
+      }
+      const conversionLocal = (data.uniqueVisitors || data.totalVisitors) > 0 ? ((uniqueCaseClicks / (data.uniqueVisitors || data.totalVisitors)) * 100).toFixed(1) : 0;
+      document.getElementById('conversion').textContent = conversionLocal + '%';
+    }
     
     // Статистика по страницам
     const pageStats = document.getElementById('pageStats');
