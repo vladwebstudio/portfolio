@@ -2167,6 +2167,7 @@ window.addEventListener('scroll', () => {
 });
 
 // Отслеживание кликов по кейсам
+let caseClickDataSent = false; // Флаг для предотвращения дублирования отправки
 document.addEventListener('click', (e) => {
   const caseLink = e.target.closest('.case-link');
   
@@ -2181,6 +2182,7 @@ document.addEventListener('click', (e) => {
     
     // Отправляем данные в фоне (без задержки на переход)
     sendAnalyticsData();
+    caseClickDataSent = true; // Помечаем что данные отправлены
   }
 });
 
@@ -2259,7 +2261,10 @@ window.addEventListener('load', () => {
 // Отправка данных при уходе со страницы
 window.addEventListener('beforeunload', () => {
   console.log('📊 [Аналитика] Уход со страницы. Максимальный скролл:', analyticsData.maxScroll + '%');
-  sendAnalyticsData();
+  // Не отправляем данные если они уже были отправлены при клике на кейс
+  if (!caseClickDataSent) {
+    sendAnalyticsData();
+  }
 });
 
 // Секретный триггер - 5 кликов на логотип
@@ -2327,7 +2332,7 @@ let uniqueCaseClicks;
 if (data.caseClickStatsUnique && Array.isArray(data.caseClickStatsUnique)) {
   uniqueCaseClicks = data.caseClickStatsUnique.length;
 } else {
-  uniqueCaseClicks = data.caseClickStats ? Object.values(data.caseClickStats).reduce((sum, count) => sum + count, 0) : 0;
+  uniqueCaseClicks = 0;
 }
 const conversionLocal = (data.uniqueVisitors || data.totalVisits) > 0 ? ((uniqueCaseClicks / (data.uniqueVisitors || data.totalVisits)) * 100).toFixed(1) : 0;
 document.getElementById('conversion').textContent = conversionLocal + '%';
@@ -2360,12 +2365,14 @@ document.getElementById('conversion').textContent = conversionLocal + '%';
     // Статистика по кликам на кейсы
     const caseClickStats = document.getElementById('caseClickStats');
     caseClickStats.innerHTML = '';
-    if (data.caseClickStats && Object.keys(data.caseClickStats).length > 0) {
-      // Объединяем все клики по кейсам в один пункт
-      const totalCaseClicks = Object.values(data.caseClickStats).reduce((sum, count) => sum + count, 0);
+    const uniqueCaseClicksCount = data.caseClickStatsUnique && Array.isArray(data.caseClickStatsUnique) ? data.caseClickStatsUnique.length : 0;
+    console.log('🔗 [Аналитика] caseClickStatsUnique:', data.caseClickStatsUnique);
+    console.log('🔗 [Аналитика] uniqueCaseClicksCount:', uniqueCaseClicksCount);
+    console.log('🔗 [Аналитика] caseClickStats:', data.caseClickStats);
+    if (uniqueCaseClicksCount > 0) {
       const item = document.createElement('div');
       item.className = 'analytics-list-item';
-      item.innerHTML = `<span>Клики на кейсы</span><span>${totalCaseClicks} кликов</span>`;
+      item.innerHTML = `<span>Клики на кейсы</span><span>${uniqueCaseClicksCount}</span>`;
       caseClickStats.appendChild(item);
     } else {
       caseClickStats.innerHTML = '<div class="analytics-list-item"><span>Нет кликов</span></div>';
