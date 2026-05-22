@@ -273,6 +273,25 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .lb-content{max-width:95vw;max-height:75vh;}
 .lb-content img{max-height:70vh;}
 }
+/* ===== ANALYTICS PANEL ===== */
+.analytics-panel{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:90%;max-width:600px;max-height:80vh;background:var(--bgc);border:1px solid var(--b);border-radius:var(--rxl);z-index:10000;overflow-y:auto;box-shadow:var(--shl);}
+.analytics-panel.show{display:block;}
+.analytics-header{display:flex;justify-content:space-between;align-items:center;padding:20px;border-bottom:1px solid var(--b);}
+.analytics-title{font-size:18px;font-weight:700;color:var(--accl);}
+.analytics-close{width:36px;height:36px;border-radius:50%;background:var(--bg2);border:1px solid var(--b);color:var(--t2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--tr);}
+.analytics-close:hover{border-color:var(--acc);color:var(--accl);}
+.analytics-content{padding:20px;}
+.analytics-stat{display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg2);border:1px solid var(--b);border-radius:var(--rmd);margin-bottom:12px;}
+.analytics-stat-label{font-size:14px;color:var(--t2);}
+.analytics-stat-value{font-size:18px;font-weight:700;color:var(--accl);}
+.analytics-section{margin-bottom:20px;}
+.analytics-section-title{font-size:14px;font-weight:600;color:var(--t1);margin-bottom:12px;}
+.analytics-list{display:flex;flex-direction:column;gap:8px;}
+.analytics-list-item{display:flex;justify-content:space-between;padding:10px;background:var(--bg2);border:1px solid var(--b);border-radius:var(--rsm);font-size:13px;}
+.analytics-list-item span:first-child{color:var(--t2);}
+.analytics-list-item span:last-child{color:var(--accl);font-weight:600;}
+.analytics-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;backdrop-filter:blur(5px);}
+.analytics-overlay.show{display:block;}
 </style>
 </head>
 <body>
@@ -2311,6 +2330,281 @@ window.addEventListener('scroll', () => {
 
 function scrollToTop() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+<!-- ===== ANALYTICS PANEL ===== -->
+<div class="analytics-overlay" id="analyticsOverlay"></div>
+<div class="analytics-panel" id="analyticsPanel">
+  <div class="analytics-header">
+    <div class="analytics-title">📊 Аналитика сайта</div>
+    <div class="analytics-close" id="analyticsClose"><i class="fas fa-times"></i></div>
+  </div>
+  <div class="analytics-content">
+    <div class="analytics-stat">
+      <span class="analytics-stat-label">Всего посещений</span>
+      <span class="analytics-stat-value" id="totalVisits">-</span>
+    </div>
+    <div class="analytics-stat">
+      <span class="analytics-stat-label">Средний скролл</span>
+      <span class="analytics-stat-value" id="avgScroll">-</span>
+    </div>
+    <div class="analytics-section">
+      <div class="analytics-section-title">По страницам</div>
+      <div class="analytics-list" id="pageStats"></div>
+    </div>
+    <div class="analytics-section">
+      <div class="analytics-section-title">По скроллу</div>
+      <div class="analytics-list" id="scrollStats"></div>
+    </div>
+    <div class="analytics-section">
+      <div class="analytics-section-title">Последние посещения</div>
+      <div class="analytics-list" id="recentVisits"></div>
+    </div>
+  </div>
+</div>
+<script>
+// ===== ANALYTICS =====
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbym_jF0dX37h8i5ItCkRCCPrEJyalHfkhimU62diqdX3evItzzgXTKlqBCctnoqNorR/exec';
+const USE_LOCAL_STORAGE = true; // true для локального тестирования, false для Google Sheets
+const SYNC_TO_GOOGLE = true; // true для отправки localStorage в Google Sheets
+let analyticsData = {
+  page: 'case-detail.html',
+  maxScroll: 0,
+  startTime: Date.now(),
+  scrollPoints: []
+};
+
+// Отслеживание скролла
+window.addEventListener('scroll', () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const scrollPercent = Math.round((scrollTop / docHeight) * 100);
+  
+  if (scrollPercent > analyticsData.maxScroll) {
+    analyticsData.maxScroll = scrollPercent;
+  }
+  
+  // Записываем точки скролла (0, 25, 50, 75, 100%) и отправляем данные
+  [0, 25, 50, 75, 100].forEach(point => {
+    if (scrollPercent >= point && !analyticsData.scrollPoints.includes(point)) {
+      analyticsData.scrollPoints.push(point);
+      // Отправляем данные при достижении точки скролла
+      sendAnalyticsData();
+    }
+  });
+});
+
+// Отправка данных в реальном времени
+function sendAnalyticsData() {
+  const timeOnPage = Math.round((Date.now() - analyticsData.startTime) / 1000);
+  
+  const data = {
+    page: analyticsData.page,
+    maxScroll: analyticsData.maxScroll,
+    timeOnPage: timeOnPage,
+    country: 'Неизвестно',
+    language: navigator.language,
+    userAgent: navigator.userAgent,
+    screenResolution: `${window.screen.width}x${window.screen.height}`,
+    date: new Date().toISOString(),
+    time: new Date().toLocaleTimeString()
+  };
+  
+  console.log('📊 [Аналитика] Попытка отправки данных:', data);
+  
+  if (USE_LOCAL_STORAGE) {
+    let visits = JSON.parse(localStorage.getItem('analytics_visits') || '[]');
+    visits.push(data);
+    localStorage.setItem('analytics_visits', JSON.stringify(visits));
+    console.log('✅ [Аналитика] Данные сохранены в localStorage');
+    
+    if (SYNC_TO_GOOGLE) {
+      console.log('🌐 [Аналитика] Попытка отправки в Google Sheets...');
+      
+      // Используем GET запрос с параметрами в URL
+      const url = `${GOOGLE_SCRIPT_URL}?action=track&data=${encodeURIComponent(JSON.stringify(data))}`;
+      
+      fetch(url)
+      .then(response => response.json())
+      .then(result => {
+        if (result.success) {
+          console.log('✅ [Аналитика] Данные отправлены в Google Sheets');
+        } else {
+          console.error('❌ [Аналитика] Ошибка сервера:', result.error);
+        }
+      })
+      .catch(e => console.error('❌ [Аналитика] Ошибка отправки в Google Sheets:', e));
+    }
+  } else {
+    console.log('🌐 [Аналитика] Попытка отправки в Google Sheets...');
+    
+    const url = `${GOOGLE_SCRIPT_URL}?action=track&data=${encodeURIComponent(JSON.stringify(data))}`;
+    
+    fetch(url)
+    .then(response => response.json())
+    .then(result => {
+      if (result.success) {
+        console.log('✅ [Аналитика] Данные отправлены в Google Sheets');
+      } else {
+        console.error('❌ [Аналитика] Ошибка сервера:', result.error);
+      }
+    })
+    .catch(e => console.error('❌ [Аналитика] Ошибка отправки в Google Sheets:', e));
+  }
+}
+
+// Отправляем данные при загрузке страницы
+window.addEventListener('load', () => {
+  setTimeout(sendAnalyticsData, 1000); // Задержка 1 секунда
+});
+
+// Отправка данных при уходе со страницы
+window.addEventListener('beforeunload', () => {
+  const timeOnPage = Math.round((Date.now() - analyticsData.startTime) / 1000);
+  
+  const data = {
+    page: analyticsData.page,
+    maxScroll: analyticsData.maxScroll,
+    timeOnPage: timeOnPage,
+    country: 'Неизвестно',
+    language: navigator.language,
+    userAgent: navigator.userAgent,
+    screenResolution: `${window.screen.width}x${window.screen.height}`,
+    date: new Date().toISOString(),
+    time: new Date().toLocaleTimeString()
+  };
+  
+  if (USE_LOCAL_STORAGE) {
+    // Сохраняем в localStorage для локального тестирования
+    let visits = JSON.parse(localStorage.getItem('analytics_visits') || '[]');
+    visits.push(data);
+    localStorage.setItem('analytics_visits', JSON.stringify(visits));
+    
+    // Если включена синхронизация, отправляем и в Google Sheets
+    if (SYNC_TO_GOOGLE) {
+      navigator.sendBeacon(GOOGLE_SCRIPT_URL + '?action=track', JSON.stringify(data));
+    }
+  } else {
+    // Отправляем данные в Google Sheets
+    navigator.sendBeacon(GOOGLE_SCRIPT_URL + '?action=track', JSON.stringify(data));
+  }
+});
+
+// Секретный триггер - 5 кликов на логотип
+let logoClicks = 0;
+const navLogo = document.querySelector('.nav-logo');
+if (navLogo) {
+  navLogo.addEventListener('click', () => {
+    logoClicks++;
+    if (logoClicks >= 5) {
+      openAnalyticsPanel();
+      logoClicks = 0;
+    }
+    setTimeout(() => logoClicks = 0, 2000);
+  });
+}
+
+// Открытие панели аналитики
+function openAnalyticsPanel() {
+  document.getElementById('analyticsOverlay').classList.add('show');
+  document.getElementById('analyticsPanel').classList.add('show');
+  loadAnalyticsData();
+}
+
+// Закрытие панели
+document.getElementById('analyticsClose').addEventListener('click', () => {
+  document.getElementById('analyticsOverlay').classList.remove('show');
+  document.getElementById('analyticsPanel').classList.remove('show');
+});
+
+document.getElementById('analyticsOverlay').addEventListener('click', () => {
+  document.getElementById('analyticsOverlay').classList.remove('show');
+  document.getElementById('analyticsPanel').classList.remove('show');
+});
+
+// Загрузка данных аналитики
+async function loadAnalyticsData() {
+  try {
+    let data;
+    
+    if (USE_LOCAL_STORAGE) {
+      // Загружаем из localStorage
+      const visits = JSON.parse(localStorage.getItem('analytics_visits') || '[]');
+      data = processLocalStorageData(visits);
+    } else {
+      // Загружаем из Google Sheets
+      const response = await fetch(GOOGLE_SCRIPT_URL + '?action=getStats');
+      data = await response.json();
+    }
+    
+    document.getElementById('totalVisits').textContent = data.totalVisits;
+    document.getElementById('avgScroll').textContent = data.avgScroll + '%';
+    
+    // Статистика по страницам
+    const pageStats = document.getElementById('pageStats');
+    pageStats.innerHTML = '';
+    for (const [page, count] of Object.entries(data.pageStats)) {
+      const item = document.createElement('div');
+      item.className = 'analytics-list-item';
+      item.innerHTML = `<span>${page}</span><span>${count}</span>`;
+      pageStats.appendChild(item);
+    }
+    
+    // Статистика по скроллу
+    const scrollStats = document.getElementById('scrollStats');
+    scrollStats.innerHTML = '';
+    const scrollLabels = {0: '0-25%', 25: '25-50%', 50: '50-75%', 75: '75-100%', 100: '100%'};
+    for (const [percent, count] of Object.entries(data.scrollStats)) {
+      const item = document.createElement('div');
+      item.className = 'analytics-list-item';
+      item.innerHTML = `<span>${scrollLabels[percent] || percent + '%'}</span><span>${count}</span>`;
+      scrollStats.appendChild(item);
+    }
+    
+    // Последние посещения
+    const recentVisits = document.getElementById('recentVisits');
+    recentVisits.innerHTML = '';
+    data.recentVisits.forEach(visit => {
+      const item = document.createElement('div');
+      item.className = 'analytics-list-item';
+      const date = new Date(visit.date).toLocaleDateString();
+      item.innerHTML = `<span>${date} - ${visit.page}</span><span>${visit.scroll}%</span>`;
+      recentVisits.appendChild(item);
+    });
+  } catch (error) {
+    console.error('Ошибка загрузки аналитики:', error);
+  }
+}
+
+// Обработка данных из localStorage
+function processLocalStorageData(visits) {
+  const totalVisits = visits.length;
+  
+  const pageStats = {};
+  const scrollStats = {0: 0, 25: 0, 50: 0, 75: 0, 100: 0};
+  
+  visits.forEach(visit => {
+    if (!pageStats[visit.page]) pageStats[visit.page] = 0;
+    pageStats[visit.page]++;
+    
+    const scroll = visit.maxScroll || 0;
+    if (scroll <= 25) scrollStats[0]++;
+    else if (scroll <= 50) scrollStats[25]++;
+    else if (scroll <= 75) scrollStats[50]++;
+    else if (scroll < 100) scrollStats[75]++;
+    else scrollStats[100]++;
+  });
+  
+  const totalScroll = visits.reduce((sum, v) => sum + (v.maxScroll || 0), 0);
+  const avgScroll = totalVisits > 0 ? (totalScroll / totalVisits).toFixed(1) : 0;
+  
+  const recentVisits = visits.slice(-10).reverse().map(v => ({
+    date: v.date,
+    page: v.page,
+    scroll: v.maxScroll || 0
+  }));
+  
+  return { totalVisits, pageStats, scrollStats, avgScroll, recentVisits };
 }
 </script>
 
