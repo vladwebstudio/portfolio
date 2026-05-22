@@ -621,6 +621,9 @@ section{position:relative;z-index:1;}
 .analytics-title{font-size:18px;font-weight:700;color:var(--accl);}
 .analytics-close{width:36px;height:36px;border-radius:50%;background:var(--bg2);border:1px solid var(--b);color:var(--t2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--tr);}
 .analytics-close:hover{border-color:var(--acc);color:var(--accl);}
+.analytics-refresh{position:absolute;top:15px;right:55px;width:32px;height:32px;border-radius:50%;background:var(--bg2);border:1px solid var(--b);color:var(--t2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--tr);}
+.analytics-refresh:hover{border-color:var(--acc);color:var(--accl);transform:rotate(180deg);}
+.analytics-refresh:active{transform:rotate(180deg)scale(0.9);}
 .analytics-content{padding:20px;}
 .analytics-stat{display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg2);border:1px solid var(--b);border-radius:var(--rmd);margin-bottom:12px;}
 .analytics-stat-label{font-size:14px;color:var(--t2);}
@@ -2026,26 +2029,55 @@ document.querySelectorAll('.faq-item').forEach(item => {
   <div class="analytics-header">
     <div class="analytics-title">📊 Аналитика сайта</div>
     <div class="analytics-close" id="analyticsClose"><i class="fas fa-times"></i></div>
+    <button class="analytics-refresh" id="analyticsRefresh" title="Обновить данные"><i class="fas fa-sync-alt"></i></button>
   </div>
   <div class="analytics-content">
-    <div class="analytics-stat">
+    <div class="analytics-stat" title="Общее количество всех посещений сайта (включая повторные)">
       <span class="analytics-stat-label">Всего посещений</span>
       <span class="analytics-stat-value" id="totalVisits">-</span>
     </div>
-    <div class="analytics-stat">
+    <div class="analytics-stat" title="Количество уникальных пользователей (без повторных заходов)">
+      <span class="analytics-stat-label">Уникальных посетителей</span>
+      <span class="analytics-stat-value" id="uniqueVisitors">-</span>
+    </div>
+    <div class="analytics-stat" title="Сколько раз уникальные пользователи заходили повторно">
+      <span class="analytics-stat-label">Повторные заходы</span>
+      <span class="analytics-stat-value" id="repeatVisits">-</span>
+    </div>
+    <div class="analytics-stat" title="Среднее время, которое пользователи проводят на сайте в секундах">
+      <span class="analytics-stat-label">Среднее время на сайте</span>
+      <span class="analytics-stat-value" id="avgTime">-</span>
+    </div>
+    <div class="analytics-stat" title="Процент пользователей, кликнувших на кейсы из тех, кто дошел до секции Кейсы">
+      <span class="analytics-stat-label">Конверсия кейсов</span>
+      <span class="analytics-stat-value" id="conversion">-</span>
+    </div>
+    <div class="analytics-stat" title="Процент уникальных пользователей, которые вернулись на сайт повторно">
+      <span class="analytics-stat-label">Возвращаемость</span>
+      <span class="analytics-stat-value" id="returnRate">-</span>
+    </div>
+    <div class="analytics-stat" title="Средний процент скролла страницы (например, 17% означает, что в среднем пользователи пролистали 17% страницы)">
       <span class="analytics-stat-label">Средний скролл</span>
       <span class="analytics-stat-value" id="avgScroll">-</span>
     </div>
     <div class="analytics-section">
-      <div class="analytics-section-title">По страницам</div>
+      <div class="analytics-section-title" title="Какие секции сайта посетили пользователи и сколько раз">📍 Достижение секций</div>
+      <div class="analytics-list" id="sectionStats"></div>
+    </div>
+    <div class="analytics-section">
+      <div class="analytics-section-title" title="Какие кейсы кликали пользователи и сколько раз">🔗 Клики по кейсам</div>
+      <div class="analytics-list" id="caseClickStats"></div>
+    </div>
+    <div class="analytics-section">
+      <div class="analytics-section-title" title="Статистика посещений по разным страницам">По страницам</div>
       <div class="analytics-list" id="pageStats"></div>
     </div>
     <div class="analytics-section">
-      <div class="analytics-section-title">По скроллу</div>
+      <div class="analytics-section-title" title="Распределение пользователей по глубине скролла">По скроллу</div>
       <div class="analytics-list" id="scrollStats"></div>
     </div>
     <div class="analytics-section">
-      <div class="analytics-section-title">Последние посещения</div>
+      <div class="analytics-section-title" title="Последние 10 посещений сайта с датой, страницей и скроллом">Последние посещения</div>
       <div class="analytics-list" id="recentVisits"></div>
     </div>
   </div>
@@ -2053,14 +2085,43 @@ document.querySelectorAll('.faq-item').forEach(item => {
 <script>
 // ===== ANALYTICS =====
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbym_jF0dX37h8i5ItCkRCCPrEJyalHfkhimU62diqdX3evItzzgXTKlqBCctnoqNorR/exec';
-const USE_LOCAL_STORAGE = true; // true для локального тестирования, false для Google Sheets
+const USE_LOCAL_STORAGE = false; // true для локального тестирования, false для Google Sheets
 const SYNC_TO_GOOGLE = true; // true для отправки localStorage в Google Sheets
+// Генерируем уникальный ID пользователя
+function getClientId() {
+  let clientId = localStorage.getItem('analytics_client_id');
+  if (!clientId) {
+    clientId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('analytics_client_id', clientId);
+    console.log('🆔 [Аналитика] Создан новый ID пользователя:', clientId);
+  } else {
+    console.log('🆔 [Аналитика] Используется существующий ID:', clientId);
+  }
+  return clientId;
+}
+
 let analyticsData = {
   page: 'index.html',
   maxScroll: 0,
   startTime: Date.now(),
-  scrollPoints: []
+  scrollPoints: [],
+  sectionsReached: [],
+  clientId: getClientId()
 };
+
+// Секции для отслеживания
+const sectionsToTrack = [
+  { id: 'services', name: 'Услуги' },
+  { id: 'process', name: 'Процесс' },
+  { id: 'cases', name: 'Кейсы' },
+  { id: 'testimonials', name: 'Отзывы' },
+  { id: 'about', name: 'О себе' },
+  { id: 'pricing', name: 'Цены' },
+  { id: 'calculator', name: 'Калькулятор' },
+  { id: 'support', name: 'Поддержка' },
+  { id: 'contact', name: 'Контакты' },
+  { id: 'faq', name: 'FAQ' }
+];
 
 // Отслеживание скролла
 window.addEventListener('scroll', () => {
@@ -2070,16 +2131,51 @@ window.addEventListener('scroll', () => {
   
   if (scrollPercent > analyticsData.maxScroll) {
     analyticsData.maxScroll = scrollPercent;
+    console.log(`📊 [Аналитика] Обновлен максимальный скролл: ${scrollPercent}%`);
   }
   
   // Записываем точки скролла (0, 25, 50, 75, 100%) и отправляем данные
   [0, 25, 50, 75, 100].forEach(point => {
     if (scrollPercent >= point && !analyticsData.scrollPoints.includes(point)) {
       analyticsData.scrollPoints.push(point);
-      // Отправляем данные при достижении точки скролла
+      console.log(`📍 [Аналитика] Достигнута точка скролла: ${point}%`);
       sendAnalyticsData();
     }
   });
+  
+  // Отслеживаем достижение секций
+  sectionsToTrack.forEach(section => {
+    const element = document.getElementById(section.id);
+    if (element) {
+      const rect = element.getBoundingClientRect();
+      const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+      
+      if (isVisible && !analyticsData.sectionsReached.includes(section.name)) {
+        analyticsData.sectionsReached.push(section.name);
+        console.log(`📍 [Аналитика] Достигнута секция: ${section.name}`);
+        sendAnalyticsData();
+      }
+    }
+  });
+});
+
+// Отслеживание кликов по кейсам
+document.addEventListener('click', (e) => {
+  const caseLink = e.target.closest('.case-card');
+  if (caseLink) {
+    const caseName = caseLink.querySelector('h3')?.textContent || 'Неизвестный кейс';
+    console.log(`🔗 [Аналитика] Клик на кейс: ${caseName}`);
+    
+    if (!analyticsData.caseClicks) {
+      analyticsData.caseClicks = [];
+    }
+    analyticsData.caseClicks.push({
+      name: caseName,
+      time: new Date().toISOString()
+    });
+    
+    sendAnalyticsData();
+  }
 });
 
 // Отправка данных в реальном времени
@@ -2095,7 +2191,10 @@ function sendAnalyticsData() {
     userAgent: navigator.userAgent,
     screenResolution: `${window.screen.width}x${window.screen.height}`,
     date: new Date().toISOString(),
-    time: new Date().toLocaleTimeString()
+    time: new Date().toLocaleTimeString(),
+    sectionsReached: analyticsData.sectionsReached,
+    caseClicks: JSON.stringify(analyticsData.caseClicks || []),
+    clientId: analyticsData.clientId
   };
   
   console.log('📊 [Аналитика] Попытка отправки данных:', data);
@@ -2150,34 +2249,8 @@ window.addEventListener('load', () => {
 
 // Отправка данных при уходе со страницы
 window.addEventListener('beforeunload', () => {
-  const timeOnPage = Math.round((Date.now() - analyticsData.startTime) / 1000);
-  
-  const data = {
-    page: analyticsData.page,
-    maxScroll: analyticsData.maxScroll,
-    timeOnPage: timeOnPage,
-    country: 'Неизвестно',
-    language: navigator.language,
-    userAgent: navigator.userAgent,
-    screenResolution: `${window.screen.width}x${window.screen.height}`,
-    date: new Date().toISOString(),
-    time: new Date().toLocaleTimeString()
-  };
-  
-  if (USE_LOCAL_STORAGE) {
-    // Сохраняем в localStorage для локального тестирования
-    let visits = JSON.parse(localStorage.getItem('analytics_visits') || '[]');
-    visits.push(data);
-    localStorage.setItem('analytics_visits', JSON.stringify(visits));
-    
-    // Если включена синхронизация, отправляем и в Google Sheets
-    if (SYNC_TO_GOOGLE) {
-      navigator.sendBeacon(GOOGLE_SCRIPT_URL + '?action=track', JSON.stringify(data));
-    }
-  } else {
-    // Отправляем данные в Google Sheets
-    navigator.sendBeacon(GOOGLE_SCRIPT_URL + '?action=track', JSON.stringify(data));
-  }
+  console.log('📊 [Аналитика] Уход со страницы. Максимальный скролл:', analyticsData.maxScroll + '%');
+  sendAnalyticsData();
 });
 
 // Секретный триггер - 5 кликов на логотип
@@ -2212,6 +2285,10 @@ document.getElementById('analyticsOverlay').addEventListener('click', () => {
   document.getElementById('analyticsPanel').classList.remove('show');
 });
 
+document.getElementById('analyticsRefresh').addEventListener('click', () => {
+  loadAnalyticsData();
+});
+
 // Загрузка данных аналитики
 async function loadAnalyticsData() {
   try {
@@ -2228,7 +2305,43 @@ async function loadAnalyticsData() {
     }
     
     document.getElementById('totalVisits').textContent = data.totalVisits;
+    document.getElementById('uniqueVisitors').textContent = data.uniqueVisitors || data.totalVisits;
+    document.getElementById('repeatVisits').textContent = data.repeatVisits || 0;
+    document.getElementById('avgTime').textContent = data.avgTime + ' сек';
+    document.getElementById('conversion').textContent = data.conversion + '%';
+    document.getElementById('returnRate').textContent = data.returnRate + '%';
     document.getElementById('avgScroll').textContent = data.avgScroll + '%';
+    
+    // Статистика по секциям (по уникальным пользователям)
+    const sectionStats = document.getElementById('sectionStats');
+    sectionStats.innerHTML = '';
+    const sectionData = data.sectionStatsUnique || data.sectionStats;
+    if (sectionData && Object.keys(sectionData).length > 0) {
+      for (const [section, value] of Object.entries(sectionData)) {
+        const item = document.createElement('div');
+        item.className = 'analytics-list-item';
+        const count = Array.isArray(value) ? value.length : (typeof value === 'object' && value.size !== undefined ? value.size : value);
+        const percentage = data.uniqueVisitors > 0 ? ((count / data.uniqueVisitors) * 100).toFixed(1) : 0;
+        item.innerHTML = `<span>${section}</span><span>${count} (${percentage}%)</span>`;
+        sectionStats.appendChild(item);
+      }
+    } else {
+      sectionStats.innerHTML = '<div class="analytics-list-item"><span>Нет данных</span></div>';
+    }
+    
+    // Статистика по кликам на кейсы
+    const caseClickStats = document.getElementById('caseClickStats');
+    caseClickStats.innerHTML = '';
+    if (data.caseClickStats && Object.keys(data.caseClickStats).length > 0) {
+      for (const [caseName, count] of Object.entries(data.caseClickStats)) {
+        const item = document.createElement('div');
+        item.className = 'analytics-list-item';
+        item.innerHTML = `<span>${caseName}</span><span>${count} кликов</span>`;
+        caseClickStats.appendChild(item);
+      }
+    } else {
+      caseClickStats.innerHTML = '<div class="analytics-list-item"><span>Нет кликов</span></div>';
+    }
     
     // Статистика по страницам
     const pageStats = document.getElementById('pageStats');
@@ -2240,14 +2353,17 @@ async function loadAnalyticsData() {
       pageStats.appendChild(item);
     }
     
-    // Статистика по скроллу
+    // Статистика по скроллу (по уникальным пользователям)
     const scrollStats = document.getElementById('scrollStats');
     scrollStats.innerHTML = '';
     const scrollLabels = {0: '0-25%', 25: '25-50%', 50: '50-75%', 75: '75-100%', 100: '100%'};
-    for (const [percent, count] of Object.entries(data.scrollStats)) {
+    const scrollData = data.scrollStatsUnique || data.scrollStats;
+    for (const [percent, value] of Object.entries(scrollData)) {
       const item = document.createElement('div');
       item.className = 'analytics-list-item';
-      item.innerHTML = `<span>${scrollLabels[percent] || percent + '%'}</span><span>${count}</span>`;
+      const count = Array.isArray(value) ? value.length : (typeof value === 'object' ? value.size : value);
+      const percentage = data.uniqueVisitors > 0 ? ((count / data.uniqueVisitors) * 100).toFixed(1) : 0;
+      item.innerHTML = `<span>${scrollLabels[percent] || percent + '%'}</span><span>${count} (${percentage}%)</span>`;
       scrollStats.appendChild(item);
     }
     
@@ -2258,7 +2374,8 @@ async function loadAnalyticsData() {
       const item = document.createElement('div');
       item.className = 'analytics-list-item';
       const date = new Date(visit.date).toLocaleDateString();
-      item.innerHTML = `<span>${date} - ${visit.page}</span><span>${visit.scroll}%</span>`;
+      const scroll = visit.scroll !== undefined ? visit.scroll + '%' : '0%';
+      item.innerHTML = `<span>${date} - ${visit.page}</span><span>${scroll}</span>`;
       recentVisits.appendChild(item);
     });
   } catch (error) {
@@ -2270,8 +2387,36 @@ async function loadAnalyticsData() {
 function processLocalStorageData(visits) {
   const totalVisits = visits.length;
   
+  // Уникальные пользователи и повторные заходы
+  const uniqueClients = new Set();
+  const clientVisits = {};
+  
+  visits.forEach(visit => {
+    if (visit.clientId) {
+      uniqueClients.add(visit.clientId);
+      
+      if (!clientVisits[visit.clientId]) {
+        clientVisits[visit.clientId] = 0;
+      }
+      clientVisits[visit.clientId]++;
+    }
+  });
+  const uniqueVisitors = uniqueClients.size;
+  
+  // Подсчет повторных заходов
+  let repeatVisits = 0;
+  Object.values(clientVisits).forEach(visits => {
+    if (visits > 1) {
+      repeatVisits += (visits - 1);
+    }
+  });
+  
   const pageStats = {};
   const scrollStats = {0: 0, 25: 0, 50: 0, 75: 0, 100: 0};
+  const scrollStatsUnique = {0: new Set(), 25: new Set(), 50: new Set(), 75: new Set(), 100: new Set()};
+  const sectionStats = {};
+  const sectionStatsUnique = {};
+  const caseClickStats = {};
   
   visits.forEach(visit => {
     if (!pageStats[visit.page]) pageStats[visit.page] = 0;
@@ -2283,18 +2428,85 @@ function processLocalStorageData(visits) {
     else if (scroll <= 75) scrollStats[50]++;
     else if (scroll < 100) scrollStats[75]++;
     else scrollStats[100]++;
+    
+    // Категоризация скролла (по уникальным пользователям)
+    // Если пользователь пролистал до X%, то он считается в категории X
+    if (visit.clientId) {
+      if (scroll <= 25) scrollStatsUnique[0].add(visit.clientId);
+      else if (scroll <= 50) scrollStatsUnique[25].add(visit.clientId);
+      else if (scroll <= 75) scrollStatsUnique[50].add(visit.clientId);
+      else if (scroll < 100) scrollStatsUnique[75].add(visit.clientId);
+      else scrollStatsUnique[100].add(visit.clientId);
+    }
+    
+    // Статистика по секциям
+    if (visit.sectionsReached) {
+      visit.sectionsReached.forEach(section => {
+        if (!sectionStats[section]) sectionStats[section] = 0;
+        sectionStats[section]++;
+        
+        // Подсчет по уникальным пользователям
+        if (!sectionStatsUnique[section]) sectionStatsUnique[section] = new Set();
+        if (visit.clientId) sectionStatsUnique[section].add(visit.clientId);
+      });
+    }
+    
+    // Статистика по кликам на кейсы
+    if (visit.caseClicks) {
+      let clicks = visit.caseClicks;
+      if (typeof clicks === 'string') {
+        try {
+          clicks = JSON.parse(clicks);
+        } catch (e) {
+          clicks = [];
+        }
+      }
+      if (Array.isArray(clicks)) {
+        clicks.forEach(click => {
+          const caseName = click.name || click;
+          if (!caseClickStats[caseName]) caseClickStats[caseName] = 0;
+          caseClickStats[caseName]++;
+        });
+      }
+    }
   });
   
-  const totalScroll = visits.reduce((sum, v) => sum + (v.maxScroll || 0), 0);
-  const avgScroll = totalVisits > 0 ? (totalScroll / totalVisits).toFixed(1) : 0;
+  // Средний скролл (средний максимальный скролл по уникальным пользователям)
+  const clientMaxScroll = {};
+  visits.forEach(visit => {
+    const scroll = parseFloat(visit.maxScroll) || 0;
+    const clientId = visit.clientId;
+    
+    if (clientId) {
+      if (!clientMaxScroll[clientId] || scroll > clientMaxScroll[clientId]) {
+        clientMaxScroll[clientId] = scroll;
+      }
+    }
+  });
+  const totalUniqueScroll = Object.values(clientMaxScroll).reduce((sum, scroll) => sum + scroll, 0);
+  const uniqueClientCount = Object.keys(clientMaxScroll).length;
+  const avgScroll = uniqueClientCount > 0 ? (totalUniqueScroll / uniqueClientCount).toFixed(1) : 0;
   
-  const recentVisits = visits.slice(-10).reverse().map(v => ({
+  // Среднее время на сайте
+  const totalTime = visits.reduce((sum, v) => sum + (parseFloat(v.timeOnPage) || 0), 0);
+  const avgTime = totalVisits > 0 ? (totalTime / totalVisits).toFixed(0) : 0;
+  
+  // Конверсия (клики на кейсы / уникальные посетители секции Кейсы)
+  const casesSectionUnique = sectionStatsUnique['Кейсы'] ? sectionStatsUnique['Кейсы'].size : 0;
+  const totalCaseClicks = Object.values(caseClickStats).reduce((sum, count) => sum + count, 0);
+  const conversion = casesSectionUnique > 0 ? ((totalCaseClicks / casesSectionUnique) * 100).toFixed(1) : 0;
+  
+  // Возвращаемость пользователей
+  const returningUsers = Object.values(clientVisits).filter(visits => visits > 1).length;
+  const returnRate = uniqueVisitors > 0 ? ((returningUsers / uniqueVisitors) * 100).toFixed(1) : 0;
+  
+  const recentVisits = visits.slice(-7).reverse().map(v => ({
     date: v.date,
     page: v.page,
     scroll: v.maxScroll || 0
   }));
   
-  return { totalVisits, pageStats, scrollStats, avgScroll, recentVisits };
+  return { totalVisits, uniqueVisitors, repeatVisits, avgTime, conversion, returnRate, pageStats, scrollStats, scrollStatsUnique, avgScroll, recentVisits, sectionStats, sectionStatsUnique, caseClickStats };
 }
 </script>
 </body>
