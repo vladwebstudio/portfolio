@@ -2601,10 +2601,9 @@ function processLocalStorageData(visits) {
   const totalTime = visits.reduce((sum, v) => sum + (parseFloat(v.timeOnPage) || 0), 0);
   const avgTime = totalVisits > 0 ? (totalTime / totalVisits).toFixed(0) : 0;
   
-  // Конверсия (клики на кейсы / уникальные посетители секции Кейсы)
-  const casesSectionUnique = sectionStatsUnique['Кейсы'] ? sectionStatsUnique['Кейсы'].size : 0;
+  // Конверсия (клики на кейсы / уникальные посетители)
   const totalCaseClicks = Object.values(caseClickStats).reduce((sum, count) => sum + count, 0);
-  const conversion = casesSectionUnique > 0 ? ((totalCaseClicks / casesSectionUnique) * 100).toFixed(1) : 0;
+  const conversion = uniqueVisitors > 0 ? ((totalCaseClicks / uniqueVisitors) * 100).toFixed(1) : 0;
   
   // Возвращаемость пользователей
   const returningUsers = Object.values(clientVisits).filter(visits => visits > 1).length;
