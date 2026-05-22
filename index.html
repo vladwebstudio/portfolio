@@ -2325,17 +2325,6 @@ async function loadAnalyticsData() {
     document.getElementById('returnRate').textContent = data.returnRate + '%';
     document.getElementById('avgScroll').textContent = data.avgScroll + '%';
     
-    // Конверсия (уникальные пользователи, кликнувшие на кейсы / уникальные посетители)
-// Конверсия (уникальные посетители / общее количество кликов на кейсы)
-// Конверсия (уникальные пользователи, кликнувшие на кейсы / уникальные посетители)
-let uniqueCaseClicks;
-if (data.caseClickStatsUnique && Array.isArray(data.caseClickStatsUnique)) {
-  uniqueCaseClicks = data.caseClickStatsUnique.length;
-} else {
-  uniqueCaseClicks = 0;
-}
-const conversionLocal = (data.uniqueVisitors || data.totalVisits) > 0 ? ((uniqueCaseClicks / (data.uniqueVisitors || data.totalVisits)) * 100).toFixed(1) : 0;
-document.getElementById('conversion').textContent = conversionLocal + '%';
     // Статистика по секциям (по уникальным пользователям)
     const sectionStats = document.getElementById('sectionStats');
     sectionStats.innerHTML = '';
@@ -2369,14 +2358,20 @@ document.getElementById('conversion').textContent = conversionLocal + '%';
     console.log('🔗 [Аналитика] caseClickStatsUnique:', data.caseClickStatsUnique);
     console.log('🔗 [Аналитика] uniqueCaseClicksCount:', uniqueCaseClicksCount);
     console.log('🔗 [Аналитика] caseClickStats:', data.caseClickStats);
-    if (uniqueCaseClicksCount > 0) {
+    // Делим на 2 для отображения
+    const displayCaseClicks = Math.floor(uniqueCaseClicksCount / 2);
+    if (displayCaseClicks > 0) {
       const item = document.createElement('div');
       item.className = 'analytics-list-item';
-      item.innerHTML = `<span>Клики на кейсы</span><span>${uniqueCaseClicksCount}</span>`;
+      item.innerHTML = `<span>Клики на кейсы</span><span>${displayCaseClicks}</span>`;
       caseClickStats.appendChild(item);
     } else {
       caseClickStats.innerHTML = '<div class="analytics-list-item"><span>Нет кликов</span></div>';
     }
+    
+    // Конверсия (клики после деления на 2 / уникальные посетители)
+    const conversionLocal = data.uniqueVisitors > 0 ? ((displayCaseClicks / data.uniqueVisitors) * 100).toFixed(1) : 0;
+    document.getElementById('conversion').textContent = conversionLocal + '%';
     
     // Статистика по страницам
     const pageStats = document.getElementById('pageStats');
