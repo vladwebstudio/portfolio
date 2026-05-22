@@ -2168,19 +2168,18 @@ window.addEventListener('scroll', () => {
 
 // Отслеживание кликов по кейсам
 document.addEventListener('click', (e) => {
-  const caseLink = e.target.closest('.case-card');
+  const caseLink = e.target.closest('.case-link');
+  
   if (caseLink) {
-    const caseName = caseLink.querySelector('h3')?.textContent || 'Неизвестный кейс';
-    console.log(`🔗 [Аналитика] Клик на кейс: ${caseName}`);
-    
     if (!analyticsData.caseClicks) {
       analyticsData.caseClicks = [];
     }
     analyticsData.caseClicks.push({
-      name: caseName,
+      name: 'Клик на кейс',
       time: new Date().toISOString()
     });
     
+    // Отправляем данные в фоне (без задержки на переход)
     sendAnalyticsData();
   }
 });
@@ -2215,18 +2214,12 @@ function sendAnalyticsData() {
     clientId: analyticsData.clientId
   };
   
-  console.log('📊 [Аналитика] Попытка отправки данных:', data);
-  
   if (USE_LOCAL_STORAGE) {
     let visits = JSON.parse(localStorage.getItem('analytics_visits') || '[]');
     visits.push(data);
     localStorage.setItem('analytics_visits', JSON.stringify(visits));
-    console.log('✅ [Аналитика] Данные сохранены в localStorage');
     
     if (SYNC_TO_GOOGLE) {
-      console.log('🌐 [Аналитика] Попытка отправки в Google Sheets...');
-      
-      // Используем POST с no-cors (обходит CORS)
       const formData = new FormData();
       formData.append('action', 'track');
       formData.append('data', JSON.stringify(data));
@@ -2237,13 +2230,11 @@ function sendAnalyticsData() {
         body: formData
       })
       .then(() => {
-        console.log('✅ [Аналитика] Данные отправлены в Google Sheets (без подтверждения из-за no-cors)');
+        console.log('✅ [Аналитика] Данные отправлены в Google Sheets');
       })
       .catch(e => console.error('❌ [Аналитика] Ошибка отправки в Google Sheets:', e));
     }
   } else {
-    console.log('🌐 [Аналитика] Попытка отправки в Google Sheets...');
-    
     const formData = new FormData();
     formData.append('action', 'track');
     formData.append('data', JSON.stringify(data));
@@ -2254,7 +2245,7 @@ function sendAnalyticsData() {
       body: formData
     })
     .then(() => {
-      console.log('✅ [Аналитика] Данные отправлены в Google Sheets (без подтверждения из-за no-cors)');
+      console.log('✅ [Аналитика] Данные отправлены в Google Sheets');
     })
     .catch(e => console.error('❌ [Аналитика] Ошибка отправки в Google Sheets:', e));
   }
@@ -2329,12 +2320,17 @@ async function loadAnalyticsData() {
     document.getElementById('returnRate').textContent = data.returnRate + '%';
     document.getElementById('avgScroll').textContent = data.avgScroll + '%';
     
-    // Пересчитываем конверсию локально (игнорируем серверную)
-    const totalCaseClicksLocal = data.caseClickStats ? Object.values(data.caseClickStats).reduce((sum, count) => sum + count, 0) : 0;
-    const effectiveClicksLocal = Math.min(totalCaseClicksLocal, data.uniqueVisitors || data.totalVisits);
-    const conversionLocal = (data.uniqueVisitors || data.totalVisits) > 0 ? ((effectiveClicksLocal / (data.uniqueVisitors || data.totalVisits)) * 100).toFixed(1) : 0;
-    document.getElementById('conversion').textContent = conversionLocal + '%';
-    
+    // Конверсия (уникальные пользователи, кликнувшие на кейсы / уникальные посетители)
+// Конверсия (уникальные посетители / общее количество кликов на кейсы)
+// Конверсия (уникальные пользователи, кликнувшие на кейсы / уникальные посетители)
+let uniqueCaseClicks;
+if (data.caseClickStatsUnique && Array.isArray(data.caseClickStatsUnique)) {
+  uniqueCaseClicks = data.caseClickStatsUnique.length;
+} else {
+  uniqueCaseClicks = data.caseClickStats ? Object.values(data.caseClickStats).reduce((sum, count) => sum + count, 0) : 0;
+}
+const conversionLocal = (data.uniqueVisitors || data.totalVisits) > 0 ? ((uniqueCaseClicks / (data.uniqueVisitors || data.totalVisits)) * 100).toFixed(1) : 0;
+document.getElementById('conversion').textContent = conversionLocal + '%';
     // Статистика по секциям (по уникальным пользователям)
     const sectionStats = document.getElementById('sectionStats');
     sectionStats.innerHTML = '';
@@ -2365,12 +2361,12 @@ async function loadAnalyticsData() {
     const caseClickStats = document.getElementById('caseClickStats');
     caseClickStats.innerHTML = '';
     if (data.caseClickStats && Object.keys(data.caseClickStats).length > 0) {
-      for (const [caseName, count] of Object.entries(data.caseClickStats)) {
-        const item = document.createElement('div');
-        item.className = 'analytics-list-item';
-        item.innerHTML = `<span>${caseName}</span><span>${count} кликов</span>`;
-        caseClickStats.appendChild(item);
-      }
+      // Объединяем все клики по кейсам в один пункт
+      const totalCaseClicks = Object.values(data.caseClickStats).reduce((sum, count) => sum + count, 0);
+      const item = document.createElement('div');
+      item.className = 'analytics-list-item';
+      item.innerHTML = `<span>Клики на кейсы</span><span>${totalCaseClicks} кликов</span>`;
+      caseClickStats.appendChild(item);
     } else {
       caseClickStats.innerHTML = '<div class="analytics-list-item"><span>Нет кликов</span></div>';
     }
