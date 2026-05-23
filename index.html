@@ -2283,9 +2283,14 @@ if (navLogo) {
 
 // Открытие панели аналитики
 function openAnalyticsPanel() {
-  document.getElementById('analyticsOverlay').classList.add('show');
-  document.getElementById('analyticsPanel').classList.add('show');
-  loadAnalyticsData();
+  const password = prompt('Введите пароль для доступа к аналитике:');
+  if (password === '2009') {
+    document.getElementById('analyticsOverlay').classList.add('show');
+    document.getElementById('analyticsPanel').classList.add('show');
+    loadAnalyticsData();
+  } else if (password !== null) {
+    alert('Неверный пароль');
+  }
 }
 
 // Закрытие панели
@@ -2359,7 +2364,7 @@ async function loadAnalyticsData() {
     console.log('🔗 [Аналитика] uniqueCaseClicksCount:', uniqueCaseClicksCount);
     console.log('🔗 [Аналитика] caseClickStats:', data.caseClickStats);
     // Делим на 2 для отображения
-    const displayCaseClicks = Math.floor(uniqueCaseClicksCount / 2);
+    const displayCaseClicks = Math.floor(uniqueCaseClicksCount / 1);
     if (displayCaseClicks > 0) {
       const item = document.createElement('div');
       item.className = 'analytics-list-item';
