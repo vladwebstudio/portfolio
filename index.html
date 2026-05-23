@@ -184,8 +184,14 @@ section{position:relative;z-index:1;}
 .gallery-slide.active{opacity:1;pointer-events:auto;}
 .slide-label{position:absolute;top:16px;left:16px;padding:4px 12px;background:rgba(0,0,0,0.6);backdrop-filter:blur(10px);border-radius:100px;font-size:11px;color:var(--t2);font-weight:500;z-index:10;}
 .scr{width:100%;height:100.2%;min-height:135px;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid var(--b);cursor:pointer;position:relative;}
-.scr::before{content:'';position:absolute;inset:0;border-radius: 20px;border:2px solid var(--acc);opacity:0;transition:opacity 0.2s ease;pointer-events:none;z-index:5;}
+.scr::before{content:'';position:absolute;inset:0;border-radius: 20px;border:2px solid var(--acc);opacity:0;transition:opacity 0.3s ease;pointer-events:none;z-index:5;}
 .scr:hover::before{opacity:1;}
+.scr .mck{transition:filter 0.3s ease;}
+.scr:hover .mck{filter:blur(3px);}
+.scr-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.3s ease;z-index:10;pointer-events:auto;}
+.scr:hover .scr-overlay{opacity:1;}
+.scr-overlay-text{padding:10px 20px;background:rgba(30,30,35,0.95);backdrop-filter:blur(10px);border:2px solid rgba(255,255,255,0.3);color:white;border-radius:var(--rsm);font-size:14px;font-weight:600;text-decoration:none;transition:var(--tr);cursor:pointer;}
+.scr-overlay-text:hover{background:rgba(40,40,45,0.95);border-color:var(--acc);border-width:2px;}
 .scr img{max-height:100%;object-fit:contain;touch-action:manipulation;position:relative;z-index:1;}
 .scr.crm-mgr-main{background:linear-gradient(135deg,#1a1a2e,#16213e);}
 .scr.crm-mgr-pay{background:linear-gradient(135deg,#0f3460,#1a1a2e);}
@@ -202,7 +208,7 @@ section{position:relative;z-index:1;}
 .scr.crs-mod{background:linear-gradient(135deg,#221a30,#1a1625);}
 .scr.crs-mob{background:linear-gradient(135deg,#1a1625,#1e1529);max-width:220px;margin:0 auto;}
 /* Mock UI */
-.mck{width:90%;height:75%;position:absolute;top:30px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;padding:12px;}
+.mck{width:99%;height:75%;position:absolute;top:5px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;padding:12px;}
 .mck-top{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:6px;}
 .mck-dots{display:flex;gap:4px;}
 .mck-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.2);}
@@ -887,12 +893,15 @@ section{position:relative;z-index:1;}
       <div class="case-card reveal">
         <div class="case-inner">
           <div class="case-gallery">
-            <div class="scr crm-mgr-main">
+            <div class="scr crm-mgr-main" onclick="if(!analyticsData.caseClicks){analyticsData.caseClicks=[];}analyticsData.caseClicks.push({name:'Клик на кейс',time:new Date().toISOString()});sendAnalyticsData();window.location.href='case-detail.html?id=1';">
               <div class="mck">
                 <div class="mck-top"><div class="mck-dots"><div class="mck-dot"></div><div class="mck-dot"></div><div class="mck-dot"></div></div><div class="mck-url"></div><div style="width:20px"></div></div>
                 <div class="mck-cnt">
                   <img src="img/srm-1.png" alt="Главный экран менеджера" style="width:100%;height:100%;object-fit:contain;border-radius:6px;">
                 </div>
+              </div>
+              <div class="scr-overlay">
+                <span class="scr-overlay-text" data-key="c_detail">Посмотреть кейс</span>
               </div>
             </div>
           </div>
@@ -913,12 +922,15 @@ section{position:relative;z-index:1;}
       <div class="case-card reveal">
         <div class="case-inner rev">
           <div class="case-gallery">
-            <div class="scr land-main">
+            <div class="scr land-main" onclick="if(!analyticsData.caseClicks){analyticsData.caseClicks=[];}analyticsData.caseClicks.push({name:'Клик на кейс',time:new Date().toISOString()});sendAnalyticsData();window.location.href='case-detail.html?id=2';">
               <div class="mck">
                 <div class="mck-top"><div class="mck-dots"><div class="mck-dot"></div><div class="mck-dot"></div><div class="mck-dot"></div></div><div class="mck-url"></div><div style="width:20px"></div></div>
                 <div class="mck-cnt">
                   <img src="img/land-1.png" alt="Главный экран лендинга" style="width:100%;height:100%;object-fit:contain;border-radius:6px;">
                 </div>
+              </div>
+              <div class="scr-overlay">
+                <span class="scr-overlay-text" data-key="c_detail">Посмотреть кейс</span>
               </div>
             </div>
           </div>
@@ -939,12 +951,15 @@ section{position:relative;z-index:1;}
       <div class="case-card reveal">
         <div class="case-inner">
           <div class="case-gallery">
-            <div class="scr crs-main">
+            <div class="scr crs-main" onclick="if(!analyticsData.caseClicks){analyticsData.caseClicks=[];}analyticsData.caseClicks.push({name:'Клик на кейс',time:new Date().toISOString()});sendAnalyticsData();window.location.href='case-detail.html?id=3';">
               <div class="mck">
                 <div class="mck-top"><div class="mck-dots"><div class="mck-dot"></div><div class="mck-dot"></div><div class="mck-dot"></div></div><div class="mck-url"></div><div style="width:20px"></div></div>
                 <div class="mck-cnt">
-                  <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a1625,#221a30);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--t2);font-size:12px;text-align:center;padding:10px;">Course Preview</div>
+                  <img src="img/tovark-1.jpg" alt="Главный экран курса" style="width:100%;height:100%;object-fit:contain;border-radius:6px;">
                 </div>
+              </div>
+              <div class="scr-overlay">
+                <span class="scr-overlay-text" data-key="c_detail">Посмотреть кейс</span>
               </div>
             </div>
           </div>
@@ -955,7 +970,7 @@ section{position:relative;z-index:1;}
             <div class="case-tech"><span class="tech-tag">HTML</span><span class="tech-tag">CSS</span><span class="tech-tag">JavaScript</span></div>
             <div class="case-links">
               <a href="case-detail.html?id=3" class="case-link primary"><i class="fas fa-search"></i><span data-key="c_detail">Посмотреть кейс</span></a>
-              <a href="#" class="case-link secondary" target="_blank"><i class="fas fa-external-link-alt"></i><span data-key="c_view">Посмотреть проект (гость)</span></a>
+              <a href="https://vladwebstudio.github.io/formula-svobodi20-/" class="case-link secondary" target="_blank"><i class="fas fa-external-link-alt"></i><span data-key="c_view">Посмотреть проект (гость)</span></a>
               <a href="https://t.me/vladoss_011" target="_blank" class="case-link secondary"><i class="fas fa-code"></i><span data-key="c_code">Код по запросу</span></a>
             </div>
           </div>
