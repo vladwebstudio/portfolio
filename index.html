@@ -1736,6 +1736,9 @@ function enterSite() {
   document.body.style.overflow = '';
   localStorage.setItem('portfolioEntered', 'true');
   window.scrollTo(0, 0);
+  setTimeout(() => {
+    if (typeof typeCodeEffect === 'function') typeCodeEffect();
+  }, 820);
 }
 // ===== UNIQUE CLIENT ID =====
 function getOrCreateClientId() {
@@ -1811,11 +1814,11 @@ document.querySelectorAll('.cn').forEach(cn => {
     this.classList.toggle('breakpoint');
   });
 });
-setTimeout(typeCodeEffect, 500);
 // Check if user already entered
 if (localStorage.getItem('portfolioEntered') === 'true') {
   document.getElementById('welcomeScreen').style.display = 'none';
   document.body.style.overflow = '';
+  setTimeout(typeCodeEffect, 500);
 } else {
   // Prevent scroll while welcome is shown
   document.body.style.overflow = 'hidden';
